@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 ##################################################################
-# Version 2.2
+# Version 2.3
 ##################################################################
 import os, sys
 import time
@@ -17,13 +17,13 @@ class KyanToolKit_Py(object):
 	def __del__(self):
 		pass
 
-	def sync(input_func): #decorator
+	def async(input_func): #decorator
 		def callInputFunc(*args, **kwargs):
 			t = threading.Thread(target=input_func, args=args, kwargs=kwargs)
 			return t.start()
 		return callInputFunc
 
-	@sync
+	@async
 	def update(self):
 		ktk_url = "https://raw.githubusercontent.com/kyan001/KyanToolKit_Unix/master/KyanToolKit_Py.py"
 		try:

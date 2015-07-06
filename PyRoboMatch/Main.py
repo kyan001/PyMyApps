@@ -3,7 +3,7 @@ import Robo, RoboYard
 
 import KyanToolKit_Py
 ktk = KyanToolKit_Py.KyanToolKit_Py()
-ktk.update(True)
+ktk.update()
 
 #--Main----------------------------------------------------------
 start_time = time.time()
