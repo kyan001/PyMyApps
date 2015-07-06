@@ -17,6 +17,8 @@ import ASCII_Encode
 import KyanToolKit_Py
 import tkinter
 ktk = KyanToolKit_Py.KyanToolKit_Py()
+ktk.update()
+
 algo_list = ["Emoji_Encode",
 	"Emoji_Encode_Pure",
 	"NATO_Phonetic_Encode",

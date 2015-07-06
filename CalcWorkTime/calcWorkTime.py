@@ -1,5 +1,6 @@
 import KyanToolKit_Py
 ktk = KyanToolKit_Py.KyanToolKit_Py()
+ktk.update()
 import datetime
 
 times = [
@@ -173,27 +174,81 @@ times = [
 ("2015/5/8 8:58", "2015/5/8 20:00"),
 ("2015/5/9 9:45", "2015/5/9 19:15"),
 ("2015/5/11 9:05", "2015/5/11 18:30"),
+("2015/5/12 9:15", "2015/5/12 18:50"),
+("2015/5/13 9:10", "2015/5/13 19:00"),
+("2015/5/14 8:58", "2015/5/14 18:50"),
+("2015/5/15 8:54", "2015/5/15 19:00"),
+("2015/5/18 9:15", "2015/5/18 19:06"),
+("2015/5/19 12:50", "2015/5/19 19:00"),
+("2015/5/20 9:15", "2015/5/20 18:35"),
+("2015/5/21 9:10", "2015/5/21 18:32"),
+("2015/5/22 9:28", "2015/5/22 18:55"),
+("2015/5/25 9:00", "2015/5/25 18:30"),
+("2015/5/26 9:01", "2015/5/26 18:35"),
+("2015/5/27 9:24", "2015/5/27 18:35"),
+("2015/5/28 9:09", "2015/5/28 18:35"),
+("2015/5/29 8:58", "2015/5/29 18:40"),
+("2015/6/1 9:19", "2015/6/1 18:50"),
+("2015/6/2 9:09", "2015/6/2 18:15"),
+("2015/6/3 9:26", "2015/6/3 18:40"),
+("2015/6/4 12:58", "2015/6/4 18:30"),
+("2015/6/5 12:56", "2015/6/5 18:40"),
+("2015/6/8 9:16", "2015/6/8 18:40"),
+("2015/6/9 13:10", "2015/6/9 18:30"),
+("2015/6/10 9:28", "2015/6/10 18:43"),
+("2015/6/11 9:45", "2015/6/11 18:40"),
+("2015/6/12 13:15", "2015/6/12 18:36"),
+("2015/6/15 9:30", "2015/6/15 18:30"), #?
+("2015/6/16 9:15", "2015/6/16 18:17"),
+("2015/6/17 9:30", "2015/6/17 18:30"), #?
+("2015/6/23 9:14", "2015/6/23 18:30"),
+("2015/6/24 9:35", "2015/6/24 18:30"),
+("2015/6/25 9:24", "2015/6/25 18:30"),
+("2015/6/26 11:40", "2015/6/26 18:51"),
+("2015/6/29 9:23", "2015/6/29 18:30"),
+("2015/6/30 9:24", "2015/6/30 18:40"),
 ];
 def minutes2Str(minutes):
     return str(int(minutes/60)) + ":" + str(minutes%60)
 
-total = 0;
+total_working_hour = 0;
+total_working_minute = 0;
+overtime_days = 0;
 for (t1,t2) in times:
     time1 = datetime.datetime.strptime(t1, "%Y/%m/%d %H:%M");
     time2 = datetime.datetime.strptime(t2, "%Y/%m/%d %H:%M");
     if time1.day != time2.day or time1.month != time2.month:
-        ktk.Err(datetime.datetime.strftime(time1, "%Y/%m/%d %H:%M") + "is not same day!");
+        ktk.err(datetime.datetime.strftime(time1, "%Y/%m/%d %H:%M") + "is not same day!");
     workingTime = (time2.hour*60 + time2.minute)-(time1.hour*60 + time1.minute);
-    ktk.Info(str(t1) + "\t" + str(t2) + "  \t" + minutes2Str(workingTime));
-    total += workingTime;
+    ktk.info(str(t1) + "\t" + str(t2) + "  \t" + minutes2Str(workingTime));
+    total_working_minute += workingTime;
+    if workingTime > 9*60:
+    	overtime_days += 1
+total_working_hour = int(total_working_minute/60)
 actualWorkingDays = len(times);
-legalVacation = int(215/7)*2 + 1 + 3 + 1 + 1;
-workDays = 215 - legalVacation;
-print(ktk.banner("Conclusions"));
-ktk.Info( str(actualWorkingDays) + "\t| Total working days" );
-ktk.Info( str(workDays) + "\t| Total work days" );
-ktk.Info( str(actualWorkingDays - workDays) + "\t| work overtime days" );
-ktk.Info( str(total) + "\t| Total working time" );
-ktk.Info( minutes2Str(int(total/actualWorkingDays)) + "\t| Working Time per day" );
-ktk.Info( minutes2Str(int(total/workDays)) + "\t| Working Time per work day" );
+total_days = 265
+legalVacation = int(total_days/7)*2 \
+- 1 \
+# - 2014.10.11 十一蹿休
++ 1 \
+# + 2015.1.1 元旦
++ 3 \
+# + 2015.18/19/20 春节
++ 1 \
+# + 2015.4.5 清明
++ 1 \
+# + 2015.5.1 劳动节
++ 0.5 \
+# + 2015.5.4 青年节
++ 1 \
+# + 2015.6.20 端午
+workDays = total_days - legalVacation;
+print('\n' + ktk.banner("Conclusions"));
+ktk.info( "{0}\t| Actually working {0} days".format(str(actualWorkingDays)) );
+ktk.info( "{0}\t| Legal workday is {0} days".format(str(workDays)) );
+ktk.info( "{0}\t| additional workdays {0} days".format(str(actualWorkingDays - workDays)) );
+ktk.info( "{0}\t| Working more than 8+1 hours for {0} days ({1}%)".format(str(overtime_days), str(round(100*overtime_days/actualWorkingDays, ndigits=2))) );
+ktk.info( "{0}\t| Total working {0} hours ({1} days)".format(str(total_working_hour), str(round(total_working_hour/24, ndigits=2))) );
+ktk.info( "{0}\t| Working {0} hours per day".format(round(total_working_hour/actualWorkingDays, ndigits=2)) );
+ktk.info( "{0}\t| Working {0} hours per work day".format(round(total_working_hour/workDays, ndigits=2)) );
 ktk.pressToContinue();
