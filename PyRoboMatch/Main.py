@@ -1,13 +1,12 @@
-import random
-import time
-import queue
-import Robo
-import csv
-import KyanToolKit_Py
-import RoboYard
+import random, time, queue, csv
+import Robo, RoboYard
 
-start_time = time.time()
+import KyanToolKit_Py
 ktk = KyanToolKit_Py.KyanToolKit_Py()
+ktk.update(True)
+
+#--Main----------------------------------------------------------
+start_time = time.time()
 CSV_FORM = [("time", "Power", "Alive Robo", "Total Robo")]
 def csvGenerate(enable):
 	if CSV_FORM and enable:
