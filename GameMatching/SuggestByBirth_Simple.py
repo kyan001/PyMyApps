@@ -1,12 +1,14 @@
-import KyanToolKit3
+import KyanToolKit_Py
+ktk = KyanToolKit_Py.KyanToolKit_Py()
+ktk.update()
 
 while True:
 	# init
-	KyanToolKit3.clearScreen();
-	KyanToolKit3.banner("Enter Your Birthday: (ex.19890101)")
-	player1 = KyanToolKit3.getInput("Yours:")
-	KyanToolKit3.banner("Yours Mr/Ms.Right was born in which year? (ex.1987)")
-	player2_year = KyanToolKit3.getInput("He/She was born in ...:")
+	ktk.clearScreen();
+	print(ktk.banner("Enter Your Birthday: (ex.19890101)"))
+	player1 = ktk.getInput("Yours:")
+	print(ktk.banner("Yours Mr/Ms.Right was born in which year? (ex.1987)"))
+	player2_year = ktk.getInput("He/She was born in ...:")
 	result = player1 + player2_year
 	# start calc
 	possible_list = []
@@ -55,9 +57,9 @@ while True:
 					result_tmp3 = calc_store
 				if 70 <= int(result_tmp3) <= 80:
 					final_list.append(player2_year + "." + month_add + "." + day_add + " --> " + result_tmp3 + "%")
-	KyanToolKit3.banner("Possible Results:")
+	print(ktk.banner("Possible Results:"))
 	for y in final_list:
 		print(y)
-	KyanToolKit3.banner("This is just a game!")
-	KyanToolKit3.pressToContinue()
+	print(ktk.banner("This is just a game!"))
+	ktk.pressToContinue()
 

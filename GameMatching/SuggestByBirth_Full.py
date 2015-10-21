@@ -1,12 +1,14 @@
-import KyanToolKit3
+import KyanToolKit_Py
+ktk = KyanToolKit_Py.KyanToolKit_Py()
+ktk.update()
 
 while True:
 	# init
-	KyanToolKit3.clearScreen();
-	KyanToolKit3.banner("Enter Your Birthday: (ex.19890101)")
-	player1 = KyanToolKit3.getInput("Yours:")
-	KyanToolKit3.banner("Yours Mr/Ms.Right was born in which year? (ex.1987)")
-	player2_year = KyanToolKit3.getInput("He/She was born in ...:")
+	ktk.clearScreen();
+	print(ktk.banner("Enter Your Birthday: (ex.19890101)"))
+	player1 = ktk.getInput("Yours:")
+	print(ktk.banner("Yours Mr/Ms.Right was born in which year? (ex.1987)"))
+	player2_year = ktk.getInput("He/She was born in ...:")
 	result = player1 + player2_year
 	# start calc
 	good_list = []
@@ -34,13 +36,13 @@ while True:
 				good_list.append(player2_year + "." + month_add + "." + day_add + " --> " + result_tmp + "%")
 			elif int(result_tmp) < 10:
 				sad_list.append(player2_year + "." + month_add + "." + day_add + " --> " + result_tmp + "%")
-	KyanToolKit3.clearScreen();
-	KyanToolKit3.banner("These guys are easy to get!")
+	ktk.clearScreen();
+	print(ktk.banner("These guys are easy to get!"))
 	for x in good_list:
 		print(x)
-	KyanToolKit3.banner("Please avoid these guys!")
+	print(ktk.banner("Please avoid these guys!"))
 	for y in sad_list:
 		print(y)
-	KyanToolKit3.banner("This is just a game!")
-	KyanToolKit3.pressToContinue()
+	print(ktk.banner("This is just a game!"))
+	ktk.pressToContinue()
 
