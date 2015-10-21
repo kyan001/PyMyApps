@@ -25,30 +25,43 @@ ktk.info('Socket Created, Server is listening...')
 
 # init reply dict
 rply_dict = {'version':[ver]}
-rply_dict["?"] = [
-    "Yes, the answer you will find out soon!",
-    "Well...I don't know the answer.",
-    "You are so right.",
-    "I don't want to answer this.",
-    ]
+
 rply_dict['hi'] = [
-    "Hello",
-    "Hi",
-    "What's up",
-    "Nice to meet you",
-    "Yo hommie",
+    "Hello~",
+    "Hi!",
+    "What's up, bro?",
+    "Nice to meet you.",
+    "Yo homie.",
     ]
 rply_dict['bye'] = [
-	'Bye bye',
-	"It's time to say good bye, bro.",
+	'Bye bye.',
+	"It's time to say good bye.",
 	"Nice talking to you.",
+    'See you.',
+    'See you later.',
 	]
+rply_dict['how old'] = [
+    "I'm 2 years old."
+    ]
+rply_dict['are you'] = [
+    'Yes, I am.',
+    "No, I'm not.",
+    ]
+rply_dict["?"] = [
+    "The answer you will find out soon!",
+    "Well...I don't know.",
+    "Maybe you are right.",
+    "Yes... I guess?",
+    "I don't want to answer this.",
+    "What question is that?",
+    ]
 rply_dict["default"] = [
     "Haha, that's funny.",
     "Oh, really?",
-    "tell me more, please.",
+    "Tell me more, please.",
     "Wow, fantastic!",
     "Pardon? The signal is not perfect.",
+    "I don't want to talk about this.",
     ]
 # Get msg
 while True:
@@ -72,8 +85,9 @@ while True:
     clnt_sckt.close()
     ktk.warn("Client disconnected: " + clnt_id)
     print("")
-    if "yes" == input("\nstop server? (yes/no): "):
+    stopit = ktk.getInput("Stop the server? (yes/no)")
+    if "yes" == stopit:
         break
     else:
-    	ktk.info('Server is running ...')
+    	ktk.info('Server keeps running ...')
 srvr_sckt.close()

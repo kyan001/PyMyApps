@@ -32,8 +32,8 @@ ktk.info('Socket Created')
 ktk.info('Connecting Server ...')
 srvr = (trgt_ip, trgt_port)
 my_sckt.connect(srvr)
-time.sleep(1)
 ktk.info('Connection Established')
+time.sleep(1)
 
 def printChats(chats):
     ktk.clearScreen()
