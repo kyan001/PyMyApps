@@ -1,4 +1,5 @@
 import socket
+import sys
 import random
 import KyanToolKit_Py
 ktk = KyanToolKit_Py.KyanToolKit_Py("trace.tra")
@@ -8,7 +9,10 @@ ktk.update()
 ver='1.2'
 hostname = socket.gethostname()
 hostip = socket.gethostbyname(hostname)
-srvr_ip = hostip
+if len(sys.argv) > 1:
+    srvr_ip = sys.argv[1]
+else:
+    srvr_ip = hostip
 srvr_port = 21516
 ktk.info('Hostname: ' + hostname)
 ktk.info('Server IP: ' + srvr_ip)
