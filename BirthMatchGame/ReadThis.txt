@@ -1,0 +1,5 @@
+This is a game:
+1. Enter 2 person's birthday, like 19870501 and 19890901, calculate the ratio of be together (or something else, anyway).
+2. Basically, 1st put two string together, and add the first 2 digits, divided the result by 10 and get the remain, put in the new string's 1st digit.
+3. Then, calculate 2nd digit and 3rd digit, then 3rd digit and 4th digit...
+4. Then, do the same thing on the new string. Until there only 2 digit left.
