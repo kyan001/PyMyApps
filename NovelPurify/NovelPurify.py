@@ -125,6 +125,8 @@ def hanziPurify(txt):
         '裤': 'kù',
         '混': 'hún',
         '唇': 'chún',
+        '操': 'cào',
+        '奶': 'nǎi',
     }
 
     word_table = {
@@ -161,7 +163,7 @@ def hanziPurify(txt):
 def unmatchedUrlPurify(txt):
     ktk.pStart().pTitle('未匹配的 url')
     chars_in_url = r"a-zA-Z0-9 \!\"\#\$\%\&\'\(\)\*\+\,\-\.\/\:\;\<\=\>\?\@\[\]\^\`\{\|\}\~\\"
-    url_pattern = re.compile(r'[{0}]*(?:www|http|com|org|net|span|div)[{0}]*'.format(chars_in_url), flags=re.IGNORECASE)
+    url_pattern = re.compile(r'[{0}]*(?:ww|http|com|org|net|span|div)[{0}]*'.format(chars_in_url), flags=re.IGNORECASE)
     txt = findCheckDelete(url_pattern, txt)
     ktk.pEnd()
     return txt
