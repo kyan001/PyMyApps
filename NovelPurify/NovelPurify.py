@@ -213,9 +213,9 @@ def main():
         with open(filepath, mode='r', encoding='gbk') as f:
             txt = f.read()
             ktk.info('以 gbk 格式打开文件')
-    #txt = hanziPurify(txt)
-    #txt = unmatchedUrlPurify(txt)
-    #txt = showUnmatchedWord(txt)
+    txt = hanziPurify(txt)
+    txt = unmatchedUrlPurify(txt)
+    txt = showUnmatchedWord(txt)
     txt = showParagraph(txt)
     save(filepath, txt)
 
