@@ -219,9 +219,15 @@ def main():
             txt = f.read()
             ktk.info('以 utf-8 格式打开文件')
     except UnicodeDecodeError:
-        with open(filepath, mode='r', encoding='gbk') as f:
-            txt = f.read()
-            ktk.info('以 gbk 格式打开文件')
+        try:
+            with open(filepath, mode='r', encoding='gbk') as f:
+                txt = f.read()
+                ktk.info('以 gbk 格式打开文件')
+        except UnicodeDecodeError:
+            with open(filepath, mode='r', encoding='latin-1') as f:
+                txt = f.read()
+                ktk.info('以 latin-1 格式打开文件，可能会产生错误')
+    ktk.info('打开文件 {}'.format(filepath))
     txt = hanziPurify(txt)
     txt = unmatchedUrlPurify(txt)
     txt = showUnmatchedWord(txt)
