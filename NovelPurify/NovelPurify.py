@@ -119,6 +119,7 @@ def hanziPurify(txt):
         '魂': 'hun',
         '腿': 'tuǐ',
         '挺': 'tǐng',
+        '穴': ('xvé', 'xué'),
     }
 
     word_table = {
@@ -174,8 +175,8 @@ def showParagraph(txt):
 
 def showUnmatchedWord(txt):
     '显示尚未匹配到的英文字符串'
-    ktk.pStart().pTitle('未匹配的英文字符串：TOP {}'.format(threshold))
     threshold = 10;
+    ktk.pStart().pTitle('未匹配的英文字符串：TOP {}'.format(threshold))
     tone_chars = 'āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ'
     word_pattern = re.compile(r'[^a-zA-Z]( *[a-zA-Z{0}][a-zA-Z.{0}]+ *)[^a-zA-Z]'.format(tone_chars), flags=re.IGNORECASE)
     matches = word_pattern.findall(txt)
