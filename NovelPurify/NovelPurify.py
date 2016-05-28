@@ -209,24 +209,20 @@ def save(filepath, txt):
     return True
 
 def main():
+    ktk.pStart()
     filepath = sys.argv[1] if len(sys.argv) > 1 else None
     if not filepath:
         tkapp = tkinter.Tk()
         filepath = tkinter.filedialog.askopenfilename()
         tkapp.destroy()
-    try:
-        with open(filepath, mode='r', encoding="utf-8") as f:
-            txt = f.read()
-            ktk.info('以 utf-8 格式打开文件')
-    except UnicodeDecodeError:
+    for mode in ("utf-8", 'gbk', 'latin-1'):
         try:
-            with open(filepath, mode='r', encoding='gbk') as f:
+            with open(filepath, mode='r', encoding=mode) as f:
                 txt = f.read()
-                ktk.info('以 gbk 格式打开文件')
+                ktk.info('以 {} 格式打开文件'.format(mode))
+                break
         except UnicodeDecodeError:
-            with open(filepath, mode='r', encoding='latin-1') as f:
-                txt = f.read()
-                ktk.info('以 latin-1 格式打开文件，可能会产生错误')
+            ktk.warn('打开文件：尝试 {} 格式失败'.format(mode))
     ktk.info('打开文件 {}'.format(filepath))
     txt = hanziPurify(txt)
     txt = unmatchedUrlPurify(txt)
