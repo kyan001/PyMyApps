@@ -1,0 +1,1 @@
+pyinstaller -i misc_Wifi.ico -F ../netqual.py
