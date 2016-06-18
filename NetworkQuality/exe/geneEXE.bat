@@ -1,1 +1,1 @@
-pyinstaller -i misc_Wifi.ico -F ../netqual.py
+pyinstaller -i misc_Wifi.ico -F --uac-admin ../netqual.py

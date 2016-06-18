@@ -1,1 +1,1 @@
-python Entrance.py -gui
+py Entrance.py -gui
