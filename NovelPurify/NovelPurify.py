@@ -229,6 +229,7 @@ def main():
     txt = showUnmatchedWord(txt)
     txt = showParagraph(txt)
     save(filepath, txt)
+    ktk.pressToContinue()
 
 if __name__ == '__main__':
     main()
