@@ -45,7 +45,7 @@ def main():
         ktk.clearScreen()
         assemble_print()
         printQ()
-        time.sleep(0.6)
+        time.sleep(1)
 
 
 def putPrint(words: str):
