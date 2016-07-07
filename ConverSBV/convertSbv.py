@@ -1,14 +1,14 @@
-import re, sys
-sys.path.append('../')
-import KyanToolKit_Py
-ktk = KyanToolKit_Py.KyanToolKit_Py()
+import re
+import sys
+import KyanToolKit
+ktk = KyanToolKit.KyanToolKit()
 
 # usage：py convertSbv.py ori.sbv srt
 # for .bat：py convertSbv.py %1
 
 if len(sys.argv) > 1:
     filename = sys.argv[1]
-    if not '.sbv' in filename:
+    if '.sbv' not in filename:
         ktk.err("file's suffix must be sbv")
         ktk.bye()
 else:
@@ -21,6 +21,7 @@ else:
     target_format = 'srt'
 
 new_filename = filename.replace('.sbv', '.srt')
+
 
 def writeFile(ln):
     ft.write(ln + '\n')
@@ -39,7 +40,7 @@ if target_format == 'srt':
                 if pattern.match(ln):
                     index += 1
                     writeFile(str(index))
-                    new_ln = ln.replace(',', ' --> ').replace('.', ',')
+                    new_ln = ln.replace(', ', ' --> ').replace('.', ', ')
                 else:
                     new_ln = ln
                 writeFile(new_ln)

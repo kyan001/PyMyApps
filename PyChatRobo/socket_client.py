@@ -1,9 +1,8 @@
 import socket
 import time
-import sys
-import KyanToolKit_Py
-ktk = KyanToolKit_Py.KyanToolKit_Py("trace.tra")
-ktk.update()
+
+import KyanToolKit
+ktk = KyanToolKit.KyanToolKit("trace.tra")
 
 # init variables
 print(ktk.banner('Select Server Ip'))
@@ -35,6 +34,7 @@ my_sckt.connect(srvr)
 ktk.info('Connection Established')
 time.sleep(1)
 
+
 def printChats(chats):
     ktk.clearScreen()
     print(ktk.banner("Welcome to ChatRobo"))
@@ -46,8 +46,8 @@ msg = 'Hi'
 chats = [""]
 
 while True:
-    if msg=='':
-        msg='Um...'
+    if msg == '':
+        msg = 'Um...'
     # send msg
     bytes_sent = my_sckt.send(msg.encode(encoding="utf-8"))
     chats.append("Me: " + msg)

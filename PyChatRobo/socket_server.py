@@ -1,12 +1,12 @@
 import socket
 import sys
 import random
-import KyanToolKit_Py
-ktk = KyanToolKit_Py.KyanToolKit_Py("trace.tra")
-ktk.update()
+
+import KyanToolKit
+ktk = KyanToolKit.KyanToolKit("trace.tra")
 
 # init server socket
-ver='1.2'
+ver = '1.2'
 hostname = socket.gethostname()
 hostip = socket.gethostbyname(hostname)
 if len(sys.argv) > 1:
@@ -28,7 +28,7 @@ ktk.info('Allowed Connection: ' + str(allowed_connection))
 ktk.info('Socket Created, Server is listening...')
 
 # init reply dict
-rply_dict = {'version':[ver]}
+rply_dict = {'version': [ver]}
 
 rply_dict['hi'] = [
     "Hello~",
@@ -36,21 +36,21 @@ rply_dict['hi'] = [
     "What's up, bro?",
     "Nice to meet you.",
     "Yo homie.",
-    ]
+]
 rply_dict['bye'] = [
-	'Bye bye.',
-	"It's time to say good bye.",
-	"Nice talking to you.",
+    'Bye bye.',
+    "It's time to say good bye.",
+    "Nice talking to you.",
     'See you.',
     'See you later.',
-	]
+]
 rply_dict['how old'] = [
     "I'm 2 years old."
-    ]
+]
 rply_dict['are you'] = [
     'Yes, I am.',
     "No, I'm not.",
-    ]
+]
 rply_dict["?"] = [
     "The answer you will find out soon!",
     "Well...I don't know.",
@@ -58,7 +58,7 @@ rply_dict["?"] = [
     "Yes... I guess?",
     "I don't want to answer this.",
     "What question is that?",
-    ]
+]
 rply_dict["default"] = [
     "Haha, that's funny.",
     "Oh, really?",
@@ -66,7 +66,7 @@ rply_dict["default"] = [
     "Wow, fantastic!",
     "Pardon? The signal is not perfect.",
     "I don't want to talk about this.",
-    ]
+]
 # Get msg
 while True:
     clnt_sckt, (clnt_ip, clnt_port) = srvr_sckt.accept()
@@ -85,7 +85,7 @@ while True:
         print("Me  : " + rply)
         print('')
         if "bye" == clnt_req:
-        	break
+            break
     clnt_sckt.close()
     ktk.warn("Client disconnected: " + clnt_id)
     print("")
@@ -93,5 +93,5 @@ while True:
     if "yes" == stopit:
         break
     else:
-    	ktk.info('Server keeps running ...')
+        ktk.info('Server keeps running ...')
 srvr_sckt.close()

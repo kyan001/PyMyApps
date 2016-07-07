@@ -1,11 +1,7 @@
-import random
 import time
-import queue
 import csv
-import sys
-sys.path.append('../')
 
-import KyanToolKit_Py
+import KyanToolKit
 
 import RoboYard
 
@@ -25,7 +21,7 @@ def csvGenerate(enable):
 
 def byeBye():
     csvGenerate(True)
-    KyanToolKit_Py.KyanToolKit_Py.byeBye()
+    KyanToolKit.KyanToolKit.byeBye()
 
 yards = []
 yard = RoboYard.RoboYard(robo_init=8, power_max=72, idel_max=0.50, name="test")

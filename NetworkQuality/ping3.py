@@ -73,7 +73,12 @@
 """
 
 
-import os, sys, socket, struct, select, time
+import os
+import sys
+import socket
+import struct
+import select
+import time
 
 if sys.platform == "win32":
     # On Windows, the best timer is time.clock()
@@ -83,7 +88,7 @@ else:
     default_timer = time.time
 
 # From /usr/include/linux/icmp.h; your milage may vary.
-ICMP_ECHO_REQUEST = 8 # Seems to be the same on Solaris.
+ICMP_ECHO_REQUEST = 8  # Seems to be the same on Solaris.
 
 
 def checksum(source_string):
@@ -94,17 +99,17 @@ def checksum(source_string):
     sum = 0
     countTo = len(source_string)
     count = 0
-    while count<countTo:
-        thisVal = source_string[count + 1]*256 + source_string[count]
+    while count < countTo:
+        thisVal = source_string[count + 1] * 256 + source_string[count]
         sum = sum + thisVal
-        sum = sum & 0xffffffff # Necessary?
+        sum = sum & 0xffffffff  # Necessary?
         count = count + 2
 
-    if countTo<len(source_string):
+    if countTo < len(source_string):
         sum = sum + ord(source_string[len(source_string) - 1])
-        sum = sum & 0xffffffff # Necessary?
+        sum = sum & 0xffffffff  # Necessary?
 
-    sum = (sum >> 16)  +  (sum & 0xffff)
+    sum = (sum >> 16) + (sum & 0xffff)
     sum = sum + (sum >> 16)
     answer = ~sum
     answer = answer & 0xffff
@@ -124,7 +129,7 @@ def receive_one_ping(my_socket, ID, timeout):
         startedSelect = default_timer()
         whatReady = select.select([my_socket], [], [], timeLeft)
         howLongInSelect = (default_timer() - startedSelect)
-        if whatReady[0] == []: # Timeout
+        if whatReady[0] == []:  # Timeout
             return
 
         timeReceived = default_timer()
@@ -150,7 +155,7 @@ def send_one_ping(my_socket, dest_addr, ID):
     """
     Send one ping to the given >dest_addr<.
     """
-    dest_addr  =  socket.gethostbyname(dest_addr)
+    dest_addr = socket.gethostbyname(dest_addr)
 
     # Header is type (8), code (8), checksum (16), id (16), sequence (16)
     my_checksum = 0
@@ -170,10 +175,10 @@ def send_one_ping(my_socket, dest_addr, ID):
         "bbHHh", ICMP_ECHO_REQUEST, 0, socket.htons(my_checksum), ID, 1
     )
     packet = header + data
-    my_socket.sendto(packet, (dest_addr, 1)) # Don't know about the 1
+    my_socket.sendto(packet, (dest_addr, 1))  # Don't know about the 1
 
 
-def do_one(dest_addr, timeout = 4):
+def do_one(dest_addr, timeout=4):
     """
     Returns either the delay (in seconds) or none on timeout.
     timeout default is same as Windows Cmd
@@ -189,7 +194,7 @@ def do_one(dest_addr, timeout = 4):
     return delay
 
 
-def verbose_ping(dest_addr, timeout = 2, count = 4):
+def verbose_ping(dest_addr, timeout=2, count=4):
     """
     Send >count< ping to >dest_addr< with the given >timeout< and display
     the result.
@@ -197,15 +202,15 @@ def verbose_ping(dest_addr, timeout = 2, count = 4):
     for i in range(count):
         print("ping '{}' ... ".format(dest_addr), end='')
         try:
-            delay  =  do_one(dest_addr, timeout)
+            delay = do_one(dest_addr, timeout)
         except socket.gaierror as e:
             print("Failed. (socket error: '{}')".format(e[1]))
             break
 
-        if delay  ==  None:
+        if delay is None:
             print("Timeout > {}s".format(timeout))
         else:
-            delay  =  delay * 1000
+            delay = delay * 1000
             print("{}ms".format(int(delay)))
     print
 

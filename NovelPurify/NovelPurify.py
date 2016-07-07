@@ -1,9 +1,11 @@
-import sys, os, re, string
-import tkinter, tkinter.filedialog
-sys.path.append('../')
-import KyanToolKit_Py
-ktk = KyanToolKit_Py.KyanToolKit_Py()
-#ktk.update()
+import sys
+import os
+import re
+import tkinter
+import tkinter.filedialog
+import KyanToolKit
+ktk = KyanToolKit.KyanToolKit()
+
 
 def findCheckDelete(pattern, txt, undelete=False):
     '根据传入的 pattern 找到 txt 中的匹配，生成列表并由用户筛选，然后删除它们'
@@ -35,9 +37,11 @@ def findCheckDelete(pattern, txt, undelete=False):
     ktk.info('完成').pEnd()
     return txt
 
+
 def hanziPurify(txt):
     ktk.pStart()
     ktk.pTitle('净化拼音')
+
     def generateToneList(pinyin):
         pinyin = pinyin.replace('*', '\*')
         tone_table = {
@@ -62,10 +66,10 @@ def hanziPurify(txt):
             raise Exception('table 不能为空')
         for hanzi, pinyin in table.items():
             pinyin_list = []
-            if type(pinyin) == tuple: # '欲': (yu, yv)
+            if type(pinyin) == tuple:  # '欲': (yu, yv)
                 for py in pinyin:
                     pinyin_list += generateToneList(py)
-            else: # '好': 'hao'
+            else:  # '好': 'hao'
                 pinyin_list += generateToneList(pinyin)
             pattern = re.compile(r'[^a-zA-Z]( *(?:{}) *)[^a-zA-Z]'.format('|'.join(pinyin_list)), flags=re.IGNORECASE)
             matches = pattern.findall(txt)
@@ -130,7 +134,7 @@ def hanziPurify(txt):
     }
 
     word_table = {
-        '政府': ('政fǔ','zhèngfǔ'),
+        '政府': ('政fǔ', 'zhèngfǔ'),
         '十有八九': '十有**',
         '侍女': 'shìnv',
         '自己': 'zìjǐ',
@@ -155,10 +159,11 @@ def hanziPurify(txt):
         if '是' == answer:
             for i, (hanzi, pattern) in enumerate(matched_patterns):
                 total = len(matched_patterns)
-                ktk.echo('Replacing {}'.format(hanzi), prefix="{}/{total}".format(i+1, total=total))
+                ktk.echo('Replacing {}'.format(hanzi), prefix="{}/{total}".format(i + 1, total=total))
                 txt = pattern.sub(hanzi, txt)
             ktk.info('完成').pEnd()
     return txt
+
 
 def unmatchedUrlPurify(txt):
     ktk.pStart().pTitle('未匹配的 url')
@@ -167,6 +172,7 @@ def unmatchedUrlPurify(txt):
     txt = findCheckDelete(url_pattern, txt)
     ktk.pEnd()
     return txt
+
 
 def showParagraph(txt):
     ktk.pStart().pTitle('优化格式不正确的章节头')
@@ -181,9 +187,10 @@ def showParagraph(txt):
     ktk.pEnd()
     return txt
 
+
 def showUnmatchedWord(txt):
     '显示尚未匹配到的英文字符串'
-    threshold = 10;
+    threshold = 10
     ktk.pStart().pTitle('未匹配的英文字符串：TOP {}'.format(threshold))
     tone_chars = 'āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ'
     word_pattern = re.compile(r'[^a-zA-Z]( *[a-zA-Z{0}][a-zA-Z.{0}]+ *)[^a-zA-Z]'.format(tone_chars), flags=re.IGNORECASE)
@@ -193,11 +200,12 @@ def showUnmatchedWord(txt):
         unm_word_dict = {}
         for uw in unmatched_words:
             unm_word_dict[uw] = matches.count(uw)
-    uw_tops = sorted(unm_word_dict.items(), key=lambda Ditem:Ditem[1], reverse=True)[:threshold]
+    uw_tops = sorted(unm_word_dict.items(), key=lambda Ditem: Ditem[1], reverse=True)[:threshold]
     for uw, count in uw_tops:
         ktk.info('"{}"：{}'.format(uw, count))
     ktk.pEnd()
     return txt
+
 
 def save(filepath, txt):
     dir, fname = os.path.split(filepath)
@@ -207,6 +215,7 @@ def save(filepath, txt):
         f.write(txt)
         ktk.info('净化后的文件已储存在 {}'.format(new_fname))
     return True
+
 
 def main():
     ktk.pStart()
