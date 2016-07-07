@@ -79,6 +79,7 @@ import socket
 import struct
 import select
 import time
+import threading
 
 if sys.platform == "win32":
     # On Windows, the best timer is time.clock()
@@ -185,8 +186,7 @@ def do_one(dest_addr, timeout=4):
     """
     icmp_protocol = socket.getprotobyname("icmp")
     my_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, icmp_protocol)
-    my_ID = os.getpid() & 0xFFFF
-
+    my_ID = threading.current_thread().ident & 0xFFFF
     send_one_ping(my_socket, dest_addr, my_ID)
     delay = receive_one_ping(my_socket, my_ID, timeout)
 

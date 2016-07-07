@@ -1,34 +1,54 @@
 import socket
 import re
-import ping3
 import statistics
-import sys
+import queue
+import threading
+import time
+from collections import defaultdict, OrderedDict
+from functools import wraps
+
+import ping3
+import KyanToolKit
+ktk = KyanToolKit.KyanToolKit()
 
 
-def getDelays(addr, count, timeout=2):
-    delays = []
-    none_count = 0
-    print('- ping {} ...'.format(addr), end='')
-    for i in range(count):
-        try:
-            delay = ping3.do_one(addr, timeout)
-        except Exception as e:
-            print()
-            print(e)
-            input('按回车键继续...')
-        if delay:
-            delay = delay * 1000
-            content = ' {}ms'.format(int(delay))
-        else:
-            none_count += 1
-            content = ' Timeout'
-        delays.append(delay)
-        sys.stdout.write(content)
-        sys.stdout.flush()
-        if none_count > 4:
-            break
-    print()
-    return delays
+# values
+myip = socket.gethostbyname(socket.gethostname())
+ippattern = re.compile(r'([0-9]+)\.([0-9]+)\.([0-9]+)\.[0-9]+')
+gatewayip = ippattern.sub(r'\1.\2.\3.1', myip)
+baiduip = socket.gethostbyname('baidu.com')
+githubip = socket.gethostbyname("github.com")
+ips = OrderedDict()
+ips['路由器'] = gatewayip
+ips['国内（baidu.com）'] = baiduip
+ips['国外（github.com）'] = githubip
+ips['墙外（twitter.com）'] = '37.61.54.158'
+
+# structures
+outputq = queue.Queue()  # output queue
+delaydict = {}  # each addr's delays
+for k, v in ips.items():
+    delaydict[v] = []
+
+
+def main():
+    for k in ips:
+        start_ping(ips[k])
+    while True:
+        ktk.clearScreen()
+        assemble_print()
+        printQ()
+        time.sleep(1)
+
+
+def putPrint(words: str):
+    if words:
+        outputq.put(words)
+
+
+def printQ():
+    while not outputq.empty():
+        print(outputq.get())
 
 
 def analyseDelays(delays):
@@ -73,31 +93,66 @@ def analyseDelays(delays):
                 result['stability'] += '[良] 连接稳定性良好，游戏上网两不误'
             else:
                 result['stability'] += '[优] 连接稳定性优秀，击败了全国 99% 的电脑'
-
     return result
 
 
-def ping_this(addr, title, count=10):
-    print(title + '：')
-    delays = getDelays(addr, count)
-    analyse = analyseDelays(delays)
+def assemble_session(dest, addr):
+    putPrint('本机 <--> {}：'.format(dest))
+
+    pingstr = '- ping {}：'.format(addr)
+    delaylist = delaydict[addr]
+    for d in delaylist:
+        pingstr += '{}ms'.format(d) if d is not None else 'Timeout'
+        pingstr += '\t'
+    putPrint(pingstr)
+
+    analyse = analyseDelays(delaylist)
     for k, v in analyse.items():
-        print(v)
-    print('\n')
+        putPrint(v)
+    putPrint(' ')
 
-my_ip = socket.gethostbyname(socket.gethostname())
-print('本机IP：{}'.format(my_ip))
-ip_pattern = re.compile(r'([0-9]+)\.([0-9]+)\.([0-9]+)\.[0-9]+')
-gateway_ip = ip_pattern.sub(r'\1.\2.\3.1', my_ip)
-print('网关IP：{}'.format(gateway_ip))
-print()
-baidu_ip = socket.gethostbyname('baidu.com')
-github_ip = socket.gethostbyname("github.com")
-google_ip = socket.gethostbyname('google.com')
 
-ping_this(gateway_ip, '检查本机与 路由器 之间的连接', count=20)
-ping_this(baidu_ip, '检查本机与 baidu.com 之间的连接')
-ping_this(github_ip, '检查本机与 github.com 之间的连接')
-ping_this(google_ip, '检查本机与 google.com 之间的连接')
+def assemble_print():
+    putPrint('网络质量监控：')
+    putPrint('=' * 25)
+    putPrint(' ')
+    putPrint('本机 IP：{}'.format(myip))
+    putPrint('网关 IP：{}'.format(gatewayip))
+    putPrint(' ')
+    for k, v in ips.items():
+        assemble_session(k, v)
 
-input('按回车键继续...')
+
+def async(input_func: callable):  # decorator
+    """使函数单开一个线程执行"""
+    @wraps(input_func)
+    def callInputFunc(*args, **kwargs):
+        t = threading.Thread(target=input_func, args=args, kwargs=kwargs)
+        t.start()
+        return t
+    return callInputFunc
+
+
+@async
+def start_ping(addr, timeout=3):
+    while True:
+        try:
+            delay = ping3.do_one(addr, timeout)
+        except Exception as e:
+            print(e)
+            input('按回车键继续...')
+        if delay:
+            if delay < 0.5:
+                time.sleep(0.5 - delay)
+            delay = int(delay * 1000)
+        delaydict[addr].append(delay)
+        if not running:
+            break
+
+
+if __name__ == '__main__':
+    try:
+        running = True
+        main()
+    except KeyboardInterrupt:
+        running = False
