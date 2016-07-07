@@ -22,7 +22,7 @@ ips = OrderedDict()
 ips['路由器'] = gatewayip
 ips['国内（baidu.com）'] = baiduip
 ips['国外（github.com）'] = githubip
-ips['墙外（twitter.com）'] = '37.61.54.158'
+ips['墙外（youtube.com）'] = '172.217.1.46'
 
 # structures
 outputq = queue.Queue()  # output queue
@@ -32,13 +32,20 @@ for k, v in ips.items():
 
 
 def main():
+    try:
+        ping3.do_one(myip, 1)  # test ping
+    except OSError as e:
+        ktk.err(e)
+        ktk.info('可能您需要以管理员权限运行')
+        ktk.pressToContinue()
+        ktk.bye()
     for k in ips:
         start_ping(ips[k])
     while True:
         ktk.clearScreen()
         assemble_print()
         printQ()
-        time.sleep(1)
+        time.sleep(0.6)
 
 
 def putPrint(words: str):
@@ -98,17 +105,19 @@ def analyseDelays(delays):
 
 def assemble_session(dest, addr):
     putPrint('本机 <--> {}：'.format(dest))
-
-    pingstr = '- ping {}：'.format(addr)
-    delaylist = delaydict[addr]
+    # analyse
+    delaylist = delaydict[addr][-40:]  # only calc last 50
+    analyse = analyseDelays(delaylist)
+    for k, v in analyse.items():
+        putPrint(v)
+    # pings
+    pingstr = '- ping {}：\n\t'.format(addr)
     for d in delaylist:
         pingstr += '{}ms'.format(d) if d is not None else 'Timeout'
         pingstr += '\t'
     putPrint(pingstr)
 
-    analyse = analyseDelays(delaylist)
-    for k, v in analyse.items():
-        putPrint(v)
+
     putPrint(' ')
 
 
@@ -136,14 +145,10 @@ def async(input_func: callable):  # decorator
 @async
 def start_ping(addr, timeout=3):
     while True:
-        try:
-            delay = ping3.do_one(addr, timeout)
-        except Exception as e:
-            print(e)
-            input('按回车键继续...')
+        delay = ping3.do_one(addr, timeout)
         if delay:
-            if delay < 0.5:
-                time.sleep(0.5 - delay)
+            if delay < 1:
+                time.sleep(1 - delay)
             delay = int(delay * 1000)
         delaydict[addr].append(delay)
         if not running:
