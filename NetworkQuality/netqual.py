@@ -1,4 +1,9 @@
-import socket, re, ping3, statistics, sys
+import socket
+import re
+import ping3
+import statistics
+import sys
+
 
 def getDelays(addr, count, timeout=2):
     delays = []
@@ -24,6 +29,7 @@ def getDelays(addr, count, timeout=2):
             break
     print()
     return delays
+
 
 def analyseDelays(delays):
     total_count = len(delays)
@@ -70,8 +76,9 @@ def analyseDelays(delays):
 
     return result
 
+
 def ping_this(addr, title, count=10):
-    print(title+'：')
+    print(title + '：')
     delays = getDelays(addr, count)
     analyse = analyseDelays(delays)
     for k, v in analyse.items():
