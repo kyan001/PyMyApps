@@ -56,7 +56,7 @@ def init_dicts(ips, delay):
         with open(G.extfile, 'r') as f:
             for l in f:
                 l = l.strip()
-                if l[0] == '#' or not l:  # comments or empty
+                if not l or l[0] == '#':  # comments or empty
                     continue
                 ext_item = l.split()
                 if len(ext_item) == 1 and G.addrpattern.match(ext_item[0]):
