@@ -55,23 +55,26 @@ def init_dicts(ips, delay):
     if os.path.isfile(G.extfile):
         with open(G.extfile, 'r') as f:
             for l in f:
-                if l[0] == '#' or not l.strip():  # comments or empty
+                l = l.strip()
+                if l[0] == '#' or not l:  # comments or empty
                     continue
                 ext_item = l.split()
                 if len(ext_item) == 1 and G.addrpattern.match(ext_item[0]):
                     G.ips[ext_item[0]] = socket.gethostbyname(ext_item[0])
                 elif len(ext_item) != 2:  # not a valid
-                    G.ext_notice += 'Not a valid pair: {}'.format(l)
                 elif not G.ippattern.match(ext_item[1]):  # not a ip
-                    G.ext_notice += 'Does not have a valid ip: {}'.format(l)
                 else:
                     G.ips[ext_item[0]] = ext_item[1]
     else:
-        G.ext_notice += '\n未找到外部配置文件：' + G.extfile
+        G.ext_notice += '\n- 未找到外部配置文件：' + G.extfile
         G.ext_notice += """
-外部文件请按照每行 “名称 ip” 的格式，
-或以网址单独一行，
-注释以“#”开头。
+- 外部文件请按照每行 “名称 ip” 的格式，或以网址单独一行，注释以“#”开头。
+- 例：
+    # 游戏类
+    Wakfu 52.76.139.242
+
+    # 网站类
+    superfarmer.net
         """
     for k, v in ips.items():
         delay[v] = []
