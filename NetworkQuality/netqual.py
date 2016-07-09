@@ -62,7 +62,9 @@ def init_dicts(ips, delay):
                 if len(ext_item) == 1 and G.addrpattern.match(ext_item[0]):
                     G.ips[ext_item[0]] = socket.gethostbyname(ext_item[0])
                 elif len(ext_item) != 2:  # not a valid
+                    G.ext_notice += '格式不正确: {}\n'.format(l)
                 elif not G.ippattern.match(ext_item[1]):  # not a ip
+                    G.ext_notice += '不是有效 IP: {}\n'.format(l)
                 else:
                     G.ips[ext_item[0]] = ext_item[1]
     else:
