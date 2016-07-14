@@ -11,12 +11,13 @@ from functools import wraps
 import ping3
 import KyanToolKit  # pip3 install KyanToolKit
 ktk = KyanToolKit.KyanToolKit()
-USE_PLOT = True
+USE_PLOT = True  # PLOT figure switch
 if USE_PLOT:
     import matplotlib.pyplot as plt  # pip3 install matplotlib
     from pylab import mpl  # pip3 install matplotlib
     import tkinter  # for pyinstaller use
     import tkinter.filedialog  # for pyinstaller use
+
 
 class G(object):
     # values
@@ -109,7 +110,7 @@ def main():
         ktk.bye()
     for k in G.ips:  # starting ping those IPs
         start_ping(G.ips[k])
-    if plt:  # start ploting the figures
+    if USE_PLOT:  # start ploting the figures
         mpl.rcParams['font.sans-serif'] = ['Microsoft YaHei']
         plt.ion()
         start_plots()
