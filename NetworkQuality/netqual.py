@@ -9,9 +9,14 @@ from collections import OrderedDict
 from functools import wraps
 
 import ping3
-import KyanToolKit
+import KyanToolKit  # pip3 install KyanToolKit
 ktk = KyanToolKit.KyanToolKit()
-
+USE_PLOT = True
+if USE_PLOT:
+    import matplotlib.pyplot as plt  # pip3 install matplotlib
+    from pylab import mpl  # pip3 install matplotlib
+    import tkinter  # for pyinstaller use
+    import tkinter.filedialog  # for pyinstaller use
 
 class G(object):
     # values
@@ -45,13 +50,23 @@ class G(object):
     [中] 连接稳定性中等，可能会影响游戏体验
     [差] 连接稳定性差，响应速度忽快忽慢
     """
+    running = True
+
+
+def async(input_func: callable):  # decorator
+    """使函数单开一个线程执行"""
+    @wraps(input_func)
+    def callInputFunc(*args, **kwargs):
+        t = threading.Thread(target=input_func, args=args, kwargs=kwargs)
+        t.start()
+        return t
+    return callInputFunc
 
 
 def init_dicts(ips, delay):
     """init ips dict and delaydict"""
     ips['路由器'] = G.gatewayip
-    ips['国内（baidu.com）'] = G.baiduip
-    ips['国外（github.com）'] = G.githubip
+    ips['国内（baidu）'] = G.baiduip
     if os.path.isfile(G.extfile):
         with open(G.extfile, 'r') as f:
             for l in f:
@@ -68,6 +83,7 @@ def init_dicts(ips, delay):
                 else:
                     G.ips[ext_item[0]] = ext_item[1]
     else:
+        ips['国外（github）'] = G.githubip
         G.ext_notice += '\n- 未找到外部配置文件：' + G.extfile
         G.ext_notice += """
 - 外部文件请按照每行 “名称 ip” 的格式，或以网址单独一行，注释以“#”开头。
@@ -91,13 +107,17 @@ def main():
         ktk.info('可能您需要以管理员权限运行')
         ktk.pressToContinue()
         ktk.bye()
-    for k in G.ips:
+    for k in G.ips:  # starting ping those IPs
         start_ping(G.ips[k])
-    while True:
+    if plt:  # start ploting the figures
+        mpl.rcParams['font.sans-serif'] = ['Microsoft YaHei']
+        plt.ion()
+        start_plots()
+    while G.running:
+        time.sleep(0.6)
         ktk.clearScreen()
         assemble_print()
         printQ()
-        time.sleep(0.6)
 
 
 def putPrint(words: str):
@@ -189,33 +209,45 @@ def assemble_print():
     putPrint(G.ext_notice)
 
 
-def async(input_func: callable):  # decorator
-    """使函数单开一个线程执行"""
-    @wraps(input_func)
-    def callInputFunc(*args, **kwargs):
-        t = threading.Thread(target=input_func, args=args, kwargs=kwargs)
-        t.start()
-        return t
-    return callInputFunc
+@async
+def start_plots():
+    try:
+        while G.running:
+            windownum = len(G.ips)
+            for i, (k, v) in enumerate(G.ips.items()):
+                delays = G.delaydict[v][-10:]
+                if not delays:
+                    break
+                plt.subplot(windownum * 100 + 10 + i + 1)
+                plt.cla()
+                plt.ylabel(k)
+                plt.plot(delays, '--ob')
+                for x, y in enumerate(delays):
+                    txt = '{}ms'.format(y) if y else 't/o'
+                    xy = (x, y) if y else (x, 0)
+                    color = 'black' if y else 'red'
+                    plt.annotate(txt, xy=xy, color=color)
+                plt.pause(0.1)
+    finally:
+        G.running = False
+        plt.close()
 
 
 @async
 def start_ping(addr, timeout=3):
-    while True:
+    while G.running:
         delay = ping3.do_one(addr, timeout)
         if delay:
             if delay < 1:
                 time.sleep(1 - delay)
             delay = int(delay * 1000)
         G.delaydict[addr].append(delay)
-        if not running:
-            break
 
 
 if __name__ == '__main__':
     try:
-        running = True
+        G.running = True
         main()
     finally:
         print('Exiting {}'.format(__file__))
-        running = False
+        G.running = False
