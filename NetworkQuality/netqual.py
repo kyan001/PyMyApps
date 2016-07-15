@@ -5,6 +5,7 @@ import statistics
 import queue
 import threading
 import time
+import configparser
 from collections import OrderedDict
 from functools import wraps
 
@@ -25,12 +26,11 @@ class G(object):
     ippattern = re.compile(r'([0-9]+)\.([0-9]+)\.([0-9]+)\.[0-9]+')
     addrpattern = re.compile(r'([a-zA-Z0-9]+.)+[com|net|me|org|cn|jp|us]')
     gatewayip = ippattern.sub(r'\1.\2.\3.1', myip)
-    baiduip = socket.gethostbyname('baidu.com')
-    githubip = socket.gethostbyname("github.com")
-    extfile = os.path.splitext(__file__)[0] + '.txt'
+    extfile = os.path.splitext(__file__)[0] + '.ini'
     # structures
     outputq = queue.Queue()  # output queue
     ips = OrderedDict()
+    ips_plot = OrderedDict()
     delaydict = {}  # each addr's delays
     # strings
     ext_notice = ""
@@ -64,43 +64,8 @@ def async(input_func: callable):  # decorator
     return callInputFunc
 
 
-def init_dicts(ips, delay):
-    """init ips dict and delaydict"""
-    ips['路由器'] = G.gatewayip
-    ips['国内（baidu）'] = G.baiduip
-    ips['国外（github）'] = G.githubip
-    if os.path.isfile(G.extfile):
-        with open(G.extfile, 'r') as f:
-            for l in f:
-                l = l.strip()
-                if not l or l[0] == '#':  # comments or empty
-                    continue
-                ext_item = l.split()
-                if len(ext_item) == 1 and G.addrpattern.match(ext_item[0]):
-                    G.ips[ext_item[0]] = socket.gethostbyname(ext_item[0])
-                elif len(ext_item) != 2:  # not a valid
-                    G.ext_notice += '格式不正确: {}\n'.format(l)
-                elif not G.ippattern.match(ext_item[1]):  # not a ip
-                    G.ext_notice += '不是有效 IP: {}\n'.format(l)
-                else:
-                    G.ips[ext_item[0]] = ext_item[1]
-    else:
-        G.ext_notice += '\n- 未找到外部配置文件：' + G.extfile
-        G.ext_notice += """
-- 外部文件请按照每行 “名称 ip” 的格式，或以网址单独一行，注释以“#”开头。
-- 例：
-    # 游戏类
-    Wakfu 52.76.139.242
-
-    # 网站类
-    superfarmer.net
-        """
-    for k, v in ips.items():
-        delay[v] = []
-
-
 def main():
-    init_dicts(G.ips, G.delaydict)
+    init_dicts()
     try:
         ping3.do_one(G.myip, 1)  # test ping
     except OSError as e:
@@ -120,6 +85,36 @@ def main():
         ktk.clearScreen()
         assemble_print()
         printQ()
+
+
+def init_dicts():
+    """init ips dict and delaydict"""
+    config = configparser.ConfigParser()
+    if not os.path.isfile(G.extfile):
+        config['路由器'] = {
+            'ip': G.gatewayip,
+            '#ip': 'Can be IP or Url',
+            'watch': 'yes',
+            '#watch': 'set yes to see it in graphic',
+        }
+        config['国内（baidu）'] = {'ip': 'baidu.com'}
+        config['国外（github）'] = {'ip': 'github.com'}
+        config.write(open(G.extfile, 'w'))
+    config.read(G.extfile)
+    for s in config.sections():
+        sect = config[s]  # get section
+        name = s
+        ip = sect.get('ip')
+        if G.addrpattern.match(ip):
+            ip = socket.gethostbyname(ip)
+        if not ip or not G.ippattern.match(ip):
+            G.ext_notice += '格式不正确，无法解析 IP：{}'.format(s)
+            continue
+        G.ips[name] = ip
+        if sect.getboolean('watch'):
+            G.ips_plot[name] = ip
+    for k, v in G.ips.items():
+        G.delaydict[v] = []
 
 
 def putPrint(words: str):
@@ -215,17 +210,12 @@ def assemble_print():
 def start_plots():
     try:
         while G.running:
-            windownum = len(G.ips) - 3
-            for i, (k, v) in enumerate(G.ips.items()):
+            for i, (k, v) in enumerate(G.ips_plot.items()):
                 delays = G.delaydict[v][-10:]
                 if not delays:
                     break
-                if i < 3:
-                    plt.figure('Base')
-                    plt.subplot(311 + i)  # 311, 312, 313
-                else:
-                    plt.figure('customer')
-                    plt.subplot(windownum * 100 + 8 + i)
+                plt.figure(i // 3)
+                plt.subplot(311 + i % 3)  # 311, 312, 313
                 plt.cla()
                 plt.ylabel(k)
                 plt.plot(delays, '--ob')
@@ -234,7 +224,7 @@ def start_plots():
                     xy = (x, y) if y is not None else (x, 0)
                     color = 'black' if y is not None else 'red'
                     plt.annotate(txt, xy=xy, color=color)
-                plt.pause(0.1)
+                plt.pause(0.001)
     finally:
         G.running = False
         plt.close()
