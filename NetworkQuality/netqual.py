@@ -68,6 +68,7 @@ def init_dicts(ips, delay):
     """init ips dict and delaydict"""
     ips['路由器'] = G.gatewayip
     ips['国内（baidu）'] = G.baiduip
+    ips['国外（github）'] = G.githubip
     if os.path.isfile(G.extfile):
         with open(G.extfile, 'r') as f:
             for l in f:
@@ -84,7 +85,6 @@ def init_dicts(ips, delay):
                 else:
                     G.ips[ext_item[0]] = ext_item[1]
     else:
-        ips['国外（github）'] = G.githubip
         G.ext_notice += '\n- 未找到外部配置文件：' + G.extfile
         G.ext_notice += """
 - 外部文件请按照每行 “名称 ip” 的格式，或以网址单独一行，注释以“#”开头。
@@ -112,6 +112,7 @@ def main():
         start_ping(G.ips[k])
     if USE_PLOT:  # start ploting the figures
         mpl.rcParams['font.sans-serif'] = ['Microsoft YaHei']
+        mpl.rcParams['toolbar'] = 'None'
         plt.ion()
         start_plots()
     while G.running:
@@ -214,17 +215,22 @@ def assemble_print():
 def start_plots():
     try:
         while G.running:
-            windownum = len(G.ips)
+            windownum = len(G.ips) - 3
             for i, (k, v) in enumerate(G.ips.items()):
                 delays = G.delaydict[v][-10:]
                 if not delays:
                     break
-                plt.subplot(windownum * 100 + 10 + i + 1)
+                if i < 3:
+                    plt.figure('Base')
+                    plt.subplot(311 + i)  # 311, 312, 313
+                else:
+                    plt.figure('customer')
+                    plt.subplot(windownum * 100 + 8 + i)
                 plt.cla()
                 plt.ylabel(k)
                 plt.plot(delays, '--ob')
                 for x, y in enumerate(delays):
-                    txt = '{}ms'.format(y) if y else 't/o'
+                    txt = '{}ms'.format(y) if y else 'None'
                     xy = (x, y) if y else (x, 0)
                     color = 'black' if y else 'red'
                     plt.annotate(txt, xy=xy, color=color)
