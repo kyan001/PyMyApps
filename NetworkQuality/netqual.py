@@ -93,9 +93,11 @@ def init_dicts():
     if not os.path.isfile(G.extfile):
         config['路由器'] = {
             'ip': G.gatewayip,
-            '#ip': 'Can be IP or Url',
+            '# ip': 'Can be IP(8.8.8.8) or Address(google.com)',
             'watch': 'yes',
-            '#watch': 'set yes to see it in graphic',
+            '# watch': 'Set "yes" to see it in graphic',
+            'hline': '10',
+            '# hline': 'Draw a horizontal line with given num in ms',
         }
         config['国内（baidu）'] = {'ip': 'baidu.com'}
         config['国外（github）'] = {'ip': 'github.com'}
@@ -104,15 +106,22 @@ def init_dicts():
     for s in config.sections():
         sect = config[s]  # get section
         name = s
+        # parse ip
         ip = sect.get('ip')
         if G.addrpattern.match(ip):
             ip = socket.gethostbyname(ip)
         if not ip or not G.ippattern.match(ip):
             G.ext_notice += '格式不正确，无法解析 IP：{}'.format(s)
             continue
+        # parse hline
+        hline = sect.getint('hline')
+        # put data
         G.ips[name] = ip
         if sect.getboolean('watch'):
-            G.ips_plot[name] = ip
+            G.ips_plot[name] = {
+                'ip': ip,
+                'hline': hline,
+            }
     for k, v in G.ips.items():
         G.delaydict[v] = []
 
@@ -211,7 +220,8 @@ def start_plots():
     try:
         while G.running:
             for i, (k, v) in enumerate(G.ips_plot.items()):
-                delays = G.delaydict[v][-10:]
+                delays = G.delaydict[v.get('ip')][-10:]
+                hline = v.get('hline')
                 if not delays:
                     break
                 plt.figure(i // 3)
@@ -219,6 +229,8 @@ def start_plots():
                 plt.cla()
                 plt.ylabel(k)
                 plt.plot(delays, '--ob')
+                if hline:
+                    plt.axhline(y=hline, color='g')  # draw a horizontal line
                 for x, y in enumerate(delays):
                     txt = '{}ms'.format(y) if y is not None else 'None'
                     xy = (x, y) if y is not None else (x, 0)
