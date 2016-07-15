@@ -231,8 +231,8 @@ def start_plots():
                 plt.plot(delays, '--ob')
                 for x, y in enumerate(delays):
                     txt = '{}ms'.format(y) if y is not None else 'None'
-                    xy = (x, y) if y else (x, 0)
-                    color = 'black' if y else 'red'
+                    xy = (x, y) if y is not None else (x, 0)
+                    color = 'black' if y is not None else 'red'
                     plt.annotate(txt, xy=xy, color=color)
                 plt.pause(0.1)
     finally:
