@@ -1,11 +1,13 @@
 import socket
 import os
+import sys
 import re
 import statistics
 import queue
 import threading
 import time
 import configparser
+import cmd
 from collections import OrderedDict
 from functools import wraps
 
@@ -32,6 +34,7 @@ class G(object):
     ips = OrderedDict()
     ips_plot = OrderedDict()
     delaydict = {}  # each addr's delays
+    plotthread = ""
     # strings
     ext_notice = ""
     quality_expl = """
@@ -52,6 +55,52 @@ class G(object):
     [差] 连接稳定性差，响应速度忽快忽慢
     """
     running = True
+
+
+class iShell(cmd.Cmd):
+    def __init__(self):
+        super().__init__(self)
+        self.prompt = '\nNetqual> '
+        self.intro = '欢迎使用 NetQual，输入 ? 查看所有命令'
+
+    def do_show(self, args):
+        """显示所有 ping 的细节信息"""
+        G.running = True
+        while G.running:
+            time.sleep(0.6)
+            ktk.clearScreen()
+            assemble_print()
+            printQ()
+
+    def do_run(self, args):
+        """开始运行 ping（需配合 show）"""
+        G.running = True
+        ktk.info('已开始运行')
+
+    def do_stop(self, args):
+        """停止运行 ping"""
+        G.running = False
+        ktk.info('已停止运行')
+
+    def do_ping(self, args=None):
+        name = list(G.ips)[int(args) - 1] if args else ktk.getChoice(list(G.ips))
+        ip = G.ips[name]
+        affix = "-t" if "win" in sys.platform else ''
+        ktk.pStart()
+        for line in os.popen("ping {ip} {af}".format(ip=ip, af=affix)):
+            ktk.echo(line.strip())
+        ktk.pEnd()
+
+    def help_ping(self):
+        ktk.echo('用系统命令 ping 某个 ip')
+        ktk.echo('使用语法: ping [index]', lvl=1)
+        ktk.echo('如果没有提供 index，会让你从列表中选择')
+        ktk.echo('index 应为数字，从 1 开始')
+
+    def do_exit(self, args):
+        """Exit interactive shell mode"""
+        return True
+    do_quit = do_exit  # shortcuts
 
 
 def async(input_func: callable):  # decorator
@@ -79,12 +128,11 @@ def main():
         mpl.rcParams['font.sans-serif'] = ['Microsoft YaHei']
         mpl.rcParams['toolbar'] = 'None'
         plt.ion()
-        start_plots()
-    while G.running:
-        time.sleep(0.6)
+        print('111')
+        G.plotthread = start_plots()
+        time.sleep(2)
         ktk.clearScreen()
-        assemble_print()
-        printQ()
+        iShell().cmdloop()
 
 
 def init_dicts():
@@ -238,7 +286,6 @@ def start_plots():
                     plt.annotate(txt, xy=xy, color=color)
                 plt.pause(0.001)
     finally:
-        G.running = False
         plt.close()
 
 
