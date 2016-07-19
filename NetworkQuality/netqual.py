@@ -7,6 +7,7 @@ import queue
 import threading
 import time
 import configparser
+import subprocess
 import cmd
 from collections import OrderedDict
 from functools import wraps
@@ -46,14 +47,19 @@ class iShell(cmd.Cmd):
         self.prompt = '\nNetqual> '
         self.intro = '欢迎使用 NetQual，输入 ? 查看所有命令'
 
-    def do_show(self, args):
-        """显示所有 ping 的细节信息"""
-        G.running = True
-        while G.running:
+    def do_show(self, args='unlimit'):
+        """显示所有 ping 的细节信息
+
+        语法：ping [count]
+        count - 一共刷新多少次，不填则无限循环
+        """
+        count = int(args) if args.isdigit() else 0
+        while args == 'unlimit' or count > 0:
             time.sleep(0.6)
             ktk.clearScreen()
             assemble_print()
             printQ()
+            count -= 1
 
     def do_run(self, args):
         """开始运行 ping（需配合 show）"""
@@ -69,10 +75,8 @@ class iShell(cmd.Cmd):
         name = list(G.ips)[int(args) - 1] if args else ktk.getChoice(list(G.ips))
         ip = G.ips[name]
         affix = "-t" if "win" in sys.platform else ''
-        ktk.pStart()
-        for line in os.popen("ping {ip} {af}".format(ip=ip, af=affix)):
-            ktk.echo(line.strip())
-        ktk.pEnd()
+        command = "ping {ip} {af}".format(ip=ip, af=affix)
+        subprocess.Popen(command, creationflags=subprocess.CREATE_NEW_CONSOLE)
 
     def help_ping(self):
         ktk.echo('用系统命令 ping 某个 ip')
@@ -257,6 +261,7 @@ def assemble_print():
     putPrint('本机 IP：{}'.format(G.myip))
     putPrint('网关 IP：{}'.format(G.gatewayip))
     putPrint(' ')
+    putPrint('运行状态：{}'.format('运行中' if G.running else '已停止'))
     for k, v in G.ips.items():
         assemble_session(k, v)
     putPrint('=' * 25)
