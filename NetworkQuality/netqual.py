@@ -12,15 +12,14 @@ import cmd
 from collections import OrderedDict
 from functools import wraps
 
+import matplotlib.pyplot as plt  # pip3 install matplotlib
+from pylab import mpl  # pip3 install matplotlib
+import tkinter  # for pyinstaller use
+import tkinter.filedialog  # for pyinstaller use
+
 import ping3
 import KyanToolKit  # pip3 install KyanToolKit
 ktk = KyanToolKit.KyanToolKit()
-USE_PLOT = True  # PLOT figure switch
-if USE_PLOT:
-    import matplotlib.pyplot as plt  # pip3 install matplotlib
-    from pylab import mpl  # pip3 install matplotlib
-    import tkinter  # for pyinstaller use
-    import tkinter.filedialog  # for pyinstaller use
 
 
 class G(object):
@@ -35,43 +34,76 @@ class G(object):
     ips = OrderedDict()
     ips_plot = OrderedDict()
     delaydict = {}  # each addr's delays
-    plotthread = ""
     # strings
     ext_notice = ""
-    running = True
+    running = False
+    plotting = False
 
 
-class iShell(cmd.Cmd):
+class IShell(cmd.Cmd):
     def __init__(self):
         super().__init__(self)
         self.prompt = '\nNetqual> '
-        self.intro = '欢迎使用 NetQual，输入 ? 查看所有命令'
+        self.intro = """
+欢迎使用 NetQual，输入 ? 查看所有命令
+- 启动/停止/查看：start、stop、state
+- 文字展示: show 1、show
+- 图片展示: plot、plot off
+- 查看说明：expl
+- 退出：exit
+"""
 
-    def do_show(self, args='unlimit'):
+    def preloop(self):
+        time.sleep(2)
+        ktk.clearScreen()
+
+    def do_state(self, args):
+        """显示程序的运行状态"""
+        ktk.info('Running: {}'.format('On' if G.running else 'Off'))
+        ktk.info('Plotting: {}'.format('On' if G.plotting else 'Off'))
+
+    def do_show(self, args):
         """显示所有 ping 的细节信息
 
         语法：ping [count]
         count - 一共刷新多少次，不填则无限循环
         """
         count = int(args) if args.isdigit() else 0
-        while args == 'unlimit' or count > 0:
+        while (not args) or count > 0:
             time.sleep(0.6)
             ktk.clearScreen()
             assemble_print()
             printQ()
             count -= 1
 
-    def do_run(self, args):
+    def do_start(self, args):
         """开始运行 ping（需配合 show）"""
-        G.running = True
-        ktk.info('已开始运行')
+        if not G.running:
+            G.running = True
+            for k in G.ips:  # starting ping those IPs
+                ktk.info('启动 {}'.format(k))
+                start_ping(G.ips[k])
+        else:
+            ktk.warn('已在运行中')
 
     def do_stop(self, args):
         """停止运行 ping"""
         G.running = False
         ktk.info('已停止运行')
 
-    def do_ping(self, args=None):
+    def do_plot(self, args):
+        if args == 'off':
+            G.plotting = False
+        elif G.plotting:
+            ktk.warn('图片展示已在开启状态')
+        else:  # start plotting the figures
+            mpl.rcParams['font.sans-serif'] = ['Microsoft YaHei']
+            mpl.rcParams['toolbar'] = 'None'
+            plt.ion()
+            G.plotting = True
+            start_plots()
+
+    def do_ping(self, args):
         name = list(G.ips)[int(args) - 1] if args else ktk.getChoice(list(G.ips))
         ip = G.ips[name]
         affix = "-t" if "win" in sys.platform else ''
@@ -86,27 +118,30 @@ class iShell(cmd.Cmd):
 
     def do_expl(self, args):
         """显示对延迟、方差、稳定性的解释"""
-        quality_expl = """\n
-    - 【无响应率】：
-        [优] 连通性优秀，无 timeout
-        [良] 连通性良好，较顺畅
-        [中] 连通性中等，但可能会影响游戏体验
-        [差] 连通性差，上网体验差
-    - 【平均延迟】：
-        [优] 平均延迟优秀，可愉快的玩耍
-        [良] 平均延迟良好
-        [中] 平均延迟偏高，可能会影响游戏体验
-        [差] 平均延迟异常，网络响应过慢
-    - 【延迟方差】：
-        [优] 连接稳定性优秀，击败了全国 99% 的电脑
-        [良] 连接稳定性良好，游戏上网两不误
-        [中] 连接稳定性中等，可能会影响游戏体验
-        [差] 连接稳定性差，响应速度忽快忽慢
+        quality_expl = """
+- 【无响应率】：
+    [优] 连通性优秀，无 timeout
+    [良] 连通性良好，较顺畅
+    [中] 连通性中等，但可能会影响游戏体验
+    [差] 连通性差，上网体验差
+- 【平均延迟】：
+    [优] 平均延迟优秀，可愉快的玩耍
+    [良] 平均延迟良好
+    [中] 平均延迟偏高，可能会影响游戏体验
+    [差] 平均延迟异常，网络响应过慢
+- 【延迟方差】：
+    [优] 连接稳定性优秀，击败了全国 99% 的电脑
+    [良] 连接稳定性良好，游戏上网两不误
+    [中] 连接稳定性中等，可能会影响游戏体验
+    [差] 连接稳定性差，响应速度忽快忽慢
         """
-        ktk.info(quality_expl.strip())
+        for line in quality_expl.strip().split('\n'):
+            ktk.info(line)
 
     def do_exit(self, args):
         """Exit interactive shell mode"""
+        G.running = False
+        G.plotting = False
         return True
     do_quit = do_exit  # shortcuts
 
@@ -130,17 +165,10 @@ def main():
         ktk.info('可能您需要以管理员权限运行')
         ktk.pressToContinue()
         ktk.bye()
-    for k in G.ips:  # starting ping those IPs
-        start_ping(G.ips[k])
-    if USE_PLOT:  # start ploting the figures
-        mpl.rcParams['font.sans-serif'] = ['Microsoft YaHei']
-        mpl.rcParams['toolbar'] = 'None'
-        plt.ion()
-        print('111')
-        G.plotthread = start_plots()
-        time.sleep(2)
-        ktk.clearScreen()
-        iShell().cmdloop()
+    shell = IShell()
+    shell.do_start('')
+    shell.do_plot('')
+    shell.cmdloop()
 
 
 def init_dicts():
@@ -271,7 +299,7 @@ def assemble_print():
 @async
 def start_plots():
     try:
-        while G.running:
+        while G.plotting:
             for i, (k, v) in enumerate(G.ips_plot.items()):
                 delays = G.delaydict[v.get('ip')][-10:]
                 hline = v.get('hline')
@@ -307,8 +335,8 @@ def start_ping(addr, timeout=3):
 
 if __name__ == '__main__':
     try:
-        G.running = True
         main()
     finally:
-        print('Exiting {}'.format(__file__))
         G.running = False
+        G.plotting = False
+        print('Exiting {}'.format(__file__))
