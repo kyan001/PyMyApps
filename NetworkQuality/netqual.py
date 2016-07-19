@@ -37,23 +37,6 @@ class G(object):
     plotthread = ""
     # strings
     ext_notice = ""
-    quality_expl = """
-- 【无响应率】：
-    [优] 连通性优秀，无 timeout
-    [良] 连通性良好，较顺畅
-    [中] 连通性中等，但可能会影响游戏体验
-    [差] 连通性差，上网体验差
-- 【平均延迟】：
-    [优] 平均延迟优秀，可愉快的玩耍
-    [良] 平均延迟良好
-    [中] 平均延迟偏高，可能会影响游戏体验
-    [差] 平均延迟异常，网络响应过慢
-- 【延迟方差】：
-    [优] 连接稳定性优秀，击败了全国 99% 的电脑
-    [良] 连接稳定性良好，游戏上网两不误
-    [中] 连接稳定性中等，可能会影响游戏体验
-    [差] 连接稳定性差，响应速度忽快忽慢
-    """
     running = True
 
 
@@ -96,6 +79,27 @@ class iShell(cmd.Cmd):
         ktk.echo('使用语法: ping [index]', lvl=1)
         ktk.echo('如果没有提供 index，会让你从列表中选择')
         ktk.echo('index 应为数字，从 1 开始')
+
+    def do_expl(self, args):
+        """显示对延迟、方差、稳定性的解释"""
+        quality_expl = """\n
+    - 【无响应率】：
+        [优] 连通性优秀，无 timeout
+        [良] 连通性良好，较顺畅
+        [中] 连通性中等，但可能会影响游戏体验
+        [差] 连通性差，上网体验差
+    - 【平均延迟】：
+        [优] 平均延迟优秀，可愉快的玩耍
+        [良] 平均延迟良好
+        [中] 平均延迟偏高，可能会影响游戏体验
+        [差] 平均延迟异常，网络响应过慢
+    - 【延迟方差】：
+        [优] 连接稳定性优秀，击败了全国 99% 的电脑
+        [良] 连接稳定性良好，游戏上网两不误
+        [中] 连接稳定性中等，可能会影响游戏体验
+        [差] 连接稳定性差，响应速度忽快忽慢
+        """
+        ktk.info(quality_expl.strip())
 
     def do_exit(self, args):
         """Exit interactive shell mode"""
@@ -250,12 +254,8 @@ def assemble_session(dest, addr):
 
 
 def assemble_print():
-    putPrint('网络质量监控：')
-    putPrint('=' * 25)
     putPrint('本机 IP：{}'.format(G.myip))
     putPrint('网关 IP：{}'.format(G.gatewayip))
-    putPrint(' ')
-    putPrint(G.quality_expl.strip())
     putPrint(' ')
     for k, v in G.ips.items():
         assemble_session(k, v)
