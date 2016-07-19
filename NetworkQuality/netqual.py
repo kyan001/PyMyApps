@@ -92,6 +92,11 @@ class IShell(cmd.Cmd):
         ktk.info('已停止运行')
 
     def do_plot(self, args):
+        """开启/关闭图形显示
+
+        语法：plot on/off
+        BUG：当 plot off 之后，再次 plot on 会报错，这是由于 windows 端的 matplotlib 会无形的维持一个 TCL，且不允许多个进程使用
+        """
         if args == 'off':
             G.plotting = False
         elif G.plotting:
@@ -139,7 +144,7 @@ class IShell(cmd.Cmd):
             ktk.info(line)
 
     def do_exit(self, args):
-        """Exit interactive shell mode"""
+        """Exit interactive shell mode & stop running + plotting"""
         G.running = False
         G.plotting = False
         return True
