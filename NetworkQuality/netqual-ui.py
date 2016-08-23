@@ -12,6 +12,11 @@ import cmd
 from collections import OrderedDict
 from functools import wraps
 
+import matplotlib.pyplot as plt  # pip3 install matplotlib
+from pylab import mpl  # pip3 install matplotlib
+import tkinter  # for pyinstaller use
+import tkinter.filedialog  # for pyinstaller use
+
 import ping3
 import KyanToolKit  # pip3 install KyanToolKit
 ktk = KyanToolKit.KyanToolKit()
@@ -27,10 +32,12 @@ class G(object):
     # structures
     outputq = queue.Queue()  # output queue
     ips = OrderedDict()
+    ips_plot = OrderedDict()
     delaydict = {}  # each addr's delays
     # strings
     ext_notice = ""
     running = False
+    plotting = False
 
 
 class IShell(cmd.Cmd):
@@ -41,7 +48,7 @@ class IShell(cmd.Cmd):
 欢迎使用 NetQual，输入 ? 查看所有命令
 - 启动/停止/查看：start、stop、state
 - 文字展示: show 1、show
-- Ping: ping 1
+- 图片展示: plot、plot off
 - 查看说明：expl
 - 退出：exit
 """
@@ -53,6 +60,7 @@ class IShell(cmd.Cmd):
     def do_state(self, args):
         """显示程序的运行状态"""
         ktk.info('Running: {}'.format('On' if G.running else 'Off'))
+        ktk.info('Plotting: {}'.format('On' if G.plotting else 'Off'))
 
     def do_show(self, args):
         """显示所有 ping 的细节信息
@@ -82,6 +90,23 @@ class IShell(cmd.Cmd):
         """停止运行 ping"""
         G.running = False
         ktk.info('已停止运行')
+
+    def do_plot(self, args):
+        """开启/关闭图形显示
+
+        语法：plot on/off
+        BUG：当 plot off 之后，再次 plot on 会报错，这是由于 windows 端的 matplotlib 会无形的维持一个 TCL，且不允许多个进程使用
+        """
+        if args == 'off':
+            G.plotting = False
+        elif G.plotting:
+            ktk.warn('图片展示已在开启状态')
+        else:  # start plotting the figures
+            mpl.rcParams['font.sans-serif'] = ['Microsoft YaHei']
+            mpl.rcParams['toolbar'] = 'None'
+            plt.ion()
+            G.plotting = True
+            start_plots()
 
     def do_ping(self, args):
         name = list(G.ips)[int(args) - 1] if args else ktk.getChoice(list(G.ips))
@@ -119,8 +144,9 @@ class IShell(cmd.Cmd):
             ktk.info(line)
 
     def do_exit(self, args):
-        """Exit interactive shell mode & stop running"""
+        """Exit interactive shell mode & stop running + plotting"""
         G.running = False
+        G.plotting = False
         return True
     do_quit = do_exit  # shortcuts
 
@@ -145,6 +171,8 @@ def main():
         ktk.pressToContinue()
         ktk.bye()
     shell = IShell()
+    shell.do_start('')
+    shell.do_plot('')
     shell.cmdloop()
 
 
@@ -174,8 +202,15 @@ def init_dicts():
         if not ip or not G.ippattern.match(ip):
             G.ext_notice += '格式不正确，无法解析 IP：{}'.format(s)
             continue
+        # parse hline
+        hline = sect.getint('hline')
         # put data
         G.ips[name] = ip
+        if sect.getboolean('watch'):
+            G.ips_plot[name] = {
+                'ip': ip,
+                'hline': hline,
+            }
     for k, v in G.ips.items():
         G.delaydict[v] = []
 
@@ -267,6 +302,32 @@ def assemble_print():
 
 
 @async
+def start_plots():
+    try:
+        while G.plotting:
+            for i, (k, v) in enumerate(G.ips_plot.items()):
+                delays = G.delaydict[v.get('ip')][-10:]
+                hline = v.get('hline')
+                if not delays:
+                    break
+                plt.figure(i // 3)
+                plt.subplot(311 + i % 3)  # 311, 312, 313
+                plt.cla()
+                plt.ylabel(k)
+                plt.plot(delays, '--ob')
+                if hline:
+                    plt.axhline(y=hline, color='g')  # draw a horizontal line
+                for x, y in enumerate(delays):
+                    txt = '{}ms'.format(y) if y is not None else 'None'
+                    xy = (x, y) if y is not None else (x, 0)
+                    color = 'black' if y is not None else 'red'
+                    plt.annotate(txt, xy=xy, color=color)
+                plt.pause(0.001)
+    finally:
+        plt.close()
+
+
+@async
 def start_ping(addr, timeout=3):
     while G.running:
         delay = ping3.do_one(addr, timeout)
@@ -282,4 +343,5 @@ if __name__ == '__main__':
         main()
     finally:
         G.running = False
+        G.plotting = False
         print('Exiting {}'.format(__file__))
