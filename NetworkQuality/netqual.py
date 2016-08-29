@@ -200,7 +200,7 @@ def analyseDelays(delays):
     else:
         if total_count:
             none_rate = int(none_count / total_count * 100)
-            result['connectivity'] = '无响应率 {}%：'.format(none_rate)
+            result['connectivity'] = 'disc {}% '.format(none_rate)
             if none_rate > 50:
                 result['connectivity'] += '差'
             elif none_rate > 10:
@@ -212,7 +212,7 @@ def analyseDelays(delays):
 
         if len(valid_delays) > 1:
             mean = int(statistics.mean(valid_delays))
-            result['latency'] = '平均延迟 {}ms：'.format(mean)
+            result['latency'] = 'late {}ms '.format(mean)
             if mean > 1000:
                 result['latency'] += '差'
             elif mean > 200:
@@ -223,7 +223,7 @@ def analyseDelays(delays):
                 result['latency'] += '优'
 
             variance = int(statistics.variance(valid_delays))
-            result['stability'] = '延迟方差 {}：'.format(variance)
+            result['stability'] = 'stab {} '.format(variance)
             if variance > 10000:
                 result['stability'] += '差'
             elif variance > 2500:
@@ -232,25 +232,22 @@ def analyseDelays(delays):
                 result['stability'] += '良'
             else:
                 result['stability'] += '优'
-    for i in result:
-        result[i] = '【' + result[i] + '】'
     return result
 
 
 def assemble_session(dest, addr):
     putPrint('*')
-    putPrint('| {}：ping {}'.format(dest, addr))
     # analyse
     delaylist = G.delaydict[addr][-50:]  # only calc last 50
     analyse = analyseDelays(delaylist)
-    summery = '| '
+    summery = ''
     for k, v in analyse.items():
-        summery += v + '\t'
-    putPrint(summery)
+        summery += '\t[' + v + ']'
     # pings
     pingstr = '| '
     for d in delaylist[-10:]:
-        pingstr += '\t{}ms'.format(d) if d is not None else '\tTimeout'
+        pingstr += '\t{}ms'.format(d) if d is not None else '\t--'
+    putPrint('| {} {}: {}'.format(dest, addr, summery))
     putPrint(pingstr)
     putPrint('|')
 
