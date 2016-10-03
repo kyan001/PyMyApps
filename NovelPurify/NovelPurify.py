@@ -84,7 +84,7 @@ def hanziPurify(txt):
 
     hanzi_table = {
         '惑': 'huò',
-        '露': 'lù',
+        '露': ('lù', 'lòu'),
         '摸': 'mō',
         '色': 'sè',
         '潮': 'cháo',
@@ -127,10 +127,15 @@ def hanziPurify(txt):
         '肉': 'ròu',
         '日': 'rì',
         '裤': 'kù',
+        '靠': 'kào',
         '混': 'hún',
         '唇': 'chún',
         '操': 'cào',
         '奶': 'nǎi',
+        '占': 'zhàn',
+        '掀': 'xiān',
+        '菊': ('jǘ', 'jú'),
+        '续': ('xǜ', 'xù'),
     }
 
     word_table = {
@@ -168,7 +173,8 @@ def hanziPurify(txt):
 def unmatchedUrlPurify(txt):
     ktk.pStart().pTitle('未匹配的 url')
     chars_in_url = r"a-zA-Z0-9 \!\"\#\$\%\&\'\(\)\*\+\,\-\.\/\:\;\<\=\>\?\@\[\]\^\`\{\|\}\~\\"
-    url_pattern = re.compile(r'[{0}]*(?:ww|http|com|org|net|span|div)[{0}]*'.format(chars_in_url), flags=re.IGNORECASE)
+    html_tags = ('ww', 'http', 'com', 'org', 'net', 'span', 'div', 'hr', 'c o m', 'w w w', 'script')
+    url_pattern = re.compile(r'[{char}]*(?:{htag})[{char}]*'.format(char=chars_in_url, htag='|'.join(html_tags)), flags=re.IGNORECASE)
     txt = findCheckDelete(url_pattern, txt)
     ktk.pEnd()
     return txt
@@ -222,9 +228,9 @@ def main():
     filepath = sys.argv[1] if len(sys.argv) > 1 else None
     if not filepath:
         tkapp = tkinter.Tk()
-        filepath = tkinter.filedialog.askopenfilename()
+        filepath = tkinter.filedialog.askopenfilename(filetypes=[('文本文件', '.txt'), ('所有', '.*')])
         tkapp.destroy()
-    for mode in ("utf-8", 'gbk', 'latin-1'):
+    for mode in ("utf-8", 'gbk', 'cp1252', 'windows-1252', 'latin-1'):
         try:
             with open(filepath, mode='r', encoding=mode) as f:
                 txt = f.read()
