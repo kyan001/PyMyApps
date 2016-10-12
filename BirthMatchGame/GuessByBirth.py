@@ -1,11 +1,11 @@
-import KyanToolKit
-ktk = KyanToolKit.KyanToolKit()
+import consoleiotools as cit
 
 while True:
-    ktk.clearScreen()
-    print(ktk.banner("Enter Birthday: (ex.19890101)"))
-    player1 = ktk.getInput("Player 1:")
-    player2 = ktk.getInput("Player 2:")
+    cit.start()
+    cit.title('Game Start')
+    cit.ask("Enter Birthday: (ex.19890101):")
+    player1 = cit.get_input("Player 1:")
+    player2 = cit.get_input("Player 2:")
     result = player1 + player2
     while int(result) > 99 or len(result) >= 3:
         calc_store = ""
@@ -18,9 +18,9 @@ while True:
         print("-->" + result)
     if int(result) > 50:
         words = "Result is : " + result + "% ! " + "Congratulations! Go and get her/him!"
-        print(ktk.banner(words))
+        cit.info(words)
     else:
         words = "Result is : " + result + "% ! " + "Anyhow, Still have a chance! You can make it!"
-        print(ktk.banner(words))
-    print(ktk.banner("This is just a game!"))
-    ktk.pressToContinue()
+        cit.info(words)
+    cit.warn("This is just a game!")
+    cit.pause()
