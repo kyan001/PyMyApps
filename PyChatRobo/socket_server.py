@@ -2,6 +2,7 @@ import socket
 import sys
 import random
 
+import consoleiotools
 import KyanToolKit
 ktk = KyanToolKit.KyanToolKit("trace.tra")
 
@@ -14,18 +15,18 @@ if len(sys.argv) > 1:
 else:
     srvr_ip = hostip
 srvr_port = 21516
-ktk.info('Hostname: ' + hostname)
-ktk.info('Server IP: ' + srvr_ip)
-ktk.info('Server Port: ' + str(srvr_port))
+cit.info('Hostname: ' + hostname)
+cit.info('Server IP: ' + srvr_ip)
+cit.info('Server Port: ' + str(srvr_port))
 
 # create socket
-ktk.info('Starting Server ...')
+cit.info('Starting Server ...')
 srvr_sckt = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 allowed_connection = 5
 srvr_sckt.bind((srvr_ip, srvr_port))
 srvr_sckt.listen(allowed_connection)
-ktk.info('Allowed Connection: ' + str(allowed_connection))
-ktk.info('Socket Created, Server is listening...')
+cit.info('Allowed Connection: ' + str(allowed_connection))
+cit.info('Socket Created, Server is listening...')
 
 # init reply dict
 rply_dict = {'version': [ver]}
@@ -71,7 +72,7 @@ rply_dict["default"] = [
 while True:
     clnt_sckt, (clnt_ip, clnt_port) = srvr_sckt.accept()
     clnt_id = clnt_ip + ":" + str(clnt_port)
-    ktk.warn("Client connected: " + clnt_id)
+    cit.warn("Client connected: " + clnt_id)
     while True:
         clnt_req = clnt_sckt.recv(1024).decode('utf-8')
         for kywrd in rply_dict:
@@ -87,11 +88,11 @@ while True:
         if "bye" == clnt_req:
             break
     clnt_sckt.close()
-    ktk.warn("Client disconnected: " + clnt_id)
+    cit.warn("Client disconnected: " + clnt_id)
     print("")
-    stopit = ktk.getInput("Stop the server? (yes/no)")
+    stopit = cit.get_input("Stop the server? (yes/no)")
     if "yes" == stopit:
         break
     else:
-        ktk.info('Server keeps running ...')
+        cit.info('Server keeps running ...')
 srvr_sckt.close()

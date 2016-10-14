@@ -4,6 +4,7 @@ import queue
 import random
 import time
 
+import consoleiotools as cit
 import KyanToolKit
 
 
@@ -181,5 +182,5 @@ class RoboYard(threading.Thread):
 
     def byeBye(self, words=""):
         self.end_time = time.time()
-        self.ktk.pressToContinue("\n" + words + "\nYard exsits: " + self.floatToStr(self.end_time - self.start_time) + "s\n")
-        self.ktk.byeBye()
+        cit.pause("\n" + words + "\nYard exsits: " + self.floatToStr(self.end_time - self.start_time) + "s\n")
+        cit.bye()

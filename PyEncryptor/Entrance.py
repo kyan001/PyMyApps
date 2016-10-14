@@ -1,7 +1,9 @@
 import sys
 import tkinter
 
+import consoleiotools as cit
 import KyanToolKit
+ktk = KyanToolKit.KyanToolKit()
 
 from Encodes import Emoji_Encode
 from Encodes import NATO_Phonetic_Encode
@@ -42,8 +44,8 @@ def getAlgo(algo_input_):
         encode_mode = getattr(globals()[algo_input_], algo_input_)()
     else:
         ktk.TRACE("Wrong Algorithm: " + algo_input_, "ERR")
-        ktk.Err("Wrong Algorithm: " + algo_input_)
-        ktk.byeBye()
+        cit.err("Wrong Algorithm: " + algo_input_)
+        cit.bye()
     return encode_mode
 
 
@@ -93,8 +95,8 @@ def selectDecodeText():
 ALGO = "Xor_Key_Encode"
 ktk.TRACE("Selected Algorithm: " + ALGO)
 if not (("-console" in sys.argv) or ("-gui" in sys.argv)):
-    print(ktk.banner("Please choose the interface"))
-    sys.argv.append(ktk.getChoice(["-gui", "-console"]))
+    cit.ask("Please choose the interface")
+    sys.argv.append(cit.get_choice(["-gui", "-console"]))
 
 # -GUI Launch-----------------------------------------------------
 if "-gui" in sys.argv:
@@ -138,19 +140,19 @@ if "-console" in sys.argv:
     while True:
         # Encode or Decode choice
         ktk.clearScreen()
-        print(ktk.banner("Encode or Decode? That's a question"))
+        cit.ask("Encode or Decode? That's a question")
         print(ALGO + ":")
-        usr_choice = ktk.getChoice(["Encode", "Decode", "Re-select Algorithm"])
+        usr_choice = cit.get_choice(["Encode", "Decode", "Re-select Algorithm"])
         if "Re-select Algorithm" == usr_choice:
             ktk.clearScreen()
             ALGO = selectAlgo()
         else:
             # Enter words
-            print(ktk.banner("What do you wanna " + usr_choice.upper() + "?"))
-            print(ALGO + ":")
-            user_input = ktk.getInput("Please Enter your words:").replace("\n", "")
+            cit.ask("What do you wanna " + usr_choice.upper() + "?")
+            cit.echo(ALGO + ":")
+            user_input = cit.get_input("Please Enter your words:").replace("\n", "")
             # Show result
-            ktk.banner(usr_choice + " Result")
+            cit.info(usr_choice + " Result")
             if "Encode" == usr_choice:
                 print("\n--Raw Input--")
                 print(user_input)
@@ -162,5 +164,5 @@ if "-console" in sys.argv:
                 print("\n--Decoded Raw Output--")
                 print(getAlgo(ALGO).decode(user_input))
             else:
-                ktk.byeBye()
-            ktk.pressToContinue()
+                cit.bye()
+            cit.pause()

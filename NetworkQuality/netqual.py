@@ -74,28 +74,28 @@ class IShell(cmd.Cmd):
         if not G.running:
             G.running = True
             for k in G.ips:  # starting ping those IPs
-                ktk.info('启动 {}'.format(k))
+                cit.info('启动 {}'.format(k))
                 start_ping(G.ips[k])
         else:
-            ktk.warn('已在运行中')
+            cit.warn('已在运行中')
 
     def do_stop(self, args):
         """停止运行 ping"""
         G.running = False
-        ktk.info('已停止运行')
+        cit.info('已停止运行')
 
     def do_ping(self, args):
-        name = list(G.ips)[int(args) - 1] if args else ktk.getChoice(list(G.ips))
+        name = list(G.ips)[int(args) - 1] if args else cit.get_choice(list(G.ips))
         ip = G.ips[name]
         affix = "-t" if "win" in sys.platform else ''
         command = "ping {ip} {af}".format(ip=ip, af=affix)
         subprocess.Popen(command, creationflags=subprocess.CREATE_NEW_CONSOLE)
 
     def help_ping(self):
-        ktk.echo('用系统命令 ping 某个 ip')
-        ktk.echo('使用语法: ping [index]', lvl=1)
-        ktk.echo('如果没有提供 index，会让你从列表中选择')
-        ktk.echo('index 应为数字，从 1 开始')
+        cit.echo('用系统命令 ping 某个 ip')
+        cit.echo('使用语法: ping [index]', lvl=1)
+        cit.echo('如果没有提供 index，会让你从列表中选择')
+        cit.echo('index 应为数字，从 1 开始')
 
     def do_expl(self, args):
         """显示对延迟、方差、稳定性的解释"""
@@ -117,7 +117,7 @@ class IShell(cmd.Cmd):
     [差] 连接稳定性差，响应速度忽快忽慢
         """
         for line in quality_expl.strip().split('\n'):
-            ktk.info(line)
+            cit.info(line)
 
     def do_exit(self, args):
         """Exit interactive shell mode & stop running"""
@@ -141,10 +141,10 @@ def main():
     try:
         ping3.do_one(G.myip, 1)  # test ping
     except OSError as e:
-        ktk.err(e)
-        ktk.info('可能您需要以管理员权限运行')
-        ktk.pressToContinue()
-        ktk.bye()
+        cit.err(e)
+        cit.info('可能您需要以管理员权限运行')
+        cit.pause()
+        cit.bye()
     shell = IShell()
     shell.cmdloop()
 
