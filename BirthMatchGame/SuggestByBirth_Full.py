@@ -1,14 +1,12 @@
-import KyanToolKit
-ktk = KyanToolKit.KyanToolKit()
+import consoleiotools as cit
 
 
 while True:
     # init
-    ktk.clearScreen()
-    print(ktk.banner("Enter Your Birthday: (ex.19890101)"))
-    player1 = ktk.getInput("Yours:")
-    print(ktk.banner("Yours Mr/Ms.Right was born in which year? (ex.1987)"))
-    player2_year = ktk.getInput("He/She was born in ...:")
+    cit.ask("Enter Your Birthday: (ex.19890101)")
+    player1 = cit.get_input("Yours:")
+    cit.ask("Yours Mr/Ms.Right was born in which year? (ex.1987)")
+    player2_year = cit.get_input("He/She was born in ...:")
     result = player1 + player2_year
     # start calc
     good_list = []
@@ -36,12 +34,11 @@ while True:
                 good_list.append(player2_year + "." + month_add + "." + day_add + " --> " + result_tmp + "%")
             elif int(result_tmp) < 10:
                 sad_list.append(player2_year + "." + month_add + "." + day_add + " --> " + result_tmp + "%")
-    ktk.clearScreen()
-    print(ktk.banner("These guys are easy to get!"))
+    cit.echo("These guys are easy to get!")
     for x in good_list:
         print(x)
-    print(ktk.banner("Please avoid these guys!"))
+    cit.echo("Please avoid these guys!")
     for y in sad_list:
         print(y)
-    print(ktk.banner("This is just a game!"))
-    ktk.pressToContinue()
+    cit.echo("This is just a game!")
+    cit.pause()

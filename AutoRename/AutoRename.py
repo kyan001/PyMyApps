@@ -3,8 +3,7 @@ import os
 import re
 import tkinter
 import tkinter.filedialog
-import KyanToolKit
-ktk = KyanToolKit.KyanToolKit()
+import consoleiotools as cit
 
 
 class G(object):
@@ -16,28 +15,28 @@ class G(object):
     namemap = {}
 
 
+@cit.as_session('-- Get file dir --')
 def getFiledir():
     """Get file dir path
 
     Set:
         G.filedir (str)
     """
-    ktk.pStart().pTitle('-- Get file dir --')
     filedir = os.getcwd()
-    ktk.echo('Set file dir to "{}"?'.format(filedir))
-    how_to_locate = ktk.getChoice(['Yes', 'No, let me select', 'No, let me type'])
+    cit.ask('Set file dir to "{}"?'.format(filedir))
+    how_to_locate = cit.get_choice(['Yes', 'No, let me select', 'No, let me type'])
     if how_to_locate == 'No, let me select':
         tkapp = tkinter.Tk()
         filedir = tkinter.filedialog.askdirectory()
         tkapp.destroy()
     elif how_to_locate == 'No, let me type':
-        filedir = ktk.getInput('Please enter your dir:').strip('"').strip("'")
-    ktk.info('File dir: "{}"'.format(filedir))
-    ktk.pEnd()
+        filedir = cit.get_input('Please enter your dir:').strip('"').strip("'")
+    cit.info('File dir: "{}"'.format(filedir))
     G.filedir = filedir
     return
 
 
+@cit.as_session('-- Get file list --')
 def getFilelist():
     """Get all the file names in the path
 
@@ -46,19 +45,18 @@ def getFilelist():
     Set:
         G.filelist: list
     """
-    ktk.pStart().pTitle('-- Get file list --')
     if os.path.isdir(G.filedir):
         filelist = os.listdir(G.filedir)
     else:
-        ktk.err('"{}" is not a path'.format(G.filedir)).bye()
-    ktk.info('File list:')
+        cit.err('"{}" is not a path'.format(G.filedir)).bye()
+    cit.info('File list:')
     for fname in filelist:
-        ktk.echo(fname, lvl=1)
-    ktk.pEnd()
+        cit.echo(fname, lvl=1)
     G.filelist = filelist
     return
 
 
+@cit.as_session('-- Get keyword --')
 def getKeyword():
     """Get Keyword as the 1st part of the new filename
 
@@ -67,20 +65,19 @@ def getKeyword():
     Set:
         G.keyword: str
     """
-    ktk.pStart().pTitle('-- Get keyword --')
     if os.path.isdir(G.filedir):
         keyword = os.path.split(G.filedir)[-1].replace(' ', '_')
     else:
-        ktk.err('"{}" is not a path'.format(G.filedir)).bye()
-    ktk.echo('Set keyword to "{}"?'.format(keyword))
-    if ktk.getChoice(['Yes', 'No']) == 'No':
-        keyword = ktk.getInput('Please enter new keyword:')
-    ktk.info('Keyword: "{}"'.format(keyword))
-    ktk.pEnd()
+        cit.err('"{}" is not a path'.format(G.filedir)).bye()
+    cit.ask('Set keyword to "{}"?'.format(keyword))
+    if cit.get_choice(['Yes', 'No']) == 'No':
+        keyword = cit.get_input('Please enter new keyword:')
+    cit.info('Keyword: "{}"'.format(keyword))
     G.keyword = keyword
     return
 
 
+@cit.as_session('-- Get name mapping --')
 def getNamemap(pttrn: str):
     """Get name mapping, old name as key, new name as value
 
@@ -91,14 +88,13 @@ def getNamemap(pttrn: str):
     Set:
         G.namemap: dict
     """
-    ktk.pStart().pTitle('-- Get name mapping --')
     namemap = {}
     for fname in G.filelist:
         mtch = re.compile(pttrn).findall(fname)
         if not mtch:
-            ktk.warn('Ignored: {}'.format(fname), lvl=2)
+            cit.warn('Ignored: {}'.format(fname), lvl=2)
         else:
-            ktk.info('Matched: "{n}" : "{m}"'.format(n=fname, m=mtch[0]), lvl=2)
+            cit.info('Matched: "{n}" : "{m}"'.format(n=fname, m=mtch[0]), lvl=2)
             fext = os.path.splitext(fname)[-1]
             to_name = "{kw}_{num}{ext}".format(kw=G.keyword, num=mtch[0], ext=fext)
             namemap[fname] = to_name
@@ -106,6 +102,7 @@ def getNamemap(pttrn: str):
     return
 
 
+@cit.as_session('-- Get pattern --')
 def getPattern(pttrn: str):
     """Get pattern for match the episode's number in filename
 
@@ -116,22 +113,20 @@ def getPattern(pttrn: str):
     Set:
         G.pattern: str
     """
-    ktk.pStart().pTitle('-- Get pattern --')
-    ktk.info('Testing pattern: {}'.format(pttrn), lvl=1)
+    cit.info('Testing pattern: {}'.format(pttrn), lvl=1)
     if not G.filelist:
-        ktk.err('No file list', lvl=1).bye()
+        cit.err('No file list', lvl=1).bye()
     if not pttrn:
-        ktk.err('No pattern', lvl=1).bye()
+        cit.err('No pattern', lvl=1).bye()
     getNamemap(pttrn)
     if G.namemap:
-        ktk.echo('Set number pattern to "{}"?'.format(pttrn))
+        cit.ask('Set number pattern to "{}"?'.format(pttrn))
     else:
-        ktk.warn('No filename matched the pattern')
-    if not G.namemap or ktk.getChoice(['Yes', 'No']) == 'No':
-        new_pttrn = ktk.getInput('Please enter a new pattern')
+        cit.warn('No filename matched the pattern')
+    if not G.namemap or cit.get_choice(['Yes', 'No']) == 'No':
+        new_pttrn = cit.get_input('Please enter a new pattern')
         return getPattern(new_pttrn)
-    ktk.info('Pattern: "{}"'.format(pttrn))
-    ktk.pEnd()
+    cit.info('Pattern: "{}"'.format(pttrn))
     G.pattern = pttrn
     return
 
@@ -153,7 +148,6 @@ def generateCmds():
     return cmdlist
 
 if __name__ == '__main__':
-    ktk.clearScreen()
     # get Vars
     getFiledir()
     getFilelist()
@@ -161,10 +155,10 @@ if __name__ == '__main__':
     getPattern(r'S[0-9][0-9]E[0-9][0-9]')
     # get cmd
     cmds = generateCmds()
-    ktk.warn('Commands example for final comfirm:')
-    ktk.echo(cmds[0], lvl=1)
-    ktk.pressToContinue('Press enter to run {} commands (Ctrl+C to Quit)...'.format(len(cmds)))
+    cit.warn('Commands example for final comfirm:')
+    cit.echo(cmds[0], lvl=1)
+    cit.pause('Press enter to run {} commands (Ctrl+C to Quit)...'.format(len(cmds)))
     # execute
     for c in cmds:
         os.system(c)
-    ktk.pressToContinue('[ Done ]')
+    cit.pause('[ Done ]')

@@ -1,6 +1,5 @@
 import datetime
-import KyanToolKit
-ktk = KyanToolKit.KyanToolKit()
+import consoleiotools as cit
 
 times = [
     ("2014/10/8 9:20", "2014/10/8 23:30"),
@@ -219,9 +218,9 @@ for (t1, t2) in times:
     time1 = datetime.datetime.strptime(t1, "%Y/%m/%d %H:%M")
     time2 = datetime.datetime.strptime(t2, "%Y/%m/%d %H:%M")
     if time1.day != time2.day or time1.month != time2.month:
-        ktk.err(datetime.datetime.strftime(time1, "%Y/%m/%d %H:%M") + "is not same day!")
+        cit.err(datetime.datetime.strftime(time1, "%Y/%m/%d %H:%M") + "is not same day!")
     workingTime = (time2.hour * 60 + time2.minute) - (time1.hour * 60 + time1.minute)
-    ktk.info(str(t1) + "\t" + str(t2) + "  \t" + minutes2Str(workingTime))
+    cit.info(str(t1) + "\t" + str(t2) + "  \t" + minutes2Str(workingTime))
     total_working_minute += workingTime
     if workingTime > 9 * 60:
         overtime_days += 1
@@ -237,12 +236,12 @@ legalVacation = int(total_days / 7) * 2 - 1 + 1 + 3 + 1 + 1 + 0.5 + 1
 # 2015.5.4 青年节
 # 2015.6.20 端午
 workDays = total_days - legalVacation
-print('\n' + ktk.banner("Conclusions"))
-ktk.info("{0}\t| Actually working {0} days".format(str(actualWorkingDays)))
-ktk.info("{0}\t| Legal workday is {0} days".format(str(workDays)))
-ktk.info("{0}\t| additional workdays {0} days".format(str(actualWorkingDays - workDays)))
-ktk.info("{0}\t| Working more than 8+1 hours for {0} days ({1}%)".format(str(overtime_days), str(round(100 * overtime_days / actualWorkingDays, ndigits=2))))
-ktk.info("{0}\t| Total working {0} hours ({1} days)".format(str(total_working_hour), str(round(total_working_hour / 24, ndigits=2))))
-ktk.info("{0}\t| Working {0} hours per day".format(round(total_working_hour / actualWorkingDays, ndigits=2)))
-ktk.info("{0}\t| Working {0} hours per work day".format(round(total_working_hour / workDays, ndigits=2)))
-ktk.pressToContinue()
+cit.title("Conclusions")
+cit.info("{0}\t| Actually working {0} days".format(str(actualWorkingDays)))
+cit.info("{0}\t| Legal workday is {0} days".format(str(workDays)))
+cit.info("{0}\t| additional workdays {0} days".format(str(actualWorkingDays - workDays)))
+cit.info("{0}\t| Working more than 8+1 hours for {0} days ({1}%)".format(str(overtime_days), str(round(100 * overtime_days / actualWorkingDays, ndigits=2))))
+cit.info("{0}\t| Total working {0} hours ({1} days)".format(str(total_working_hour), str(round(total_working_hour / 24, ndigits=2))))
+cit.info("{0}\t| Working {0} hours per day".format(round(total_working_hour / actualWorkingDays, ndigits=2)))
+cit.info("{0}\t| Working {0} hours per work day".format(round(total_working_hour / workDays, ndigits=2)))
+cit.pause()

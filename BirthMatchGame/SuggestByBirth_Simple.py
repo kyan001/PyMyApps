@@ -1,13 +1,11 @@
-import KyanToolKit
-ktk = KyanToolKit.KyanToolKit()
+import consoleiotools as cit
 
 while True:
     # init
-    ktk.clearScreen()
-    print(ktk.banner("Enter Your Birthday: (ex.19890101)"))
-    player1 = ktk.getInput("Yours:")
-    print(ktk.banner("Yours Mr/Ms.Right was born in which year? (ex.1987)"))
-    player2_year = ktk.getInput("He/She was born in ...:")
+    cit.echo("Enter Your Birthday: (ex.19890101)")
+    player1 = cit.get_input("Yours:")
+    cit.echo("Yours Mr/Ms.Right was born in which year? (ex.1987)")
+    player2_year = cit.get_input("He/She was born in ...:")
     result = player1 + player2_year
     # start calc
     possible_list = []
@@ -56,8 +54,8 @@ while True:
                     result_tmp3 = calc_store
                 if 70 <= int(result_tmp3) <= 80:
                     final_list.append(player2_year + "." + month_add + "." + day_add + " --> " + result_tmp3 + "%")
-    print(ktk.banner("Possible Results:"))
+    cit.echo("Possible Results:")
     for y in final_list:
         print(y)
-    print(ktk.banner("This is just a game!"))
-    ktk.pressToContinue()
+    cit.echo("This is just a game!")
+    cit.pause()

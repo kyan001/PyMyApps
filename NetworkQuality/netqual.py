@@ -13,6 +13,7 @@ from collections import OrderedDict
 from functools import wraps
 
 import ping3
+import consoleiotools as cit
 import KyanToolKit  # pip3 install KyanToolKit
 ktk = KyanToolKit.KyanToolKit()
 
@@ -52,7 +53,7 @@ class IShell(cmd.Cmd):
 
     def do_state(self, args):
         """显示程序的运行状态"""
-        ktk.info('Running: {}'.format('On' if G.running else 'Off'))
+        cit.info('Running: {}'.format('On' if G.running else 'Off'))
 
     def do_show(self, args):
         """显示所有 ping 的细节信息
