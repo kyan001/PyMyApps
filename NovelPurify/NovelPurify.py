@@ -21,7 +21,7 @@ def findCheckDelete(pattern, txt, undelete=False):
             cit.info('"{}" : {}'.format(kw, matches.count(kw)), lvl=1)
         # generate final delete list
         while(True):
-            cit.ask('选择要「排除」的项：（当前 {} 个）'.format(len(unmatched_words)), prefix='问题')
+            cit.ask('选择要「排除」的项：（当前 {} 个）'.format(len(unmatched_words)))
             answer = cit.get_choice(unmatched_words)
             if confirm_txt == answer:
                 break
@@ -158,12 +158,12 @@ def hanziPurify(txt):
     matched_patterns = matchInTable(hanzi_table, matched_patterns)
     if matched_patterns:
         cit.start()
-        cit.ask('确认将「拼音」替换为以上「汉字」吗？', prefix='问题')
+        cit.ask('确认将「拼音」替换为以上「汉字」吗？')
         answer = cit.get_choice(['是', '否'])
         if '是' == answer:
             for i, (hanzi, pattern) in enumerate(matched_patterns):
                 total = len(matched_patterns)
-                cit.echo('Replacing {}'.format(hanzi), prefix="{}/{total}".format(i + 1, total=total))
+                cit.echo('Replacing {}'.format(hanzi), pre="{}/{total}".format(i + 1, total=total))
                 txt = pattern.sub(hanzi, txt)
             cit.info('完成')
             cit.end()
