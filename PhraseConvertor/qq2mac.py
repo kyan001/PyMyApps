@@ -5,8 +5,8 @@ import tkinter.filedialog
 import xml.etree.ElementTree
 import xml.dom.minidom
 
+import KyanToolKit
 import consoleiotools as cit
-
 
 @cit.as_session('生成短语字典')
 def generate_dict_list(content):
@@ -79,15 +79,8 @@ def main():
         tkapp = tkinter.Tk()
         filepath = tkinter.filedialog.askopenfilename(filetypes=[('QQ拼音自定义短语配置文件', '.ini'), ('文本文件', '.txt'), ('所有', '.*')])
         tkapp.destroy()
-    for mode in ("utf-8", 'gbk', 'cp1252', 'windows-1252', 'latin-1'):
-        try:
-            with open(filepath, mode='r', encoding=mode) as f:
-                content = f.read()
-                cit.info('以 {} 格式打开文件'.format(mode))
-                break
-        except UnicodeDecodeError:
-            cit.warn('打开文件：尝试 {} 格式失败'.format(mode))
-    cit.info('打开文件 {}'.format(filepath))
+    content = KyanToolKit.KyanToolKit.readFile(filepath)
+    cit.info('打开文件：{}'.format(filepath))
     phrase_dict_list = generate_dict_list(content)
     xml_content = dict_to_xml(phrase_dict_list)
     new_content = wrap_xml(xml_content)
