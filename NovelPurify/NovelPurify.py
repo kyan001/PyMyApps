@@ -4,12 +4,13 @@ import re
 import tkinter
 import tkinter.filedialog
 import consoleiotools as cit
+from KyanToolKit import KyanToolKit as ktk
 
 
 @cit.as_session('Find Check Delete')
-def findCheckDelete(pattern, txt, undelete=False):
-    '根据传入的 pattern 找到 txt 中的匹配，生成列表并由用户筛选，然后删除它们'
-    matches = pattern.findall(txt)
+def findCheckDelete(pattern, content, undelete=False):
+    '根据传入的 pattern 找到 content 中的匹配，生成列表并由用户筛选，然后删除它们'
+    matches = pattern.findall(content)
     unmatched_words = list(set(matches))
     action = '保留' if undelete else '删除'
     confirm_txt = '「{}」以上所有项'.format(action)
@@ -33,9 +34,9 @@ def findCheckDelete(pattern, txt, undelete=False):
     if unmatched_words:
         for word in unmatched_words:
             cit.info('Deleting {}'.format(word))
-            txt = txt.replace(word, "")
+            content = content.replace(word, "")
     cit.info('完成')
-    return txt
+    return content
 
 
 @cit.as_session('净化拼音')
@@ -205,9 +206,9 @@ def showUnmatchedWord(txt):
         unm_word_dict = {}
         for uw in unmatched_words:
             unm_word_dict[uw] = matches.count(uw)
-    uw_tops = sorted(unm_word_dict.items(), key=lambda Ditem: Ditem[1], reverse=True)[:threshold]
-    for uw, count in uw_tops:
-        cit.info('"{}"：{}'.format(uw, count))
+        uw_tops = sorted(unm_word_dict.items(), key=lambda Ditem: Ditem[1], reverse=True)[:threshold]
+        for uw, count in uw_tops:
+            cit.info('"{}"：{}'.format(uw, count))
     return txt
 
 
@@ -228,20 +229,13 @@ def main():
         tkapp = tkinter.Tk()
         filepath = tkinter.filedialog.askopenfilename(filetypes=[('文本文件', '.txt'), ('所有', '.*')])
         tkapp.destroy()
-    for mode in ("utf-8", 'gbk', 'cp1252', 'windows-1252', 'latin-1'):
-        try:
-            with open(filepath, mode='r', encoding=mode) as f:
-                txt = f.read()
-                cit.info('以 {} 格式打开文件'.format(mode))
-                break
-        except UnicodeDecodeError:
-            cit.warn('打开文件：尝试 {} 格式失败'.format(mode))
+    content = ktk.readFile(filepath)
     cit.info('打开文件 {}'.format(filepath))
-    txt = hanziPurify(txt)
-    txt = unmatchedUrlPurify(txt)
-    txt = showUnmatchedWord(txt)
-    txt = showParagraph(txt)
-    save(filepath, txt)
+    content = hanziPurify(content)
+    content = unmatchedUrlPurify(content)
+    content = showUnmatchedWord(content)
+    content = showParagraph(content)
+    save(filepath, content)
     cit.pause()
 
 if __name__ == '__main__':
