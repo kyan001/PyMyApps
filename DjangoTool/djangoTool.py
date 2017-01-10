@@ -9,7 +9,7 @@ import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.2.2'
+__version__ = '1.3.1'
 
 
 def manage_file_exist():
@@ -87,13 +87,19 @@ def load_data():
     """Load Database data from a json file"""
     run_by_py3('manage.py loaddata datadump.json')
 
+@cit.as_session('Git Assume Unchanged')
+def assume_unchanged():
+    cit.info('Current assume unchanged files:')
+    ktk.runCmd('git ls-files -v | grep -e "^[hsmrck]"')
+    filename = cit.get_input("Enter a TRACKED file's filename:")
+    ktk.runCmd('git update-index --assume-unchanged {}'.format(filename))
+
 
 @cit.as_session('Create superuser')
 def create_superuser():
     """Create superuser account for Django admin"""
     git_username = cit.get_input('Username:')
     git_email = cit.get_input('Email:')
-    cit.info('Password is specified, ask someone for it')
     run_by_py3('manage.py createsuperuser --username {username} --email {email}'.format(username=git_username, email=git_email))
 
 
@@ -114,6 +120,7 @@ def show_menu():
         'Django system check': system_check,
         'DB Data Dump (App:main)': dump_data,
         'DB Data Load (datadump.json)': load_data,
+        'Git Assume Unchanged': assume_unchanged,
         'Exit': cit.bye,
     })
     cit.echo('Select one of these:')
