@@ -9,7 +9,7 @@ import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.2.1'
+__version__ = '1.2.2'
 
 
 def manage_file_exist():
@@ -79,7 +79,7 @@ def system_check():
 @cit.as_session('Dump Data')
 def dump_data():
     """Dump Database data to a json file"""
-    run_by_py3('manage.py dumpdata > datadump.json')
+    run_by_py3('manage.py dumpdata main > datadump.json')
 
 
 @cit.as_session('Load Data')
@@ -112,8 +112,8 @@ def show_menu():
         'Shell: Interactive': interactive_shell,
         'Shell: DB': db_shell,
         'Django system check': system_check,
-        'DB Data Dump': dump_data,
-        'DB Data Load': load_data,
+        'DB Data Dump (App:main)': dump_data,
+        'DB Data Load (datadump.json)': load_data,
         'Exit': cit.bye,
     })
     cit.echo('Select one of these:')
