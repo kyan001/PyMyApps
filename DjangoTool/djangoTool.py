@@ -9,7 +9,7 @@ import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.2.0'
+__version__ = '1.2.1'
 
 
 def manage_file_exist():
@@ -123,6 +123,8 @@ def show_menu():
 
 def main():
     ktk.clearScreen()
+    cit.echo('Django Tool: version {}'.format(__version__))
+    cit.br()
     if not manage_file_exist():
         cit.err('No manage.py detected. Please run this under projects folder')
         cit.bye()
