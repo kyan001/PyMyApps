@@ -19,7 +19,7 @@ def findCheckDelete(pattern, content, undelete=False):
         # print matches
         cit.info('共找到 {} 个'.format(len(matches)))
         for kw in set(matches):
-            cit.info('"{}" : {}'.format(kw, matches.count(kw)), lvl=1)
+            cit.info('"{}" : {}'.format(kw, matches.count(kw)))
         # generate final delete list
         while(True):
             cit.ask('选择要「排除」的项：（当前 {} 个）'.format(len(unmatched_words)))
@@ -77,7 +77,7 @@ def hanziPurify(txt):
                 # print matches
                 cit.info('{}：{}，已匹配: {} 个'.format(hanzi, pinyin_list, len(matches)))
                 for kw in set(matches):
-                    cit.info('"{}" : {}'.format(kw, matches.count(kw)), lvl=1)
+                    cit.info('"{}" : {}'.format(kw, matches.count(kw)))
         cit.end()
         return result_list
 

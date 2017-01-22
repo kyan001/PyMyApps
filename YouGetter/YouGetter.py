@@ -113,7 +113,7 @@ class InteractiveShell(cmd.Cmd):
             cmd += ' --debug' if CONF.debug else ""
             cmd += ' "{}"'.format(CONF.url)
             cit.info('Final command:')
-            cit.echo(cmd, lvl=1)
+            cit.echo(cmd)
             cit.ask('Is this look good?')
             answer = cit.get_choice(['Yes', 'No'])
             if answer == 'Yes':
@@ -153,7 +153,7 @@ class InteractiveShell(cmd.Cmd):
         next_step = cit.get_choice(list(sorted(selections.values())))
         if next_step == selections['enter']:
             cit.ask('Enter a name: (Leave blank if no-change)')
-            cit.ask('example: TokyoHot', lvl=1)
+            cit.ask('example: TokyoHot')
             new_folder = cit.get_input()
         elif next_step == selections['keep']:
             pass

@@ -51,7 +51,7 @@ class IShell(cmd.Cmd):
 
     def help_ping(self):
         cit.echo('用系统命令 ping 某个 ip')
-        cit.echo('使用语法: ping [index]', lvl=1)
+        cit.echo('使用语法: ping [index]')
         cit.echo('如果没有提供 index，会让你从列表中选择')
         cit.echo('index 应为数字，从 1 开始')
 

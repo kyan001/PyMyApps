@@ -51,7 +51,7 @@ def getFilelist():
         cit.err('"{}" is not a path'.format(G.filedir)).bye()
     cit.info('File list:')
     for fname in filelist:
-        cit.echo(fname, lvl=1)
+        cit.echo(fname)
     G.filelist = filelist
     return
 
@@ -92,9 +92,9 @@ def getNamemap(pttrn: str):
     for fname in G.filelist:
         mtch = re.compile(pttrn).findall(fname)
         if not mtch:
-            cit.warn('Ignored: {}'.format(fname), lvl=2)
+            cit.warn('Ignored: {}'.format(fname))
         else:
-            cit.info('Matched: "{n}" : "{m}"'.format(n=fname, m=mtch[0]), lvl=2)
+            cit.info('Matched: "{n}" : "{m}"'.format(n=fname, m=mtch[0]))
             fext = os.path.splitext(fname)[-1]
             to_name = "{kw}_{num}{ext}".format(kw=G.keyword, num=mtch[0], ext=fext)
             namemap[fname] = to_name
@@ -113,11 +113,11 @@ def getPattern(pttrn: str):
     Set:
         G.pattern: str
     """
-    cit.info('Testing pattern: {}'.format(pttrn), lvl=1)
+    cit.info('Testing pattern: {}'.format(pttrn))
     if not G.filelist:
-        cit.err('No file list', lvl=1).bye()
+        cit.err('No file list').bye()
     if not pttrn:
-        cit.err('No pattern', lvl=1).bye()
+        cit.err('No pattern').bye()
     getNamemap(pttrn)
     if G.namemap:
         cit.ask('Set number pattern to "{}"?'.format(pttrn))
@@ -156,7 +156,7 @@ if __name__ == '__main__':
     # get cmd
     cmds = generateCmds()
     cit.warn('Commands example for final comfirm:')
-    cit.echo(cmds[0], lvl=1)
+    cit.echo(cmds[0])
     cit.pause('Press enter to run {} commands (Ctrl+C to Quit)...'.format(len(cmds)))
     # execute
     for c in cmds:
