@@ -45,6 +45,7 @@ class IShell(cmd.Cmd):
         name = list(G.ips)[int(args) - 1] if args else cit.get_choice(list(G.ips))
         ip = G.ips[name]
         affix = "-t" if "win" in sys.platform else ''
+        cit.echo('ping {}'.format(name))
         command = "ping {ip} {af}".format(ip=ip, af=affix)
         subprocess.Popen(command, creationflags=subprocess.CREATE_NEW_CONSOLE)
     do_p = do_ping
