@@ -33,7 +33,7 @@ class CONF(object):
         if not value:
             cit.ask('Enter a {k}: (Leave blank if no change)'.format(k=key))
             if example:
-                cit.ask('Example: {}'.format(example), lvl=2)
+                cit.ask('Example: {}'.format(example))
             new_value = cit.get_input()
         else:
             new_value = value
