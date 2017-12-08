@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
 import re
 import tkinter
 import tkinter.filedialog
@@ -140,10 +141,11 @@ def generateCmds():
     Returns:
         A list contains all the commands
     """
+    rename_cmd = "rename" if sys.platform == 'win32' else 'mv'
     cmdlist = []
     for (fname, to_name) in G.namemap.items():
         fullpath = "{d}/{n}".format(d=G.filedir, n=fname).replace('/', os.sep)
-        cmmnd = 'rename "{fp}" "{t}"'.format(fp=fullpath, t=to_name)
+        cmmnd = '{rename_cmd} "{fp}" "{t}"'.format(rename_cmd=rename_cmd, fp=fullpath, t=to_name)
         cmdlist.append(cmmnd)
     return cmdlist
 
