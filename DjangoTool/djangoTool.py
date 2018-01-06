@@ -13,7 +13,7 @@ import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.8.1'
+__version__ = '1.8.2'
 DATADUMP = 'datadump.json'
 TESTS_DIR = 'main.tests'
 PIP_REQUIREMENTS = 'requirements.pip'
@@ -83,7 +83,7 @@ def show_menu():
     else:
         stop_key = "CTRL + C" if 'win32' in sys.platform else "CMD + C"
         cit.echo('Select one of these:')
-        cit.echo('({} to exit)'.format(stop_key))
+        cit.warn('({} to exit)'.format(stop_key))
         selection = cit.get_choice(menu)
     return COMMANDS.get(selection)
 
