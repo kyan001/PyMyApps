@@ -13,9 +13,10 @@ import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.6.1'
+__version__ = '1.7.0'
 DATADUMP = 'datadump.json'
 TESTS_DIR = 'main.tests'
+PIP_REQUIREMENTS = 'requirements.pip'
 
 
 def manage_file_exist():
@@ -27,14 +28,7 @@ def manage_file_exist():
     return os.path.exists('./manage.py')
 
 
-def asyc(func):
-    """Asyc decorator"""
-    def wrapper(*args, **kwargs):
-        t = threading.Thread(target=func, args=args, kwargs=kwargs)
-        return t.start()
-    return wrapper
-
-
+@cit.as_session('Update djangoTool.py')
 def update_this():
     def compare(s1, s2):
         return s1 == s2, len(s2) - len(s1)
@@ -53,7 +47,9 @@ def update_this():
             if cit.get_choice(['Yes', 'No']) == 'Yes':
                 with open(__file__, 'wb') as f:
                     f.write(raw_codes)
-                cit.info("Update Success")
+                cit.info("Update Success.")
+                run_by_py3(__file__)
+                cit.bye()
             else:
                 cit.warn("Update Canceled")
     except Exception as e:
@@ -63,13 +59,13 @@ def update_this():
 @cit.as_session('Installing Requirements')
 def requirements_install():
     """Install necessary modules by pip & requirements.pip"""
-    if not os.path.exists('./requirements.pip'):
-        cit.err('No requirements.pip detected.')
+    if not os.path.exists('./{}'.format(PIP_REQUIREMENTS)):
+        cit.err('No {} detected.'.format(PIP_REQUIREMENTS))
         cit.bye()
     if 'win' in sys.platform:
-        ktk.runCmd('pip3 install -r requirements.pip')
+        ktk.runCmd('pip3 install -r {}'.format(PIP_REQUIREMENTS))
     else:
-        ktk.runCmd('sudo pip3 install -r requirements.pip')
+        ktk.runCmd('sudo pip3 install -r {}'.format(PIP_REQUIREMENTS))
 
 
 def run_by_py3(cmd):
@@ -160,7 +156,6 @@ def show_menu():
         'DB Data: Load ({})'.format(DATADUMP): load_data,
         'DB Data: Retrieve (scp {})'.format(DATADUMP): retrieve_data,
         'Git: Assume Unchanged': assume_unchanged,
-        'Exit': cit.bye,
         '*** Update djangoTool.py ***': update_this,
     }
     menu = sorted(commands.keys())
@@ -180,11 +175,13 @@ def main():
     if not manage_file_exist():
         cit.err('No manage.py detected. Please run this under projects folder')
         cit.bye()
-    while True:
-        to_run = show_menu()
-        to_run()
+    try:
+        while True:
+            to_run = show_menu()
+            to_run()
+    except KeyboardInterrupt:
+        sys.exit(0)
 
 
 if __name__ == '__main__':
     main()
-
