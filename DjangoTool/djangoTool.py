@@ -4,7 +4,6 @@ import os
 import sys
 import socket
 import webbrowser
-import threading
 import urllib.request
 import hashlib
 import functools
@@ -13,7 +12,7 @@ import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.8.2'
+__version__ = '1.8.3'
 DATADUMP = 'datadump.json'
 TESTS_DIR = 'main.tests'
 PIP_REQUIREMENTS = 'requirements.pip'
