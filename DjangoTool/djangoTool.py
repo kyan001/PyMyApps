@@ -2,14 +2,20 @@
 """Run develop commands for django project"""
 import os
 import sys
-import collections
 import socket
+import webbrowser
+import threading
+import urllib.request
+import hashlib
+import functools
 
 import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.3.1'
+__version__ = '1.6.1'
+DATADUMP = 'datadump.json'
+TESTS_DIR = 'main.tests'
 
 
 def manage_file_exist():
@@ -19,6 +25,39 @@ def manage_file_exist():
         bool: manage.py is under current path
     """
     return os.path.exists('./manage.py')
+
+
+def asyc(func):
+    """Asyc decorator"""
+    def wrapper(*args, **kwargs):
+        t = threading.Thread(target=func, args=args, kwargs=kwargs)
+        return t.start()
+    return wrapper
+
+
+def update_this():
+    def compare(s1, s2):
+        return s1 == s2, len(s2) - len(s1)
+
+    url = "https://raw.githubusercontent.com/kyan001/PyMyApps/master/DjangoTool/djangoTool.py"
+    try:
+        req = urllib.request.urlopen(url)
+        raw_codes = req.read()
+        with open(__file__, 'rb') as f:
+            current_codes = f.read().replace(b'\r', b'')
+        is_same, diff = compare(current_codes, raw_codes)
+        if is_same:
+            cit.info("djangoTool.py is already up-to-date.")
+        else:
+            cit.ask("djangoTool.py has a newer version. Update? ({} char added)".format(diff))
+            if cit.get_choice(['Yes', 'No']) == 'Yes':
+                with open(__file__, 'wb') as f:
+                    f.write(raw_codes)
+                cit.info("Update Success")
+            else:
+                cit.warn("Update Canceled")
+    except Exception as e:
+        cit.err("djangoTool.py update failed: {}".format(e))
 
 
 @cit.as_session('Installing Requirements')
@@ -38,29 +77,11 @@ def run_by_py3(cmd):
     ktk.runCmd("{py3} {cmd}".format(py3=py3_cmd, cmd=cmd))
 
 
-@cit.as_session('Applying changes to database')
-def migrate_db():
-    """Apply changes to database"""
-    run_by_py3('manage.py makemigrations')
-    run_by_py3('manage.py migrate')
-
-
-@cit.as_session('Enter DB shell')
-def db_shell():
-    """Enter Django database shell mode"""
-    run_by_py3('manage.py dbshell')
-
-
-@cit.as_session('Enter interactive shell')
-def interactive_shell():
-    """Enter Django shell mode"""
-    run_by_py3('manage.py shell')
-
-
 @cit.as_session('Runserver localhost')
 def runserver_dev():
     """Runserver in development environment, only for localhost debug use"""
     run_by_py3('manage.py runserver')
+    webbrowser.open('http://127.0.0.1:8000/')
 
 
 @cit.as_session('Runserver LAN')
@@ -71,21 +92,36 @@ def runserver_lan():
     run_by_py3('manage.py runserver 0.0.0.0:8000')
 
 
-@cit.as_session('System Checking')
-def system_check():
-    """Check if django projects has a problem"""
-    run_by_py3('manage.py check')
+@cit.as_session('Run Testcases')
+def run_testcases():
+    """Run Django testcases"""
+    run_by_py3('-Wall manage.py test {} --verbosity 2'.format(TESTS_DIR))
+
 
 @cit.as_session('Dump Data')
 def dump_data():
     """Dump Database data to a json file"""
-    run_by_py3('manage.py dumpdata main > datadump.json')
+    run_by_py3('manage.py dumpdata main > {}'.format(DATADUMP))
 
 
 @cit.as_session('Load Data')
 def load_data():
     """Load Database data from a json file"""
-    run_by_py3('manage.py loaddata datadump.json')
+    run_by_py3('manage.py loaddata {}'.format(DATADUMP))
+
+
+@cit.as_session('Retrieve Data')
+def retrieve_data():
+    """Retrieve dumped data file from remote server"""
+    server_info = {
+        'addr': cit.get_input('Server:'),
+        'username': cit.get_input('Username:'),
+        'dir': cit.get_input('File Dir:'),
+    }
+    if server_info['dir'][-1] == '/':
+        server_info['dir'] = server_info['dir'][:-1]
+    ktk.runCmd('scp {username}@{addr}:{dir}/{dd} .'.format(**server_info, dd=DATADUMP))
+
 
 @cit.as_session('Git Assume Unchanged')
 def assume_unchanged():
@@ -109,22 +145,31 @@ def show_menu():
     returns:
         a callable function name
     """
-    commands = collections.OrderedDict({
+    commands = {
         'Install Requirements Modules': requirements_install,
-        'Make & migrate database': migrate_db,
+        'Model: Make Migration': functools.partial(run_by_py3, 'manage.py makemigrations'),
+        'Model: Migrate': functools.partial(run_by_py3, 'manage.py migrate'),
         'Create superuser account': create_superuser,
         'Runserver (localhost:8000)': runserver_dev,
         'Runserver (LAN ip:8000)': runserver_lan,
-        'Shell: Interactive': interactive_shell,
-        'Shell: DB': db_shell,
-        'Django system check': system_check,
-        'DB Data Dump (App:main)': dump_data,
-        'DB Data Load (datadump.json)': load_data,
-        'Git Assume Unchanged': assume_unchanged,
+        'Shell: Interactive': functools.partial(run_by_py3, 'manage.py shell'),
+        'Shell: DB': functools.partial(run_by_py3, 'manage.py dbshell'),
+        'Run Testcases': run_testcases,
+        'Django system check': functools.partial(run_by_py3, 'manage.py check'),
+        'DB Data: Dump (App:main)': dump_data,
+        'DB Data: Load ({})'.format(DATADUMP): load_data,
+        'DB Data: Retrieve (scp {})'.format(DATADUMP): retrieve_data,
+        'Git: Assume Unchanged': assume_unchanged,
         'Exit': cit.bye,
-    })
-    cit.echo('Select one of these:')
-    selection = cit.get_choice(sorted(commands.keys()))
+        '*** Update djangoTool.py ***': update_this,
+    }
+    menu = sorted(commands.keys())
+    if len(sys.argv) > 1:
+        arg = sys.argv.pop()
+        selection = arg if arg in commands else menu[int(arg) - 1]
+    else:
+        cit.echo('Select one of these:')
+        selection = cit.get_choice(menu)
     return commands.get(selection)
 
 
@@ -142,3 +187,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
