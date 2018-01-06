@@ -13,7 +13,7 @@ import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.8.0'
+__version__ = '1.8.1'
 DATADUMP = 'datadump.json'
 TESTS_DIR = 'main.tests'
 PIP_REQUIREMENTS = 'requirements.pip'
@@ -139,8 +139,8 @@ def requirements_install():
 @cit.as_session
 def runserver_dev():
     """Runserver in development environment, only for localhost debug use"""
-    run_by_py3('manage.py runserver')
     webbrowser.open('http://127.0.0.1:8000/')
+    run_by_py3('manage.py runserver')
 
 
 @register('Runserver (LAN ip:8000)')
