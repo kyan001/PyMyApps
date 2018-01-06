@@ -13,23 +13,85 @@ import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.7.0'
+__version__ = '1.8.0'
 DATADUMP = 'datadump.json'
 TESTS_DIR = 'main.tests'
 PIP_REQUIREMENTS = 'requirements.pip'
+COMMANDS = {}  # Dict of menu commands.
 
 
 def manage_file_exist():
     """Detect if django project manage.py file exist
 
-    returns
+    Returns
         bool: manage.py is under current path
     """
     return os.path.exists('./manage.py')
 
 
-@cit.as_session('Update djangoTool.py')
-def update_this():
+def register(desc_or_func):
+    """reg func into command menu dict
+
+    Usage:
+        @register('description')
+        def func():
+
+        @register
+        def func():
+
+    Globals:
+        COMMANDS: Dict of menu commands.
+            KEY: desc / the 1st line of func.__doc__ / func.__name__
+            VAL: func
+    """
+    if callable(desc_or_func):
+        func = desc_or_func
+        desc = func.__doc__ or func.__name__
+        desc = desc.replace('\t', '').split('\n')[0]
+        return register(desc)(func)
+    else:
+        desc = desc_or_func
+
+    def deco(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+        COMMANDS[desc] = func
+        return wrapper
+    return deco
+
+
+def run_by_py3(cmd):
+    py3_cmd = 'py' if 'win32' in sys.platform else 'python3'
+    ktk.runCmd("{py3} {cmd}".format(py3=py3_cmd, cmd=cmd))
+
+
+def show_menu():
+    """Show commands menu
+
+    Globals:
+        COMMANDS: Dict of menu commands.
+            Key: description of func
+            Val: func
+    """
+    #     'Django system check': functools.partial(run_by_py3, ),
+    # }
+    menu = sorted(COMMANDS.keys())
+    if len(sys.argv) > 1:
+        arg = sys.argv.pop()
+        selection = arg if arg in COMMANDS else menu[int(arg) - 1]
+    else:
+        stop_key = "CTRL + C" if 'win32' in sys.platform else "CMD + C"
+        cit.echo('Select one of these:')
+        cit.echo('({} to exit)'.format(stop_key))
+        selection = cit.get_choice(menu)
+    return COMMANDS.get(selection)
+
+
+@register('*** Update djangoTool.py ***')
+@cit.as_session
+def update_djangotool():
+    """Check and update djangoTool.py from github"""
     def compare(s1, s2):
         return s1 == s2, len(s2) - len(s1)
 
@@ -56,9 +118,14 @@ def update_this():
         cit.err("djangoTool.py update failed: {}".format(e))
 
 
-@cit.as_session('Installing Requirements')
+@register("Install Requirements Modules")
+@cit.as_session
 def requirements_install():
-    """Install necessary modules by pip & requirements.pip"""
+    """Install necessary modules by pip with requirements.pip
+
+    Globals:
+        PIP_REQUIREMENTS: the filename of requirements.pip
+    """
     if not os.path.exists('./{}'.format(PIP_REQUIREMENTS)):
         cit.err('No {} detected.'.format(PIP_REQUIREMENTS))
         cit.bye()
@@ -68,19 +135,16 @@ def requirements_install():
         ktk.runCmd('sudo pip3 install -r {}'.format(PIP_REQUIREMENTS))
 
 
-def run_by_py3(cmd):
-    py3_cmd = 'py' if 'win32' in sys.platform else 'python3'
-    ktk.runCmd("{py3} {cmd}".format(py3=py3_cmd, cmd=cmd))
-
-
-@cit.as_session('Runserver localhost')
+@register('Runserver (localhost:8000)')
+@cit.as_session
 def runserver_dev():
     """Runserver in development environment, only for localhost debug use"""
     run_by_py3('manage.py runserver')
     webbrowser.open('http://127.0.0.1:8000/')
 
 
-@cit.as_session('Runserver LAN')
+@register('Runserver (LAN ip:8000)')
+@cit.as_session
 def runserver_lan():
     """Runserver in development environment, for Local Area Network debug use"""
     my_ip = socket.gethostbyname(socket.gethostname())
@@ -88,27 +152,47 @@ def runserver_lan():
     run_by_py3('manage.py runserver 0.0.0.0:8000')
 
 
-@cit.as_session('Run Testcases')
+@register
+@cit.as_session
 def run_testcases():
-    """Run Django testcases"""
+    """Run Django Testcases"""
     run_by_py3('-Wall manage.py test {} --verbosity 2'.format(TESTS_DIR))
 
 
-@cit.as_session('Dump Data')
+@register('DB Data: Dump (App:main)')
+@cit.as_session
 def dump_data():
-    """Dump Database data to a json file"""
+    """Dump Database data to a json file
+
+    Globals:
+        DATADUMP: the filename of target json file
+    """
     run_by_py3('manage.py dumpdata main > {}'.format(DATADUMP))
 
 
-@cit.as_session('Load Data')
+@register('DB Data: Load (App:main)')
+@cit.as_session
 def load_data():
-    """Load Database data from a json file"""
+    """Load Database data from a json file
+
+    Globals:
+        DATADUMP: the filename of target json file
+    """
     run_by_py3('manage.py loaddata {}'.format(DATADUMP))
 
 
-@cit.as_session('Retrieve Data')
+@register('DB Data: Retrieve (by scp)')
+@cit.as_session
 def retrieve_data():
-    """Retrieve dumped data file from remote server"""
+    """Retrieve dumped data file from remote server
+
+    Globals:
+        DATADUMP: the filename of target json file
+    Inputs:
+        addr: Server IP / Address
+        username: username on server
+        dir: dir on server, DATADUMP file should in it.
+    """
     server_info = {
         'addr': cit.get_input('Server:'),
         'username': cit.get_input('Username:'),
@@ -119,56 +203,74 @@ def retrieve_data():
     ktk.runCmd('scp {username}@{addr}:{dir}/{dd} .'.format(**server_info, dd=DATADUMP))
 
 
-@cit.as_session('Git Assume Unchanged')
+@register('Git: Assume Unchanged')
+@cit.as_session
 def assume_unchanged():
+    """Show and add a file to 'No-tracking' in Git"""
     cit.info('Current assume unchanged files:')
     ktk.runCmd('git ls-files -v | grep -e "^[hsmrck]"')
-    filename = cit.get_input("Enter a TRACKED file's filename:")
+    filename = cit.get_input("Enter a TRACKED file's filename: (Ctrl + C to stop)")
     ktk.runCmd('git update-index --assume-unchanged {}'.format(filename))
 
 
-@cit.as_session('Create superuser')
+@register
+@cit.as_session
 def create_superuser():
-    """Create superuser account for Django admin"""
-    git_username = cit.get_input('Username:')
-    git_email = cit.get_input('Email:')
-    run_by_py3('manage.py createsuperuser --username {username} --email {email}'.format(username=git_username, email=git_email))
+    """Create Superuser Account
 
-
-def show_menu():
-    """Show commands menu
-
-    returns:
-        a callable function name
+    Superuser is a user in Django User System with superuser flag.
+    Asks: username / email / password for the new superuser
     """
-    commands = {
-        'Install Requirements Modules': requirements_install,
-        'Model: Make Migration': functools.partial(run_by_py3, 'manage.py makemigrations'),
-        'Model: Migrate': functools.partial(run_by_py3, 'manage.py migrate'),
-        'Create superuser account': create_superuser,
-        'Runserver (localhost:8000)': runserver_dev,
-        'Runserver (LAN ip:8000)': runserver_lan,
-        'Shell: Interactive': functools.partial(run_by_py3, 'manage.py shell'),
-        'Shell: DB': functools.partial(run_by_py3, 'manage.py dbshell'),
-        'Run Testcases': run_testcases,
-        'Django system check': functools.partial(run_by_py3, 'manage.py check'),
-        'DB Data: Dump (App:main)': dump_data,
-        'DB Data: Load ({})'.format(DATADUMP): load_data,
-        'DB Data: Retrieve (scp {})'.format(DATADUMP): retrieve_data,
-        'Git: Assume Unchanged': assume_unchanged,
-        '*** Update djangoTool.py ***': update_this,
-    }
-    menu = sorted(commands.keys())
-    if len(sys.argv) > 1:
-        arg = sys.argv.pop()
-        selection = arg if arg in commands else menu[int(arg) - 1]
-    else:
-        cit.echo('Select one of these:')
-        selection = cit.get_choice(menu)
-    return commands.get(selection)
+    username = cit.get_input('Username:')
+    email = cit.get_input('Email:')
+    run_by_py3('manage.py createsuperuser --username {username} --email {email}'.format(username=username, email=email))
 
 
-def main():
+@register('Model: Make Migration')
+@cit.as_session
+def make_migration():
+    """make migration: detect and generate changes of models"""
+    run_by_py3('manage.py makemigrations')
+
+
+@register('Model: Migrate')
+@cit.as_session
+def migrate():
+    """migrate: apply models changes to database"""
+    run_by_py3('manage.py migrate')
+
+
+@register('Shell: Interactive')
+@cit.as_session
+def interactive_shell():
+    """Enter interactive shell mode
+
+    Example Commands:
+        >>> from main.models import User
+        >>> User.objects.all()
+    """
+    run_by_py3('manage.py shell')
+
+
+@register('Shell: Database')
+@cit.as_session
+def database_shell():
+    """Enter the database's shell mode
+
+    Example Commands:
+        MySQL> select * from User;
+    """
+    run_by_py3('manage.py dbshell')
+
+
+@register
+@cit.as_session
+def system_check():
+    """Django System Check"""
+    run_by_py3('manage.py check')
+
+
+if __name__ == '__main__':
     ktk.clearScreen()
     cit.echo('Django Tool: version {}'.format(__version__))
     cit.br()
@@ -180,8 +282,5 @@ def main():
             to_run = show_menu()
             to_run()
     except KeyboardInterrupt:
+        cit.info('Thanks for using. Bye bye!')
         sys.exit(0)
-
-
-if __name__ == '__main__':
-    main()
