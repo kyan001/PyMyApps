@@ -12,7 +12,7 @@ import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.8.3'
+__version__ = '1.9.0'
 DATADUMP = 'datadump.json'
 TESTS_DIR = 'main.tests'
 PIP_REQUIREMENTS = 'requirements.pip'
@@ -91,30 +91,10 @@ def show_menu():
 @cit.as_session
 def update_djangotool():
     """Check and update djangoTool.py from github"""
-    def compare(s1, s2):
-        return s1 == s2, len(s2) - len(s1)
-
     url = "https://raw.githubusercontent.com/kyan001/PyMyApps/master/DjangoTool/djangoTool.py"
-    try:
-        req = urllib.request.urlopen(url)
-        raw_codes = req.read()
-        with open(__file__, 'rb') as f:
-            current_codes = f.read().replace(b'\r', b'')
-        is_same, diff = compare(current_codes, raw_codes)
-        if is_same:
-            cit.info("djangoTool.py is already up-to-date.")
-        else:
-            cit.ask("djangoTool.py has a newer version. Update? ({} char added)".format(diff))
-            if cit.get_choice(['Yes', 'No']) == 'Yes':
-                with open(__file__, 'wb') as f:
-                    f.write(raw_codes)
-                cit.info("Update Success.")
-                run_by_py3(__file__)
-                cit.bye()
-            else:
-                cit.warn("Update Canceled")
-    except Exception as e:
-        cit.err("djangoTool.py update failed: {}".format(e))
+    if ktk.update_file(__file__, url):
+        run_by_py3(__file__)
+        cit.bye()
 
 
 @register("Install Requirements Modules")
