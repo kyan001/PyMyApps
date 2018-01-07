@@ -12,11 +12,11 @@ import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.9.0'
+__version__ = '1.9.1'
 DATADUMP = 'datadump.json'
 TESTS_DIR = 'main.tests'
 PIP_REQUIREMENTS = 'requirements.pip'
-COMMANDS = {}  # Dict of menu commands.
+COMMANDS = {'-- Exit --': cit.bye}  # Dict of menu commands.
 
 
 def manage_file_exist():
@@ -61,8 +61,7 @@ def register(desc_or_func):
 
 
 def run_by_py3(cmd):
-    py3_cmd = 'py' if 'win32' in sys.platform else 'python3'
-    ktk.runCmd("{py3} {cmd}".format(py3=py3_cmd, cmd=cmd))
+    ktk.runCmd("{py3} {cmd}".format(py3=ktk.getPyCmd(), cmd=cmd))
 
 
 def show_menu():
@@ -80,9 +79,7 @@ def show_menu():
         arg = sys.argv.pop()
         selection = arg if arg in COMMANDS else menu[int(arg) - 1]
     else:
-        stop_key = "CTRL + C" if 'win32' in sys.platform else "CMD + C"
         cit.echo('Select one of these:')
-        cit.warn('({} to exit)'.format(stop_key))
         selection = cit.get_choice(menu)
     return COMMANDS.get(selection)
 
@@ -92,9 +89,9 @@ def show_menu():
 def update_djangotool():
     """Check and update djangoTool.py from github"""
     url = "https://raw.githubusercontent.com/kyan001/PyMyApps/master/DjangoTool/djangoTool.py"
-    if ktk.update_file(__file__, url):
+    if ktk.updateFile(__file__, url):
         run_by_py3(__file__)
-        cit.bye()
+        cit.bye(0)
 
 
 @register("Install Requirements Modules")
@@ -262,4 +259,4 @@ if __name__ == '__main__':
             to_run()
     except KeyboardInterrupt:
         cit.info('Thanks for using. Bye bye!')
-        sys.exit(0)
+        cit.bye(0)

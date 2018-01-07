@@ -11,12 +11,14 @@ import consoleiotools as cit
 import KyanToolKit
 ktk = KyanToolKit.KyanToolKit()
 
-__version__ = '1.4.0'
+__version__ = '1.5.5'
 
 
 def main():
     # precheck
-    ktk.needPlatform("linux")
+    # ktk.needPlatform("linux")
+    cit.info('Uwsgi Tool: version {}'.format(__version__))
+    cit.br()
     # defines
     uwsgi_xml = get_config_file("./uwsgi.xml")  # uwsgi config file
     pid_file = get_pid_file()  # exist when running
@@ -28,6 +30,15 @@ def main():
         run_operation(operation, uwsgi_xml, pid_file, log_file)
     else:
         cit.bye()
+
+
+@cit.as_session
+def update_uwsgitool():
+    """Check and update djangoTool.py from github"""
+    url = 'https://raw.githubusercontent.com/kyan001/PyMyApps/master/UwsgiTool/uwsgiTool.py'
+    if ktk.updateFile(__file__, url):
+        ktk.runCmd('{py} "{f}"'.format(py=ktk.getPyCmd(), f=__file__))
+        cit.bye(0)
 
 
 def get_pid_file():
@@ -50,6 +61,7 @@ def get_log_file():
     return "/var/log/uwsgi_{}.log".format(dir_name)
 
 
+@cit.as_session
 def get_config_file(xml_file='./uwsgi.xml'):
     """check if uswgi config file exists"""
     dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -64,6 +76,7 @@ def get_config_file(xml_file='./uwsgi.xml'):
         return None
 
 
+@cit.as_session
 def show_running_status(pid_file):
     """check if this uwsgi is already running"""
     if os.path.exists(pid_file):
@@ -74,9 +87,10 @@ def show_running_status(pid_file):
         return False
 
 
+@cit.as_session('Select one of these:')
 def get_operation():
     """start a new uwsgi, stop a running uwsgi, or reload the config and codes"""
-    operations = ["start", "stop", "reload"]
+    operations = ["*** update uwsgiTool ***", "start", "stop", "reload"]
     if len(sys.argv) != 2:
         return cit.get_choice(operations)
     elif sys.argv[1] in operations:
@@ -99,6 +113,8 @@ def run_operation(oprtn, config_file, pid_file, log_file):
         ktk.runCmd("sudo rm " + pid_file)
     elif "reload" == oprtn:
         ktk.runCmd("sudo uwsgi --reload " + pid_file)
+    elif "*** update uwsgiTool ***" == oprtn:
+        update_uwsgitool()
     else:
         cit.err("Wrong operation: " + oprtn)
         cit.bye()
