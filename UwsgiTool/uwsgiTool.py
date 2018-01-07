@@ -11,7 +11,7 @@ import consoleiotools as cit
 import KyanToolKit
 ktk = KyanToolKit.KyanToolKit()
 
-__version__ = '1.3.3'
+__version__ = '1.4.0'
 
 
 def main():
@@ -20,11 +20,12 @@ def main():
     # defines
     uwsgi_xml = get_config_file("./uwsgi.xml")  # uwsgi config file
     pid_file = get_pid_file()  # exist when running
+    log_file = get_log_file()
     # run
     if pid_file and uwsgi_xml:
         show_running_status(pid_file)
         operation = get_operation()
-        run_operation(operation, uwsgi_xml, pid_file)
+        run_operation(operation, uwsgi_xml, pid_file, log_file)
     else:
         cit.bye()
 
@@ -37,6 +38,16 @@ def get_pid_file():
     """
     dir_name = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
     return "/var/run/uwsgi_{}.pid".format(dir_name)
+
+
+def get_log_file():
+    """generate log_file path and name according to script's dirname
+
+    returns:
+        '/var/log/uwsgi_dirname.log'
+    """
+    dir_name = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
+    return "/var/log/uwsgi_{}.log".format(dir_name)
 
 
 def get_config_file(xml_file='./uwsgi.xml'):
@@ -75,14 +86,14 @@ def get_operation():
         cit.bye()
 
 
-def run_operation(oprtn, config_file, pid_file):
+def run_operation(oprtn, config_file, pid_file, log_file):
     if "start" == oprtn:
         if os.path.exists(pid_file):
             cit.ask('uwsgi is already running, start a new one? (Y/n)\n(Doing this will overwrite pid_file)')
             if cit.get_input().lower() != 'y':
                 cit.info('User canceled start operation')
                 return False
-        ktk.runCmd("sudo uwsgi -x '{c}' --pidfile '{p}'".format(c=config_file, p=pid_file))
+        ktk.runCmd("sudo uwsgi -x '{c}' --pidfile '{p}' --daemonize '{d}'".format(c=config_file, p=pid_file, d=log_file))
     elif "stop" == oprtn:
         ktk.runCmd("sudo uwsgi --stop " + pid_file)
         ktk.runCmd("sudo rm " + pid_file)

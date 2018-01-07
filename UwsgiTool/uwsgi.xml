@@ -7,8 +7,7 @@
     <gid>www-data</gid>
     <pythonpath>/home/kyan001/src/portal_django</pythonpath>
     <module>portal.wsgi:application</module>
-    <daemonize>/var/log/portal_uwsgi.log</daemonize>
     <master/>
     <processes>32</processes>
-    <plugins>python34</plugins>
+    <plugins>python35</plugins>
 </uwsgi>
