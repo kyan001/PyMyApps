@@ -11,7 +11,7 @@ import consoleiotools as cit
 import KyanToolKit
 ktk = KyanToolKit.KyanToolKit()
 
-__version__ = '1.5.5'
+__version__ = '1.5.6'
 
 
 def main():
@@ -94,7 +94,9 @@ def get_operation():
     if len(sys.argv) != 2:
         return cit.get_choice(operations)
     elif sys.argv[1] in operations:
-        return sys.argv[1]
+        selected = sys.argv[1]
+        cit.info("Selected: {}".format(selected))
+        return selected
     else:
         cit.err("Wrong Params: " + sys.argv[1])
         cit.bye()
