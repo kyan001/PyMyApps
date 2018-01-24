@@ -12,7 +12,7 @@ import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.9.1'
+__version__ = '1.10.0'
 DATADUMP = 'datadump.json'
 TESTS_DIR = 'main.tests'
 PIP_REQUIREMENTS = 'requirements.pip'
@@ -244,6 +244,20 @@ def database_shell():
 def system_check():
     """Django System Check"""
     run_by_py3('manage.py check')
+
+
+@register('i18n: Make Messages (.po)')
+@cit.as_session
+def make_messages():
+    """Django i18n Make .po Messaages File"""
+    ktk.runCmd('django-admin makemessages')
+
+
+@register('i18n: Compile Messages (.mo)')
+@cit.as_session
+def compile_messages():
+    """Django i18n Compile .po files into .mo files"""
+    ktk.runCmd('django-admin compilemessages')
 
 
 if __name__ == '__main__':
