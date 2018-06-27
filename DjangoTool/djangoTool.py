@@ -13,13 +13,14 @@ import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.11.0'
+__version__ = '1.12.0'
 conf = configparser.ConfigParser()
-conf.read('config.ini')
+conf.read('djangoTool.conf')
 conf = conf['DEFAULT']
 DATADUMP = conf.get('datadump') or 'datadump.json'
 TESTS_DIR = conf.get('testsdir') or 'main.tests'
 PIP_REQUIREMENTS = conf.get('piprequirements') or 'requirements.pip'
+DEV_URL = conf.get('devurl') or 'http://127.0.0.1:8000/'
 COMMANDS = {'-- Exit --': cit.bye}  # Dict of menu commands.
 
 
@@ -118,8 +119,12 @@ def requirements_install():
 @register('Runserver (localhost:8000)')
 @cit.as_session
 def runserver_dev():
-    """Runserver in development environment, only for localhost debug use"""
-    webbrowser.open('http://127.0.0.1:8000/')
+    """Runserver in development environment, only for localhost debug use
+
+    Globals:
+        DEV_URL: the url of test page.
+    """
+    webbrowser.open(DEV_URL)
     run_by_py3('manage.py runserver')
 
 
