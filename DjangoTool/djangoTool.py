@@ -7,15 +7,19 @@ import webbrowser
 import urllib.request
 import hashlib
 import functools
+import configparser
 
 import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.10.0'
-DATADUMP = 'datadump.json'
-TESTS_DIR = 'main.tests'
-PIP_REQUIREMENTS = 'requirements.pip'
+__version__ = '1.11.0'
+conf = configparser.ConfigParser()
+conf.read('config.ini')
+conf = conf['DEFAULT']
+DATADUMP = conf.get('datadump') or 'datadump.json'
+TESTS_DIR = conf.get('testsdir') or 'main.tests'
+PIP_REQUIREMENTS = conf.get('piprequirements') or 'requirements.pip'
 COMMANDS = {'-- Exit --': cit.bye}  # Dict of menu commands.
 
 
