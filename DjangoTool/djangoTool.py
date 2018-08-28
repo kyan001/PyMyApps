@@ -13,18 +13,27 @@ import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.15.2'
-conf = configparser.ConfigParser()
-conf.read('djangoTool.ini')
-conf_default = conf['DEFAULT']
-conf_datadump = conf['DATADUMP']
-DATADUMP_FILE = conf_datadump.get('file') or 'datadump.json'
-DATADUMP_DIR = conf_datadump.get('dir') or ""
-DATADUMP_SERVER = conf_datadump.get('server') or ""
-DATADUMP_USER = conf_datadump.get('user') or os.getlogin()
-TESTS_DIR = conf_default.get('testsdir') or 'main.tests'
-PIP_REQUIREMENTS = conf_default.get('piprequirements') or 'requirements.txt'
-DEV_URL = conf_default.get('devurl') or 'http://127.0.0.1:8000/'
+__version__ = '1.15.6'
+
+
+def load_config(config_file):
+    config = configparser.ConfigParser()
+    config.read(config_file)
+    conf = config['DEFAULT']
+    conf_dd = config['DATADUMP']
+    if conf.get('version') and conf.get('version') not in __version__:
+        cit.warn("Different versions detected: {cfile} ({cver}) and djangoTool.py ({pver})".format(cfile=config_file, cver=conf.get('version'), pver=__version__))
+    return conf, conf_dd
+
+
+CONF, CONF_DD = load_config('djangoTool.ini')
+DATADUMP_FILE = CONF_DD.get('file') or 'datadump.json'
+DATADUMP_DIR = CONF_DD.get('dir') or ""
+DATADUMP_SERVER = CONF_DD.get('server') or ""
+DATADUMP_USER = CONF_DD.get('user') or os.getlogin()
+TESTS_DIR = CONF.get('testsdir') or 'main.tests'
+PIP_REQUIREMENTS = CONF.get('piprequirements') or 'requirements.txt'
+DEV_URL = CONF.get('devurl') or 'http://127.0.0.1:8000/'
 COMMANDS = {'-- Exit --': cit.bye}  # Dict of menu commands.
 
 
@@ -266,18 +275,17 @@ def system_check():
 @cit.as_session
 def make_messages():
     """Django i18n Make .po Messaages File"""
-    ktk.runCmd('django-admin makemessages')
+    run_by_py3('manage.py makemessages')
 
 
 @register('i18n: Compile Messages (.mo)')
 @cit.as_session
 def compile_messages():
     """Django i18n Compile .po files into .mo files"""
-    ktk.runCmd('django-admin compilemessages')
+    run_by_py3('manage.py compilemessages')
 
 
 if __name__ == '__main__':
-    ktk.clearScreen()
     cit.echo('Django Tool: version {}'.format(__version__))
     cit.br()
     if not manage_file_exist():
