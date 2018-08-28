@@ -13,14 +13,18 @@ import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.12.0'
+__version__ = '1.15.2'
 conf = configparser.ConfigParser()
-conf.read('djangoTool.conf')
-conf = conf['DEFAULT']
-DATADUMP = conf.get('datadump') or 'datadump.json'
-TESTS_DIR = conf.get('testsdir') or 'main.tests'
-PIP_REQUIREMENTS = conf.get('piprequirements') or 'requirements.pip'
-DEV_URL = conf.get('devurl') or 'http://127.0.0.1:8000/'
+conf.read('djangoTool.ini')
+conf_default = conf['DEFAULT']
+conf_datadump = conf['DATADUMP']
+DATADUMP_FILE = conf_datadump.get('file') or 'datadump.json'
+DATADUMP_DIR = conf_datadump.get('dir') or ""
+DATADUMP_SERVER = conf_datadump.get('server') or ""
+DATADUMP_USER = conf_datadump.get('user') or os.getlogin()
+TESTS_DIR = conf_default.get('testsdir') or 'main.tests'
+PIP_REQUIREMENTS = conf_default.get('piprequirements') or 'requirements.txt'
+DEV_URL = conf_default.get('devurl') or 'http://127.0.0.1:8000/'
 COMMANDS = {'-- Exit --': cit.bye}  # Dict of menu commands.
 
 
@@ -150,9 +154,9 @@ def dump_data():
     """Dump Database data to a json file
 
     Globals:
-        DATADUMP: the filename of target json file
+        DATADUMP_FILE: the filename of target json file
     """
-    run_by_py3('manage.py dumpdata main > {}'.format(DATADUMP))
+    run_by_py3('manage.py dumpdata main > {}'.format(DATADUMP_FILE))
 
 
 @register('DB Data: Load (App:main)')
@@ -161,9 +165,9 @@ def load_data():
     """Load Database data from a json file
 
     Globals:
-        DATADUMP: the filename of target json file
+        DATADUMP_FILE: the filename of target json file
     """
-    run_by_py3('manage.py loaddata {}'.format(DATADUMP))
+    run_by_py3('manage.py loaddata {}'.format(DATADUMP_FILE))
 
 
 @register('DB Data: Retrieve (by scp)')
@@ -172,20 +176,23 @@ def retrieve_data():
     """Retrieve dumped data file from remote server
 
     Globals:
-        DATADUMP: the filename of target json file
+        DATADUMP_FILE: the filename of target json file
+        DATADUMP_SERVER: the server's address
+        DATADUMP_DIR: the datadump file's folder path on server
+        DATADUMP_USER: the username on server
     Inputs:
         addr: Server IP / Address
         username: username on server
         dir: dir on server, DATADUMP file should in it.
     """
     server_info = {
-        'addr': cit.get_input('Server:'),
-        'username': cit.get_input('Username:'),
-        'dir': cit.get_input('File Dir:'),
+        'addr': cit.get_input('Server: (Default: {})'.format(DATADUMP_SERVER)) or DATADUMP_SERVER,
+        'username': cit.get_input('Username: (Default: {})'.format(DATADUMP_USER)) or DATADUMP_USER,
+        'dir': cit.get_input('File Dir: (Default: {})'.format(DATADUMP_DIR)) or DATADUMP_DIR,
     }
     if server_info['dir'][-1] == '/':
         server_info['dir'] = server_info['dir'][:-1]
-    ktk.runCmd('scp {username}@{addr}:{dir}/{dd} .'.format(**server_info, dd=DATADUMP))
+    ktk.runCmd('scp {username}@{addr}:{dir}/{dd} .'.format(**server_info, dd=DATADUMP_FILE))
 
 
 @register('Git: Assume Unchanged')
