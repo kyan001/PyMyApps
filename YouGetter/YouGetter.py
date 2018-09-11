@@ -48,7 +48,7 @@ class CONF(object):
 
 
 class InteractiveShell(cmd.Cmd):
-    HELP_MSG = """
+    HELP_MSG = """\
 [ Commands List ] __________________________
     ? / help : Show all commands
     ---------:---------------------------
@@ -68,7 +68,7 @@ class InteractiveShell(cmd.Cmd):
     """
 
     def __init__(self):
-        super().__init__(self)
+        super().__init__()
         self.prompt = self.HELP_MSG + 'YouGetter> '
         self.onecmd('url')
 
@@ -211,7 +211,8 @@ def load_config():
 
 def main():
     load_config()
-    InteractiveShell().cmdloop()
+    ishell = InteractiveShell()
+    ishell.cmdloop()
 
 
 if __name__ == '__main__':
