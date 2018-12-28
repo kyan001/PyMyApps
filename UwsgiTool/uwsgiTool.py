@@ -11,7 +11,7 @@ import consoleiotools as cit
 import KyanToolKit
 ktk = KyanToolKit.KyanToolKit()
 
-__version__ = '1.5.6'
+__version__ = '1.6.6'
 
 
 def main():
@@ -23,11 +23,12 @@ def main():
     uwsgi_xml = get_config_file("./uwsgi.xml")  # uwsgi config file
     pid_file = get_pid_file()  # exist when running
     log_file = get_log_file()
+    venv_folder = get_venv_folder()  # virtualenv folder
     # run
     if pid_file and uwsgi_xml:
         show_running_status(pid_file)
         operation = get_operation()
-        run_operation(operation, uwsgi_xml, pid_file, log_file)
+        run_operation(operation, uwsgi_xml, pid_file, log_file, venv_folder)
     else:
         cit.bye()
 
@@ -59,6 +60,18 @@ def get_log_file():
     """
     dir_name = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
     return "/var/log/uwsgi_{}.log".format(dir_name)
+
+
+def get_venv_folder():
+    """check if virtualenv folder exist, and return the path or None
+
+    returns:
+        '/path/to/VENV' or None
+    """
+    dir_path = os.getcwd()
+    venv_name = "VENV"
+    venv_path = os.path.join(dir_path, venv_name)
+    return venv_path if os.path.isdir(venv_path) else None
 
 
 @cit.as_session
@@ -102,14 +115,17 @@ def get_operation():
         cit.bye()
 
 
-def run_operation(oprtn, config_file, pid_file, log_file):
+def run_operation(oprtn, config_file, pid_file, log_file, venv_folder):
     if "start" == oprtn:
         if os.path.exists(pid_file):
             cit.ask('uwsgi is already running, start a new one? (Y/n)\n(Doing this will overwrite pid_file)')
             if cit.get_input().lower() != 'y':
                 cit.info('User canceled start operation')
                 return False
-        ktk.runCmd("sudo uwsgi -x '{c}' --pidfile '{p}' --daemonize '{d}'".format(c=config_file, p=pid_file, d=log_file))
+        cmd = "sudo uwsgi -x '{c}' --pidfile '{p}' --daemonize '{d}'".format(c=config_file, p=pid_file, d=log_file)
+        if venv_folder:
+            cmd += " --virtualenv '{}'".format(venv_folder)
+        ktk.runCmd(cmd)
     elif "stop" == oprtn:
         ktk.runCmd("sudo uwsgi --stop " + pid_file)
         ktk.runCmd("sudo rm " + pid_file)
