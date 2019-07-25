@@ -9,13 +9,14 @@ import argparse
 import consoleiotools as cit
 
 
-__version__ = '1.1.2'
+__version__ = '1.2.1'
 __prog__ = "AutoRename"
 __description__ = "Auto rename files in a folder"
 __epilog__ = "TL;DR: Run program with no args, or drag & drop a folder on it."
 
 # Global Variables
-_PATTERN = r'S[0-9][0-9]E[0-9][0-9]'
+PATTERN = r'S[0-9][0-9]E[0-9][0-9]'
+DIVIDER = '-'
 
 
 @cit.as_session
@@ -70,57 +71,63 @@ def get_keyword(filedir: str):
     Returns:
         keyword: str
     """
+    global DIVIDER
     if os.path.isdir(filedir):
         keyword = os.path.split(filedir)[-1].replace(' ', '_')
     else:
         cit.err("'{}' is not a path".format(filedir)).bye()
-    cit.ask("Set keyword to '{}'?".format(keyword))
+    cit.ask("Set keyword to '{}' and divider to '{}'?".format(keyword, DIVIDER))
     if cit.get_choice(["Yes", "No"]) == "No":
         keyword = cit.get_input("Please enter new keyword:")
+        DIVIDER = cit.get_input("Please enter new divider:")
     cit.info("Keyword: '{}'".format(keyword))
     return keyword
 
 
 @cit.as_session('Get Name Mapping')
-def get_name_map(pattern: str, files: list, keyword: str):
+def get_name_map(files: list, keyword: str):
     """Get name mapping, old name as key, new name as value
 
     Args:
-        pattern: pattern to test
         files: list
         keyword: str
 
     Returns:
         namemap: dict
+
+    Globals:
+        PATTERN: pattern to test
+        DIVIDER: divider between keyword and pattern matches
     """
     # validations
+    global PATTERN
+    global DIVIDER
     if not files:
         cit.err('No file list').bye()
-    if not pattern:
-        cit.warn('No pattern detected, use default pattern.')
-        pattern = _PATTERN
-    cit.info('Testing pattern: `{}`'.format(pattern))
+    if not PATTERN:
+        cit.err('No pattern detected.').bye()
+    cit.info('Testing pattern: `{}`'.format(PATTERN))
     # generate namemap
     namemap = {}
-    for fname in files:
-        mtch = re.compile(pattern).findall(fname)
+    for filename in files:
+        froot, fext = os.path.splitext(filename)
+        mtch = re.compile(PATTERN).findall(froot)
         if not mtch:
-            cit.warn('Ignored: {}'.format(fname))
+            cit.warn('Ignored: {}'.format(filename))
         else:
-            cit.info('Matched: "{n}" : "{m}"'.format(n=fname, m=mtch[0]))
-            fext = os.path.splitext(fname)[-1]
-            to_name = "{kw}_{num}{ext}".format(kw=keyword, num=mtch[0], ext=fext)
-            namemap[fname] = to_name
+            cit.info('Matched: "{n}" : "{m}"'.format(n=filename, m=mtch[0]))
+            to_name = "{kw}{div}{num}{ext}".format(kw=keyword, div=DIVIDER, num=mtch[0], ext=fext)
+            namemap[filename] = to_name
     # check if namemap and pattern is ok
     if namemap:
-        cit.ask("Set number's pattern to '{}'?".format(pattern))
+        cit.ask("Set number's pattern to '{}'?".format(PATTERN))
         if cit.get_choice(['Yes', 'No']) == 'Yes':
-            cit.info('Pattern: "{}"'.format(pattern))
+            cit.info('Pattern: "{}"'.format(PATTERN))
             return namemap
     else:
         cit.warn('Pattern does not match any file!')
-    new_pattern = cit.get_input("Please enter a new pattern: `[0-9] [a-Z] . * + ()`")
-    return get_name_map(new_pattern, files, keyword)
+    PATTERN = cit.get_input("Please enter a new pattern: `[0-9] [a-Z] . * + ()`")
+    return get_name_map(files, keyword)
 
 
 def generate_cmds(filedir: str, namemap: dict):
@@ -134,8 +141,9 @@ def generate_cmds(filedir: str, namemap: dict):
         A list contains all the commands
     """
     cmdlist = []
-    for (fname, to_name) in namemap.items():
-        fullpath = "{d}/{n}".format(d=filedir, n=fname).replace('/', os.sep)
+    os_rename_cmd = "rename" if "win32" in sys.platform else "mv"
+    for (filename, to_name) in namemap.items():
+        fullpath = os.path.join(filedir, filename)
         cmmnd = 'rename "{fp}" "{t}"'.format(fp=fullpath, t=to_name)
         cmdlist.append(cmmnd)
     return cmdlist
@@ -147,14 +155,17 @@ if __name__ == '__main__':
     parser.add_argument("-v", "--version", action="version", version=__version__)
     parser.add_argument(dest="filedir", metavar="FILEDIR", nargs="?", default=os.getcwd(), help="Folder path of target files.")
     parser.add_argument("-k", "--keyword", dest="keyword", help="Prefix of new filename.")
-    parser.add_argument("-p", "--pattern", dest="pattern", default=_PATTERN, help="REGEX (REGular EXpression) which matches a part of filenames.")
+    parser.add_argument("-p", "--pattern", dest="pattern", default=PATTERN, help="REGEX (REGular EXpression) which matches a part of filenames.")
+    parser.add_argument("-d", "--divider", dest="divider", default=DIVIDER, help="Divider between keyword and matches.")
     parser.add_argument("-f", "--file", dest="files", action="append", nargs="*", help="target files in filedir, repeat it to add more files.")
     args = parser.parse_args()
     # get Vars
+    PATTERN = args.pattern
+    DIVIDER = args.divider
     filedir = get_file_dir(args.filedir)
     files = args.files or get_files(filedir)
     keyword = args.keyword or get_keyword(filedir)
-    namemap = get_name_map(pattern=args.pattern, files=files, keyword=keyword)
+    namemap = get_name_map(files=files, keyword=keyword)
     # get cmd
     cmds = generate_cmds(filedir=filedir, namemap=namemap)
     cit.warn('Commands example for final comfirm:')
