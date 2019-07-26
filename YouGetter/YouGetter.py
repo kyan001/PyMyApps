@@ -18,6 +18,7 @@ class CONF(object):
     itag = None
     use_proxy = False
     debug = False
+    cookies = None
 
     @classmethod
     def attr(cls, key, value=None):
@@ -31,7 +32,7 @@ class CONF(object):
         old_value = cls.attr(key)
         cit.info('Current {k} is: "{v}"'.format(k=key, v=old_value))
         if not value:
-            cit.ask('Enter a {k}: (Leave blank if no change)'.format(k=key))
+            cit.ask('Enter a {k}: (Leave blank if no-change, "yes/no" for True/False)'.format(k=key))
             if example:
                 cit.ask('Example: {}'.format(example))
             new_value = cit.get_input()
@@ -60,6 +61,7 @@ class InteractiveShell(cmd.Cmd):
       folder : Set where to save the downloaded files
         name : Set the filename of the savedfiles
         itag : Set itag to download with a different quality
+     cookies : Set cookies for download.
        debug : Set if this run in debug mode
     ---------:---------------------------
          get : Get the recommanded video to target folder
@@ -110,6 +112,7 @@ class InteractiveShell(cmd.Cmd):
             cmd += ' --output-filename "{}"'.format(CONF.name) if CONF.name else ""  # -O
             cmd += ' --http-proxy "{}"'.format(CONF.proxy) if CONF.use_proxy and CONF.proxy else ""  # -x
             cmd += ' --itag={}'.format(CONF.itag) if CONF.itag else ""
+            cmd += ' --cookies {}'.format(CONF.cookies) if CONF.cookies else ""
             cmd += ' --debug' if CONF.debug else ""
             cmd += ' "{}"'.format(CONF.url)
             cit.info('Final command:')
@@ -182,6 +185,30 @@ class InteractiveShell(cmd.Cmd):
     def do_itag(self, arg=None):
         """Set itag to download with a different quality"""
         CONF.try_set('itag', example='127 (no or 0 for not use)', value=arg)
+
+    def do_cookies(self, arg=None):
+        if CONF.cookies:
+            cit.info('Current cookies is: {}'.format(CONF.cookies))
+        cit.ask('What do you want to do with the cookies:')
+        selections = {
+            'keep': 'Keep this',
+            'select': 'Select my own',
+            'enter': 'Enter a new one',
+        }
+        next_step = cit.get_choice(list(sorted(selections.values())))
+        if next_step == selections['enter']:
+            new_cookies = arg or None
+        elif next_step == selections['keep']:
+            new_cookies = CONF.cookies
+        elif next_step == selections['select']:
+            tkapp = tkinter.Tk()
+            new_cookies = tkinter.filedialog.askopenfilename()
+            tkapp.destroy()
+        CONF.try_set('cookies', example='/home/user/cookies.txt', value=new_cookies)
+        if not os.path.isfile(CONF.cookies):
+            cit.err('cookies file does not exist!')
+            CONF.cookies = None
+
 
     def do_proxy(self, arg=None):
         """Set proxy for oversea sites"""
