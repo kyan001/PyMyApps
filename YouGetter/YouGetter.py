@@ -1,8 +1,6 @@
 import configparser
 import os
 import cmd
-import tkinter
-import tkinter.filedialog
 
 import consoleiotools as cit
 
@@ -166,6 +164,8 @@ class InteractiveShell(cmd.Cmd):
             name = CONF.name if CONF.name else cit.get_input('Enter a folder name:')
             new_folder = os.path.join(CONF.DESKTOP_PATH, name)
         elif next_step == selections['select']:
+            import tkinter
+            import tkinter.filedialog
             tkapp = tkinter.Tk()
             new_folder = tkinter.filedialog.askdirectory(initialdir='CONF.DESKTOP_PATH')
             tkapp.destroy()
@@ -201,6 +201,8 @@ class InteractiveShell(cmd.Cmd):
         elif next_step == selections['keep']:
             new_cookies = CONF.cookies
         elif next_step == selections['select']:
+            import tkinter
+            import tkinter.filedialog
             tkapp = tkinter.Tk()
             new_cookies = tkinter.filedialog.askopenfilename()
             tkapp.destroy()
