@@ -1,12 +1,13 @@
 import configparser
 import os
 import cmd
-
+import sys
 import consoleiotools as cit
 
 
 class CONF(object):
-    DESKTOP_PATH = os.path.join(os.path.expanduser('~'), 'Desktop')
+    TARGET_FOLDER = "Desktop" if "win32" in sys.platform else "Downloads"
+    DESKTOP_PATH = os.path.join(os.path.expanduser('~'), TARGET_FOLDER)
     CONFIGFILE = 'yougetter.ini'
     GFWSITES = ['youtube', 'tumblr', 'twitter']
     proxy = None
