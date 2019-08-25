@@ -1,7 +1,6 @@
 import sys
 
 import consoleiotools as cit
-import pyperclip
 
 import jisho
 
@@ -59,6 +58,7 @@ def get_source_text():
         multilines = sys.stdin.readlines()
         return "".join(multilines)
     elif selection == choices['paste']:
+        import pyperclip
         return pyperclip.paste()
 
 
@@ -92,6 +92,7 @@ def save_text_to(romaji: str):
             cit.write_file(path=filepath, content=romaji)
             cit.info(f"File saved at {filepath}")
         elif selection == choices['copy']:
+            import pyperclip
             pyperclip.copy(romaji)
         elif selection == choices['print']:
             print(romaji)
