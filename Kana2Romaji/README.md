@@ -8,13 +8,13 @@ $ python3 kana2romaji.py
 
 ## Input & Output
 * Input source could be:
-    1. Text File.
-    2. Console Input.
-    3. Clipboard.
+    1. 📜Text File.
+    2. ⌨Console Input.
+    3. 📋Clipboard.
 * Output destination could be:
-    1. Console Output (Screen or tty).
-    2. Clipboard.
-    3. Text File.
+    1. 📜Text File.
+    2. ⌨Console Output (Screen or tty).
+    3. 📋Clipboard.
 
 > Note: Clipboard support need a 3rd party library "pyperclip".
 > To install pyperclip, enter `pip install pyperclip` in your console.
