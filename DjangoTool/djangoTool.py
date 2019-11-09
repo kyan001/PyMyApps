@@ -14,7 +14,7 @@ import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.16.2'
+__version__ = '1.16.5'
 
 
 def load_config(config_file):
@@ -287,7 +287,7 @@ def compile_messages():
     run_by_py3('manage.py compilemessages')
 
 
-def debug_mode_detect():
+def debug_mode_status():
     """Print Django debug mode on/off.
 
     Django settings.DEBUG is True if DEBUG_FLAG file exists."""
@@ -297,13 +297,21 @@ def debug_mode_detect():
         cit.echo("Django Debug Mode: Off.")
 
 
+@register('Debug: Debug Mode Switch')
+@cit.as_session
+def debug_mode_switch():
+    """Switch Django debug mode by deleting/creating debug flag file."""
+    if DEBUG_FLAG and os.path.exists(DEBUG_FLAG):
+        os.remove(DEBUG_FLAG)
+    else:
+        open(DEBUG_FLAG, 'a').close()
+    debug_mode_status()
+
+
 if __name__ == '__main__':
     cit.echo('Django Tool: version {}'.format(__version__))
-    debug_mode_detect()
+    debug_mode_status()
     cit.br()
-    if DEBUG_FLAG and os.path.exists(DEBUG_FLAG):
-        cit.warn("Django DEBUG is ON. (Flag exists: {})".format(DEBUG_FLAG))
-        cit.br()
     if not manage_file_exist():
         cit.err('No manage.py detected. Please run this under projects folder')
         cit.bye()
