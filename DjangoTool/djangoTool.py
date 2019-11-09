@@ -14,7 +14,7 @@ import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.16.1'
+__version__ = '1.16.2'
 
 
 def load_config(config_file):
@@ -287,8 +287,19 @@ def compile_messages():
     run_by_py3('manage.py compilemessages')
 
 
+def debug_mode_detect():
+    """Print Django debug mode on/off.
+
+    Django settings.DEBUG is True if DEBUG_FLAG file exists."""
+    if DEBUG_FLAG and os.path.exists(DEBUG_FLAG):
+        cit.warn("Django Debug Mode: On. (Debug Flag Exists: {})".format(DEBUG_FLAG))
+    else:
+        cit.echo("Django Debug Mode: Off.")
+
+
 if __name__ == '__main__':
     cit.echo('Django Tool: version {}'.format(__version__))
+    debug_mode_detect()
     cit.br()
     if DEBUG_FLAG and os.path.exists(DEBUG_FLAG):
         cit.warn("Django DEBUG is ON. (Flag exists: {})".format(DEBUG_FLAG))
