@@ -112,6 +112,7 @@ def get_name_map(files: list, keyword: str):
         cit.bye()
     if not PATTERN:
         cit.err('No pattern detected.')
+        return set_new_pattern()
     cit.info('Testing pattern: `{}`'.format(PATTERN))
     # generate namemap
     namemap = {}
@@ -132,8 +133,7 @@ def get_name_map(files: list, keyword: str):
             return namemap
     else:
         cit.warn('Pattern does not match any file!')
-    PATTERN = cit.get_input("Please enter a new pattern: `[0-9] [a-Z] . * + ()`")
-    return get_name_map(files, keyword)
+        return set_new_pattern()
 
 
 def generate_cmds(filedir: str, namemap: dict):
