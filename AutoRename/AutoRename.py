@@ -9,7 +9,7 @@ import argparse
 import consoleiotools as cit
 
 
-__version__ = '1.2.1'
+__version__ = '1.2.5'
 __prog__ = "AutoRename"
 __description__ = "Auto rename files in a folder"
 __epilog__ = "TL;DR: Run program with no args, or drag & drop a folder on it."
