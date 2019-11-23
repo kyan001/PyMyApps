@@ -114,12 +114,17 @@ def get_name_map(files: list, keyword: str):
         cit.err('No pattern detected.')
         return set_new_pattern()
     cit.info('Testing pattern: `{}`'.format(PATTERN))
+    try:
+        cmpld_pttrn = re.compile(PATTERN)
+    except re.error as e:
+        cit.warn('Pattern Error: {}'.format(e))
+        return set_new_pattern()
     # generate namemap
     namemap = {}
     for filename in files:
         froot, fext = os.path.splitext(filename)
-        mtch = re.compile(PATTERN).findall(froot)
-        if not mtch:
+        mtchs = cmpld_pttrn.findall(froot)
+        if not mtchs:
             cit.warn('Ignored: {}'.format(filename))
         else:
             cit.info('Matched: "{n}" : "{m}"'.format(n=filename, m=mtch[0]))
