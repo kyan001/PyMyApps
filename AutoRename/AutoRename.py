@@ -127,8 +127,9 @@ def get_name_map(files: list, keyword: str):
         if not mtchs:
             cit.warn('Ignored: {}'.format(filename))
         else:
-            cit.info('Matched: "{n}" : "{m}"'.format(n=filename, m=mtch[0]))
-            to_name = "{kw}{div}{num}{ext}".format(kw=keyword, div=DIVIDER, num=mtch[0], ext=fext)
+            mtch = "".join(mtchs[0]) if isinstance(mtchs[0], tuple) else mtchs[0]
+            cit.info('Matched: "{n}" : "{m}"'.format(n=filename, m=mtch))
+            to_name = "{kw}{div}{num}{ext}".format(kw=keyword, div=DIVIDER, num=mtch, ext=fext)
             namemap[filename] = to_name
     # check if namemap and pattern is ok
     if namemap:
