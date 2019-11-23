@@ -103,9 +103,10 @@ def get_name_map(files: list, keyword: str):
     global PATTERN
     global DIVIDER
     if not files:
-        cit.err('No file list').bye()
+        cit.err('No file list')
+        cit.bye()
     if not PATTERN:
-        cit.err('No pattern detected.').bye()
+        cit.err('No pattern detected.')
     cit.info('Testing pattern: `{}`'.format(PATTERN))
     # generate namemap
     namemap = {}
