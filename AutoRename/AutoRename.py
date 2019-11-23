@@ -99,6 +99,11 @@ def get_name_map(files: list, keyword: str):
         PATTERN: pattern to test
         DIVIDER: divider between keyword and pattern matches
     """
+    def set_new_pattern(pattern=None):
+        global PATTERN
+        PATTERN = pattern or cit.get_input("Please enter a new pattern: `[0-9][a-Z].+*()`")
+        return get_name_map(files, keyword)
+
     # validations
     global PATTERN
     global DIVIDER
