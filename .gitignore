@@ -56,3 +56,6 @@ PyEncryptor/trace.xml
 
 # macOS
 .DS_store
+
+# virtualenv
+*/VENV/*
