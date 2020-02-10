@@ -12,7 +12,7 @@ def diff(from_path: str, to_path: str):
         from_lines = f.readlines()
     with open(to_path, encoding='utf-8') as f:
         to_lines = f.readlines()
-    return list(difflib.unified_diff(from_lines, to_lines))
+    return list(difflib.unified_diff(from_lines, to_lines, n=0))
 
 
 def final_strategy_replace(filename="shdwrckt_gfwlst.conf"):
@@ -21,7 +21,12 @@ def final_strategy_replace(filename="shdwrckt_gfwlst.conf"):
         tmp_filepath = os.path.join(tmp_filedir, filename)
         filepath = os.path.join(filedirpath, filename)
         with open(filepath, "rt", encoding='utf-8') as old_file, open(tmp_filepath, "wt", encoding='utf-8') as tmp_file:
-            tmp_file.write(old_file.read().replace("FINAL,PROXY", "FINAL,DIRECT"))
+            file_content = old_file.read()
+            cit.info("Replacing `FINAL`")
+            file_content = file_content.replace("FINAL,PROXY", "FINAL,DIRECT")
+            cit.info("Replacing `dns-server`")
+            file_content = file_content.replace("dns-server = 119.29.29.29,223.5.5.5","dns-server = 114.114.114.114,8.8.8.8")
+            tmp_file.write(file_content)
         diffs = diff(filepath, tmp_filepath)
         if diffs:
             cit.warn("Diffs found:\n" + "".join(diffs))
