@@ -9,13 +9,13 @@ import argparse
 import consoleiotools as cit
 
 
-__version__ = '1.2.5'
+__version__ = '1.2.6'
 __prog__ = "AutoRename"
 __description__ = "Auto rename files in a folder"
 __epilog__ = "TL;DR: Run program with no args, or drag & drop a folder on it."
 
 # Global Variables
-PATTERN = r'S[0-9][0-9]E[0-9][0-9]'
+PATTERN = r'[sS][0-9][0-9][eE][0-9][0-9]'
 DIVIDER = '-'
 
 
@@ -128,7 +128,7 @@ def get_name_map(files: list, keyword: str):
             cit.warn('Ignored: {}'.format(filename))
         else:
             mtch = "".join(mtchs[0]) if isinstance(mtchs[0], tuple) else mtchs[0]
-            cit.info('Matched: "{n}" : "{m}"'.format(n=filename, m=mtch))
+            cit.echo('"{m}" : "{fn}"'.format(fn=filename, m=mtch), pre="Matched")
             to_name = "{kw}{div}{num}{ext}".format(kw=keyword, div=DIVIDER, num=mtch, ext=fext)
             namemap[filename] = to_name
     # check if namemap and pattern is ok
