@@ -9,7 +9,7 @@ import argparse
 import consoleiotools as cit
 
 
-__version__ = '1.2.6'
+__version__ = '1.3.0'
 __prog__ = "AutoRename"
 __description__ = "Auto rename files in a folder"
 __epilog__ = "TL;DR: Run program with no args, or drag & drop a folder on it."
@@ -104,6 +104,14 @@ def get_name_map(files: list, keyword: str):
         PATTERN = pattern or cit.get_input("Please enter a new pattern: `[0-9][a-Z].+*()`")
         return get_name_map(files, keyword)
 
+    def duplicate_check(lst):
+        pre = None
+        for l in sorted(lst):
+            if pre and pre == l:
+                cit.err(f'Duplicated Name: {pre}')
+            pre = l
+        return True
+
     # validations
     global PATTERN
     global DIVIDER
@@ -133,6 +141,7 @@ def get_name_map(files: list, keyword: str):
             namemap[filename] = to_name
     # check if namemap and pattern is ok
     if namemap:
+        duplicate_check(namemap.values())
         cit.ask("Set number's pattern to '{}'?".format(PATTERN))
         if cit.get_choice(['Yes', 'No']) == 'Yes':
             cit.info('Pattern: "{}"'.format(PATTERN))
