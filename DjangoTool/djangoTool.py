@@ -14,7 +14,7 @@ import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.16.5'
+__version__ = '1.17.1'
 
 
 def load_config(config_file):
@@ -32,6 +32,7 @@ DATADUMP_FILE = CONF_DD.get('file') or 'datadump.json'
 DATADUMP_DIR = CONF_DD.get('dir') or ""
 DATADUMP_SERVER = CONF_DD.get('server') or ""
 DATADUMP_USER = CONF_DD.get('user') or getpass.getuser()
+VIRTUALENV_DIR = CONF_DD.get('virtualenv') or ""
 TESTS_DIR = CONF.get('testsdir') or 'main.tests'
 PIP_REQUIREMENTS = CONF.get('piprequirements') or 'requirements.txt'
 DEV_URL = CONF.get('devurl') or 'http://127.0.0.1:8000/'
@@ -277,14 +278,20 @@ def system_check():
 @cit.as_session
 def make_messages():
     """Django i18n Make .po Messaages File"""
-    run_by_py3('manage.py makemessages')
+    cmd = 'manage.py makemessages'
+    if VIRTUALENV_DIR:
+        cmd += " --ignore='{}/*'".format(os.path.normpath(VIRTUALENV_DIR))
+    run_by_py3(cmd)
 
 
 @register('i18n: Compile Messages (.mo)')
 @cit.as_session
 def compile_messages():
     """Django i18n Compile .po files into .mo files"""
-    run_by_py3('manage.py compilemessages')
+    cmd = 'manage.py compilemessages'
+    if VIRTUALENV_DIR:
+        cmd += " --ignore='{}/*'".format(os.path.normpath(VIRTUALENV_DIR))
+    run_by_py3(cmd)
 
 
 def debug_mode_status():
