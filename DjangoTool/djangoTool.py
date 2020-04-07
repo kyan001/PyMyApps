@@ -32,7 +32,7 @@ DATADUMP_FILE = CONF_DD.get('file') or 'datadump.json'
 DATADUMP_DIR = CONF_DD.get('dir') or ""
 DATADUMP_SERVER = CONF_DD.get('server') or ""
 DATADUMP_USER = CONF_DD.get('user') or getpass.getuser()
-VIRTUALENV_DIR = CONF_DD.get('virtualenv') or ""
+VIRTUALENV_DIR = os.path.normpath(CONF_DD['virtualenv']) if CONF_DD.get('virtualenv') else ""
 TESTS_DIR = CONF.get('testsdir') or 'main.tests'
 PIP_REQUIREMENTS = CONF.get('piprequirements') or 'requirements.txt'
 DEV_URL = CONF.get('devurl') or 'http://127.0.0.1:8000/'
@@ -280,7 +280,7 @@ def make_messages():
     """Django i18n Make .po Messaages File"""
     cmd = 'manage.py makemessages'
     if VIRTUALENV_DIR:
-        cmd += " --ignore='{}/*'".format(os.path.normpath(VIRTUALENV_DIR))
+        cmd += " --ignore='{}/*'".format(VIRTUALENV_DIR)
     run_by_py3(cmd)
 
 
@@ -290,7 +290,7 @@ def compile_messages():
     """Django i18n Compile .po files into .mo files"""
     cmd = 'manage.py compilemessages'
     if VIRTUALENV_DIR:
-        cmd += " --ignore='{}/*'".format(os.path.normpath(VIRTUALENV_DIR))
+        cmd += " --ignore='{}/*'".format(VIRTUALENV_DIR)
     run_by_py3(cmd)
 
 
