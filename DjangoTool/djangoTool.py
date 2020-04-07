@@ -14,7 +14,7 @@ import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.17.1'
+__version__ = '1.18.2'
 
 
 def load_config(config_file):
@@ -304,7 +304,22 @@ def debug_mode_status():
         cit.echo("Django Debug Mode: Off.")
 
 
-@register('Debug: Debug Mode Switch')
+def virtualenv_status():
+    """Print Virtualenv info."""
+    if not VIRTUALENV_DIR:
+        return None
+    if not os.path.isdir(VIRTUALENV_DIR):
+        cit.err("Virtualenv: Config Error. (Folder Not Exist: {}/)".format(VIRTUALENV_DIR))
+        return None
+    if "VIRTUAL_ENV" in os.environ:
+        cit.info("Virtualenv: On.")
+        return True
+    else:
+        cit.warn("Virtualenv: Off. (Folder Exist: {}/)".format(VIRTUALENV_DIR))
+        return False
+
+
+@register('Debug: Debug Mode On/Off')
 @cit.as_session
 def debug_mode_switch():
     """Switch Django debug mode by deleting/creating debug flag file."""
@@ -318,6 +333,7 @@ def debug_mode_switch():
 if __name__ == '__main__':
     cit.echo('Django Tool: version {}'.format(__version__))
     debug_mode_status()
+    virtualenv_status()
     cit.br()
     if not manage_file_exist():
         cit.err('No manage.py detected. Please run this under projects folder')
