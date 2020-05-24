@@ -15,7 +15,7 @@ class Updater:
 
     @classmethod
     def is_available(cls):
-        return ktk.isCmdExist(cls.base_cmd)
+        return cls.base_cmd and ktk.isCmdExist(cls.base_cmd)
 
     @classmethod
     def self_update(cls):
@@ -30,7 +30,7 @@ class Updater:
         pass
 
     @classmethod
-    def ls_outdated(cls):
+    def list_outdated(cls):
         pass
 
 
@@ -38,7 +38,7 @@ class BrewUpdater(Updater):
     base_cmd = 'brew'
 
     @classmethod
-    def ls_outdated(cls):
+    def list_outdated(cls):
         result = cls._read_cmd('outdated')
         cit.info("\n".join(result.split()))
         return True if result else False
@@ -66,7 +66,7 @@ class BrewcaskUpdater(Updater):
     base_cmd = 'brew cask'
 
     @classmethod
-    def ls_outdated(cls):
+    def list_outdated(cls):
         cls._exe('outdated')
 
     @classmethod
@@ -88,7 +88,7 @@ class PipUpdater(Updater):
     base_cmd = 'pip3'
 
     @classmethod
-    def ls_outdated(cls):
+    def list_outdated(cls):
         cls._exe('list --outdated')
 
     @classmethod
@@ -107,6 +107,19 @@ class PipUpdater(Updater):
         cls._exe(f'install --upgrade {pkg}')
 
 
-class NpmUpdater(Updater):
+class NvmUpdater(Updater):
+    base_cmd = 'nvm'
+
+    @classmethod
+    def list_outdated(cls):
+        cls._exe('ls')
+
+    # TODO
+    pass
+
+
+class ChocoUpdater(Updater):
+    base_cmd = 'choco'
+
     # TODO
     pass
