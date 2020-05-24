@@ -44,10 +44,6 @@ class BrewUpdater(Updater):
         return True if result else False
 
     @classmethod
-    def is_available(cls):
-        return super().is_available()
-
-    @classmethod
     def self_update(cls):
         cls._exe('update')
 
