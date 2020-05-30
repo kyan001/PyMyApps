@@ -22,10 +22,10 @@ def final_strategy_replace(filename="shdwrckt_gfwlst.conf"):
         filepath = os.path.join(filedirpath, filename)
         with open(filepath, "rt", encoding='utf-8') as old_file, open(tmp_filepath, "wt", encoding='utf-8') as tmp_file:
             file_content = old_file.read()
-            cit.info("Replacing `FINAL`")
+            cit.info("Replacing `FINAL` to `FINAL,DIRECT`")
             file_content = file_content.replace("FINAL,PROXY", "FINAL,DIRECT")
-            cit.info("Replacing `dns-server`")
-            file_content = file_content.replace("dns-server = 119.29.29.29,223.5.5.5","dns-server = 114.114.114.114,8.8.8.8")
+            cit.info("Replacing `dns-server` to `223.5.5.5,8.8.8.8`")
+            file_content = file_content.replace("dns-server = 119.29.29.29,223.5.5.5","dns-server = 223.5.5.5,8.8.8.8")
             tmp_file.write(file_content)
         diffs = diff(filepath, tmp_filepath)
         if diffs:
