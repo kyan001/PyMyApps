@@ -207,7 +207,7 @@ class InteractiveShell(cmd.Cmd):
             tkapp = tkinter.Tk()
             new_cookies = tkinter.filedialog.askopenfilename()
             tkapp.destroy()
-        CONF.try_set('cookies', example='/home/user/cookies.txt', value=new_cookies)
+        CONF.try_set('cookies', example='/home/user/cookies.sqlite', value=new_cookies)
         if not os.path.isfile(CONF.cookies):
             cit.err('cookies file does not exist!')
             CONF.cookies = None
