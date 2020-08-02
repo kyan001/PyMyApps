@@ -67,7 +67,7 @@ class BrewcaskUpdater(Updater):
 
     @classmethod
     def self_update(cls):
-        ktk.runCmd("brew upgrade brew-cask")
+        pass
 
     @classmethod
     def upgrade_all(cls):

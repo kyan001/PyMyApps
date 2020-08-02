@@ -48,3 +48,6 @@ if __name__ == '__main__':
         self_update()
     else:
         cit.info("Skiped")
+    update_list = []
+    cit.ask("Please select Package Manager:")
+    choice = cit.get_choice(UPDATERS + ['ALL'])
