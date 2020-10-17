@@ -14,7 +14,7 @@ import consoleiotools as cit
 from KyanToolKit import KyanToolKit as ktk
 
 
-__version__ = '1.18.2'
+__version__ = '1.19.1'
 
 
 def load_config(config_file):
@@ -37,7 +37,7 @@ TESTS_DIR = CONF.get('testsdir') or 'main.tests'
 PIP_REQUIREMENTS = CONF.get('piprequirements') or 'requirements.txt'
 DEV_URL = CONF.get('devurl') or 'http://127.0.0.1:8000/'
 DEBUG_FLAG = CONF.get('debugflag') or 'DEBUGMODE'
-COMMANDS = {'-- Exit --': cit.bye}  # Dict of menu commands.
+COMMANDS = {}  # Dict of menu commands.
 
 
 def manage_file_exist():
@@ -101,7 +101,7 @@ def show_menu():
         selection = arg if arg in COMMANDS else menu[int(arg) - 1]
     else:
         cit.echo('Select one of these:')
-        selection = cit.get_choice(menu)
+        selection = cit.get_choice(menu, exitable=True)
     return COMMANDS.get(selection)
 
 
@@ -330,6 +330,11 @@ def debug_mode_switch():
     debug_mode_status()
 
 
+def bye():
+    cit.info('Thanks for using. Bye bye!')
+    cit.bye(0)
+
+
 if __name__ == '__main__':
     cit.echo('Django Tool: version {}'.format(__version__))
     debug_mode_status()
@@ -341,7 +346,9 @@ if __name__ == '__main__':
     try:
         while True:
             to_run = show_menu()
-            to_run()
+            if to_run:
+                to_run()
+            else:
+                bye()
     except KeyboardInterrupt:
-        cit.info('Thanks for using. Bye bye!')
-        cit.bye(0)
+        bye()
