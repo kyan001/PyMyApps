@@ -35,9 +35,17 @@ class Updater:
     def list_outdated(cls):
         pass
 
+    @classmethod
+    def list_all(cls):
+        pass
+
 
 class BrewUpdater(Updater):
     base_cmd = 'brew'
+
+    @classmethod
+    def list_all(cls):
+        cls._exe('list')
 
     @classmethod
     def list_outdated(cls):
@@ -64,6 +72,10 @@ class BrewcaskUpdater(Updater):
     base_cmd = 'brew cask'
 
     @classmethod
+    def list_all(cls):
+        cls._exe('list')
+
+    @classmethod
     def list_outdated(cls):
         cls._exe('outdated')
 
@@ -84,6 +96,10 @@ class BrewcaskUpdater(Updater):
 
 class PipUpdater(Updater):
     base_cmd = 'pip3'
+
+    @classmethod
+    def list_all(cls):
+        cls._exe('list')
 
     @classmethod
     def list_outdated(cls):
@@ -115,6 +131,10 @@ class NvmUpdater(Updater):
         return cls.base_cmd and os.path.exists(cls.nvm_shell)
 
     @classmethod
+    def list_all(cls):
+        cls._exe('ls')
+
+    @classmethod
     def list_outdated(cls):
         cls._exe("ls-remote | grep -A 100 -B 2 '\->'")
 
@@ -144,20 +164,23 @@ class ChocoUpdater(Updater):
     base_cmd = 'choco'
 
     @classmethod
+    def list_all(cls):
+        cls._exe('list --local')
+
+    @classmethod
     def list_outdated(cls):
-        cls._exe('list --outdated')
+        cls._exe('outdated')
 
     @classmethod
     def self_update(cls):
-        cls._exe('install --upgrade pip')
+        cls._exe('upgrade chocolatey')
 
     @classmethod
     def upgrade_all(cls):
-        # TODO
-        cit.warn("pip upgrade_all() is TODO")
+        cit.warn("upgrade all")
 
     @classmethod
     def upgrade(cls, pkg):
         if not pkg:
             raise Exception("package name cannot be empty.")
-        cls._exe(f'install --upgrade {pkg}')
+        cls._exe(f'upgrade {pkg}')

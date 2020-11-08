@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import os
 
 import KyanToolKit as ktk
@@ -59,7 +60,9 @@ def select_updaters(avail_updaters: list):
     while True:
         cit.info(f"Selected Updaters: {selected_updaters}")
         cit.ask("Please Select Updaters:")
-        selection = cit.get_choice(menu)
+        selection = cit.get_choice(menu, exitable=True)
+        if selection is None:
+            cit.bye()
         if selection == SENTINEL_DONE:
             return selected_updaters
         if selection == SENTINEL_ALL:
