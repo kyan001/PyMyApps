@@ -12,7 +12,7 @@ import consoleiotools as cit
 import consolecmdtools as cct
 
 
-__version__ = '1.20.1'
+__version__ = '1.21.1'
 
 
 def load_config(config_file):
@@ -107,7 +107,7 @@ def show_menu():
 @cit.as_session
 def update_djangotool():
     """Check and update djangoTool.py from github"""
-    url = "https://raw.githubusercontent.com/kyan001/PyMyApps/master/DjangoTool/djangoTool.py"
+    url = "https://github.com/kyan001/PyMyApps/raw/master/DjangoTool/djangoTool.py"
     if cct.update_file(__file__, url):
         run_by_py3(__file__)
         cit.bye(0)

@@ -10,7 +10,7 @@ import sys
 import consoleiotools as cit
 import consolecmdtools as cct
 
-__version__ = '1.7.1'
+__version__ = '1.7.2'
 
 
 def main():
@@ -34,7 +34,7 @@ def main():
 @cit.as_session
 def update_uwsgitool():
     """Check and update djangoTool.py from github"""
-    url = 'https://raw.githubusercontent.com/kyan001/PyMyApps/master/UwsgiTool/uwsgiTool.py'
+    url = 'https://github.com/kyan001/PyMyApps/raw/master/UwsgiTool/uwsgiTool.py'
     if cct.update_file(__file__, url):
         cct.run_cmd('{py} "{f}"'.format(py=cct.get_py_cmd(), f=__file__))
         cit.bye(0)
