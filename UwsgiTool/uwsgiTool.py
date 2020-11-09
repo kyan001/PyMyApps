@@ -8,15 +8,13 @@ import os
 import sys
 
 import consoleiotools as cit
-import KyanToolKit
-ktk = KyanToolKit.KyanToolKit()
+import consolecmdtools as cct
 
-__version__ = '1.6.6'
+__version__ = '1.7.1'
 
 
 def main():
     # precheck
-    # ktk.needPlatform("linux")
     cit.info('Uwsgi Tool: version {}'.format(__version__))
     cit.br()
     # defines
@@ -37,8 +35,8 @@ def main():
 def update_uwsgitool():
     """Check and update djangoTool.py from github"""
     url = 'https://raw.githubusercontent.com/kyan001/PyMyApps/master/UwsgiTool/uwsgiTool.py'
-    if ktk.updateFile(__file__, url):
-        ktk.runCmd('{py} "{f}"'.format(py=ktk.getPyCmd(), f=__file__))
+    if cct.update_file(__file__, url):
+        cct.run_cmd('{py} "{f}"'.format(py=cct.get_py_cmd(), f=__file__))
         cit.bye(0)
 
 
@@ -105,7 +103,7 @@ def get_operation():
     """start a new uwsgi, stop a running uwsgi, or reload the config and codes"""
     operations = ["*** update uwsgiTool ***", "start", "stop", "reload"]
     if len(sys.argv) != 2:
-        return cit.get_choice(operations)
+        return cit.get_choice(operations, exitable=True)
     elif sys.argv[1] in operations:
         selected = sys.argv[1]
         cit.info("Selected: {}".format(selected))
@@ -125,12 +123,12 @@ def run_operation(oprtn, config_file, pid_file, log_file, venv_folder):
         cmd = "sudo uwsgi -x '{c}' --pidfile '{p}' --daemonize '{d}'".format(c=config_file, p=pid_file, d=log_file)
         if venv_folder:
             cmd += " --virtualenv '{}'".format(venv_folder)
-        ktk.runCmd(cmd)
+        cct.run_cmd(cmd)
     elif "stop" == oprtn:
-        ktk.runCmd("sudo uwsgi --stop " + pid_file)
-        ktk.runCmd("sudo rm " + pid_file)
+        cct.run_cmd("sudo uwsgi --stop " + pid_file)
+        cct.run_cmd("sudo rm " + pid_file)
     elif "reload" == oprtn:
-        ktk.runCmd("sudo uwsgi --reload " + pid_file)
+        cct.run_cmd("sudo uwsgi --reload " + pid_file)
     elif "*** update uwsgiTool ***" == oprtn:
         update_uwsgitool()
     else:

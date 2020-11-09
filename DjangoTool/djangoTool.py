@@ -5,16 +5,14 @@ import sys
 import socket
 import webbrowser
 import getpass
-import urllib.request
-import hashlib
 import functools
 import configparser
 
 import consoleiotools as cit
-from KyanToolKit import KyanToolKit as ktk
+import consolecmdtools as cct
 
 
-__version__ = '1.19.1'
+__version__ = '1.20.1'
 
 
 def load_config(config_file):
@@ -82,7 +80,7 @@ def register(desc_or_func):
 
 
 def run_by_py3(cmd):
-    ktk.runCmd("{py3} {cmd}".format(py3=ktk.getPyCmd(), cmd=cmd))
+    return cct.run_cmd("{py3} {cmd}".format(py3=cct.get_py_cmd(), cmd=cmd))
 
 
 def show_menu():
@@ -110,7 +108,7 @@ def show_menu():
 def update_djangotool():
     """Check and update djangoTool.py from github"""
     url = "https://raw.githubusercontent.com/kyan001/PyMyApps/master/DjangoTool/djangoTool.py"
-    if ktk.updateFile(__file__, url):
+    if cct.update_file(__file__, url):
         run_by_py3(__file__)
         cit.bye(0)
 
@@ -127,9 +125,9 @@ def requirements_install():
         cit.err('No {} detected.'.format(PIP_REQUIREMENTS))
         cit.bye()
     if 'win' in sys.platform:
-        ktk.runCmd('pip3 install -r {}'.format(PIP_REQUIREMENTS))
+        cct.run_cmd('pip3 install -r {}'.format(PIP_REQUIREMENTS))
     else:
-        ktk.runCmd('sudo pip3 install -r {}'.format(PIP_REQUIREMENTS))
+        cct.run_cmd('sudo pip3 install -r {}'.format(PIP_REQUIREMENTS))
 
 
 @register('Runserver (localhost:8000)')
@@ -204,7 +202,7 @@ def retrieve_data():
     }
     if server_info['dir'][-1] == '/':
         server_info['dir'] = server_info['dir'][:-1]
-    ktk.runCmd('scp {username}@{addr}:{dir}/{dd} .'.format(**server_info, dd=DATADUMP_FILE))
+    cct.run_cmd('scp {username}@{addr}:{dir}/{dd} .'.format(**server_info, dd=DATADUMP_FILE))
 
 
 @register('Git: Assume Unchanged')
@@ -212,9 +210,9 @@ def retrieve_data():
 def assume_unchanged():
     """Show and add a file to 'No-tracking' in Git"""
     cit.info('Current assume unchanged files:')
-    ktk.runCmd('git ls-files -v | grep -e "^[hsmrck]"')
+    cct.run_cmd('git ls-files -v | grep -e "^[hsmrck]"')
     filename = cit.get_input("Enter a TRACKED file's filename: (Ctrl + C to stop)")
-    ktk.runCmd('git update-index --assume-unchanged {}'.format(filename))
+    cct.run_cmd('git update-index --assume-unchanged {}'.format(filename))
 
 
 @register
