@@ -14,18 +14,19 @@ def get_id_str() -> str:
         if len(id_str) == 18:
             return id_str
         else:
-            cit.err("ID Number must be 18 digits!")
+            cit.err("ID number must be 18 digits!")
 
 
-def get_id_intlist(id_str: str) -> list:
-    id_strlist = list(id_str)
-    if id_strlist[-1].lower() == 'x':
-        id_strlist[-1] = '10'
-    return list(map(int, id_strlist))
+def get_id_ints(id_str: str) -> list:
+    id_strs = list(id_str)
+    if id_strs[-1].lower() == 'x':
+        id_strs[-1] = '10'
+    return list(map(int, id_strs))
 
 
-def get_products_sum(id_intlist: list) -> bool:
-    products = list(map(lambda x, y: x * y, id_intlist, WEIGHT))
+def get_products_sum(id_ints: list) -> bool:
+    # products = list(map(lambda x, y: x * y, id_ints, WEIGHT))
+    products = [x * w for x, w in zip(id_ints, WEIGHT)]
     return sum(products)
 
 
@@ -36,9 +37,9 @@ def get_mod_11(products_sum: int) -> int:
 def main():
     id_str = get_id_str()
     cit.info(f"ID: {id_str}")
-    id_intlist = get_id_intlist(id_str)
-    cit.info(f"ID: {id_intlist}")
-    products_sum = get_products_sum(id_intlist)
+    id_ints = get_id_ints(id_str)
+    cit.info(f"ID: {id_ints}")
+    products_sum = get_products_sum(id_ints)
     cit.info(f"WEIGHT: {WEIGHT}")
     cit.info(f"ID Digits Products Sum: {products_sum}")
     mod = get_mod_11(products_sum)
