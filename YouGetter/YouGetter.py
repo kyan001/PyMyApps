@@ -2,74 +2,51 @@ import configparser
 import os
 import cmd
 import sys
+
 import consoleiotools as cit
 
-
-class CONF(object):
-    TARGET_FOLDER = "Desktop" if "win32" in sys.platform else "Downloads"
-    DESKTOP_PATH = os.path.join(os.path.expanduser('~'), TARGET_FOLDER)
-    CONFIGFILE = 'yougetter.ini'
-    GFWSITES = ['youtube', 'tumblr', 'twitter']
-    proxy = None
-    folder = DESKTOP_PATH
-    name = None
-    url = None
-    itag = None
-    use_proxy = False
-    debug = False
-    cookies = None
-
-    @classmethod
-    def attr(cls, key, value=None):
-        if value is None:
-            return getattr(cls, key)
-        else:
-            return setattr(cls, key, value)
-
-    @classmethod
-    def try_set(cls, key, example="", value=None):
-        old_value = cls.attr(key)
-        cit.info('Current {k} is: "{v}"'.format(k=key, v=old_value))
-        if not value:
-            cit.ask('Enter a {k}: (Leave blank if no-change, "yes/no" for True/False)'.format(k=key))
-            if example:
-                cit.ask('Example: {}'.format(example))
-            new_value = cit.get_input()
-        else:
-            new_value = value
-        if new_value:
-            new_value = True if new_value == 'yes' else new_value
-            new_value = False if new_value == 'no' else new_value
-            cls.attr(key, new_value)
-        if new_value == old_value:
-            cit.info('{k} is not changed'.format(k=key))
-        else:
-            cit.info('New {k} is: "{v}"'.format(k=key, v=cls.attr(key)))
+TARGET_FOLDER = "Desktop" if sys.platform.startswith('win') else "Downloads"
+DEFAULT_PATH = os.path.join(os.path.expanduser('~'), TARGET_FOLDER)
+CONFIG_FILE = 'yougetter.ini'
+GFW_SITES = ('youtube.com', 'tumblr.com', 'twitter.com')
 
 
 class InteractiveShell(cmd.Cmd):
-    HELP_MSG = """\
-[ Commands List ] __________________________
+    HELP_MSG = """[ Commands List ] __________________________
     ? / help : Show all commands
     ---------:---------------------------
-      config : Show current config info
-        info : Show the url info and all the qualities
+     configs : Show current configs.
+        info : Show the url info and all the qualities.
     ---------:---------------------------
-         url : Set URL which needs to be downloaded
-       proxy : Set proxy for oversea sites
-      folder : Set where to save the downloaded files
-        name : Set the filename of the savedfiles
-        itag : Set itag to download with a different quality
+         url : Set URL which needs to be downloaded.
+       proxy : Set proxy for oversea sites.
+      folder : Set where to save the downloaded files.
+    filename : Set filename for the saved file.
+        itag : Set itag to download with a different quality.
+      format : Set format download with a different format.
      cookies : Set cookies for download.
-       debug : Set if this run in debug mode
+       debug : Set if this run in debug mode.
+    insecure : Set to ignore ssl errors.
     ---------:---------------------------
-         get : Get the recommanded video to target folder
-      youget : Direct using you-get <arg>
-        exit : Exit
+         run : Run you-get command and start downloading.
+      dryrun : See the command.
+        exit : Exit.
     """
 
     def __init__(self):
         super().__init__()
+        self.config = {
+            "proxy": None,
+            "use_proxy": False,
+            "folder": DEFAULT_PATH,
+            "filename": None,
+            "url": None,
+            "itag": None,
+            "debug": False,
+            "cookies": None,
+            "insecure": False,
+        }
+        self.load_config()
         self.prompt = self.HELP_MSG + 'YouGetter> '
         self.onecmd('url')
 
@@ -83,164 +60,182 @@ class InteractiveShell(cmd.Cmd):
         cit.br()
         return stop
 
-    def do_youget(self, arg=None):
-        """Direct using you-get <arg>"""
-        os.system('you-get {}'.format(arg))
+    def make_command(self):
+        command = 'you-get'
+        command += f' --output-dir \"{self.config.get("folder")}\"' if self.config.get('folder') else ""  # -o
+        command += f' --output-filename \"{self.config.get("filename")}\"' if self.config.get('filename') else ""  # -O
+        command += f' --http-proxy \"{self.config.get("proxy")}\"' if self.config.get('use_proxy') and self.config.get('proxy') else ""  # -x
+        command += f' --itag={self.config.get("itag")}' if self.config.get('itag') else ""
+        command += f' --format={self.config.get("format")}' if self.config.get('format') else ""
+        command += f' --cookies \"{self.config.get("cookies")}\"' if self.config.get('cookies') else ""
+        command += ' --debug' if self.config.get('debug') else ""
+        command += ' --insecure' if self.config.get('insecure') else ""
+        command += f' \"{self.config.get("url")}\"'
+        return command
 
-    def do_config(self, arg=None):
+    def get_path_input(self, mode="file", default=None):
+        cit.ask('Select one of the following:')
+        selections = {
+            'cancel': 'Cancel',
+            'select': 'Select my own',
+            'enter': 'Enter a new one',
+        }
+        if default:
+            selections['default'] = f'Set to {default}'
+        new_path = ""
+        selection = cit.get_choice(list(sorted(selections.values())))
+        if selection == selections.get('enter'):
+            cit.ask('Enter a path: (Leave blank if no-change)')
+            new_path = cit.get_input()
+        elif selection == selections.get('cancel'):
+            return None
+        elif selections.get('default') and selection == selections.get('default'):
+            new_path = default
+        elif selection == selections.get('select'):
+            import tkinter
+            import tkinter.filedialog
+            tkapp = tkinter.Tk()
+            initial_dir = default or DEFAULT_PATH
+            if mode == 'folder':
+                new_path = tkinter.filedialog.askdirectory(initialdir=initial_dir)
+            elif mode == 'file':
+                new_path = tkinter.filedialog.askopenfilename(initialdir=initial_dir)
+            tkapp.destroy()
+        else:
+            raise Exception(f"Selection {selection} is not valid.")
+        if mode == 'folder' and not os.path.isdir(new_path):
+            cit.warn('Folder does not exist.')
+            cit.ask(f'Create `{new_path}`?')
+            if cit.get_choice(['Yes', 'No']) == 'Yes':
+                os.makedirs(new_path)
+                cit.info(f"Folder create: {new_path}")
+            else:
+                cit.warn("Folder is NOT created.")
+        if mode == 'file' and not os.path.isfile(new_path):
+            cit.warn('File does not exist.')
+        return new_path
+
+    @cit.as_session
+    def load_config(self):
+        """Loading config from config file into config"""
+        if not CONFIG_FILE:
+            return None
+        cit.info(f'Config file is {CONFIG_FILE}')
+        if not os.path.isfile(CONFIG_FILE):
+            cit.err("Config file does not exist.")
+            return None
+        config = configparser.ConfigParser()
+        config.read(CONFIG_FILE)
+        if config.has_section('proxy'):
+            sect = config['proxy']
+            proxy_ip = sect.get('ip')
+            proxy_port = sect.get('port')
+            self.config['proxy'] = f"{proxy_ip}: {proxy_port}"
+
+    def set_config(self, key, val=None, example="", mode=None):
+        old_val = self.config.get(key)
+        cit.info(f'Current {key} is: `{old_val}`')
+        if not val:  # no val provided, ask for input.
+            if mode in ('file', 'folder'):
+                new_val = self.get_path_input(mode)
+            elif mode == 'bool' or isinstance(old_val, bool):
+                cit.ask(f'Switch {key} to:')
+                new_val = cit.get_choice(["On", "Off"]) == "On"
+            else:
+                cit.ask(f'Enter a {key}: (Leave blank if no-change)')
+                if example:
+                    cit.info(f'Ex. {example}')
+                new_val = cit.get_input()
+        else:  # provided value.
+            new_val = val
+        if new_val or (new_val is False):  # None and "" will not change.
+            self.config[key] = new_val
+        if new_val == old_val:
+            cit.info(f'`{key}` is NOT changed')
+        else:
+            cit.info(f'New `{key}` is: "{new_val}"')
+
+    def do_configs(self, arg=None):
         """Show current config info"""
-        attrs = ["proxy", "folder", "name", "url", "itag", "use_proxy", "debug"]
         cit.title('Current Configs')
-        for key in attrs:
-            cit.info('{k}\t: {v}'.format(k=key, v=CONF.attr(key)))
+        for key, val in self.config.items():
+            cit.info(f'{key}\t: {val}')
         cit.pause()
 
     def do_info(self, arg=None):
         """Show the url info and all the qualities"""
-        cmd = 'you-get --info'
-        cmd += ' --http-proxy "{}"'.format(CONF.proxy) if CONF.use_proxy and CONF.proxy else ""  # -x
-        cmd += ' --debug' if CONF.debug else ""
-        cmd += ' "{}"'.format(CONF.url)
-        os.system(cmd)
-
-    def do_get(self, arg=None):
-        """Get the recommanded video to target folder"""
-        if CONF.url:
-            cmd = 'you-get'
-            cmd += ' --output-dir "{}"'.format(CONF.folder) if CONF.folder else ""  # -o
-            cmd += ' --output-filename "{}"'.format(CONF.name) if CONF.name else ""  # -O
-            cmd += ' --http-proxy "{}"'.format(CONF.proxy) if CONF.use_proxy and CONF.proxy else ""  # -x
-            cmd += ' --itag={}'.format(CONF.itag) if CONF.itag else ""
-            cmd += ' --cookies {}'.format(CONF.cookies) if CONF.cookies else ""
-            cmd += ' --debug' if CONF.debug else ""
-            cmd += ' "{}"'.format(CONF.url)
-            cit.info('Final command:')
-            cit.echo(cmd)
-            cit.ask('Is this look good?')
-            answer = cit.get_choice(['Yes', 'No'])
-            if answer == 'Yes':
-                os.system(cmd)
-                self.do_exit()
-            else:
-                cit.warn('Canceled')
-            cit.pause()
-        else:
-            cit.err('You must specified a url first')
-            return self.onecmd('url')
+        command = self.make_command()
+        command += ' --info'
+        os.system(command)
 
     def do_url(self, arg=None):
         """Enter the URL which needs to be downloaded"""
-        CONF.try_set('url', example='https://www.youtube.com/watch?v=abcdefg', value=arg)
-        if not CONF.url:
+        self.set_config('url', val=arg, example='https://www.youtube.com/watch?v=abcdefg')
+        if not self.config.get('url'):
             cit.err('You must specified a URL')
             return self.onecmd('url')
-        for site in CONF.GFWSITES:
-            if site in CONF.url:
-                CONF.use_proxy = True
+        for site in GFW_SITES:
+            if site in self.config.get('url'):
+                self.set_config('use_proxy', True)
                 break
-            CONF.use_proxy = False
 
     def do_folder(self, arg=None):
         """Set where to save the downloaded files"""
-        if CONF.folder:
-            cit.info('Current folder is: {}'.format(CONF.folder))
-        cit.ask('What do you want to do with the folder:')
-        selections = {
-            'keep': 'Keep this',
-            'desktop': 'Save to my Desktop',
-            'independent': 'Independent folder on my Desktop',
-            'select': 'Select my own',
-            'enter': 'Enter a new one',
-        }
-        next_step = cit.get_choice(list(sorted(selections.values())))
-        if next_step == selections['enter']:
-            cit.ask('Enter a name: (Leave blank if no-change)')
-            cit.ask('example: TokyoHot')
-            new_folder = cit.get_input()
-        elif next_step == selections['keep']:
-            pass
-        elif next_step == selections['desktop']:
-            new_folder = CONF.DESKTOP_PATH
-        elif next_step == selections['independent']:
-            name = CONF.name if CONF.name else cit.get_input('Enter a folder name:')
-            new_folder = os.path.join(CONF.DESKTOP_PATH, name)
-        elif next_step == selections['select']:
-            import tkinter
-            import tkinter.filedialog
-            tkapp = tkinter.Tk()
-            new_folder = tkinter.filedialog.askdirectory(initialdir='CONF.DESKTOP_PATH')
-            tkapp.destroy()
-        if new_folder and CONF.folder != new_folder:
-            CONF.folder = new_folder
-            cit.info('Folder has set to "{}"'.format(CONF.folder))
-        else:
-            cit.info('Folder has not changed')
-        if not os.path.isdir(CONF.folder):
-            cit.warn('Folder does not exist, created')
-            os.makedirs(CONF.folder)
-
-    def do_debug(self, arg=None):
-        """Set if this run in debug mode"""
-        CONF.try_set('debug', example='yes/no', value=arg)
+        self.set_config('folder', val=arg, mode='folder')
 
     def do_itag(self, arg=None):
         """Set itag to download with a different quality"""
-        CONF.try_set('itag', example='127 (no or 0 for not use)', value=arg)
+        self.set_config('itag', val=arg, example='127 (0 for not use)')
+
+    def do_format(self, arg=None):
+        self.set_config('format', val=arg, example='dash-hdflv2')
 
     def do_cookies(self, arg=None):
-        if CONF.cookies:
-            cit.info('Current cookies is: {}'.format(CONF.cookies))
-        cit.ask('What do you want to do with the cookies:')
-        selections = {
-            'keep': 'Keep this',
-            'select': 'Select my own',
-            'enter': 'Enter a new one',
-        }
-        next_step = cit.get_choice(list(sorted(selections.values())))
-        if next_step == selections['enter']:
-            new_cookies = arg or None
-        elif next_step == selections['keep']:
-            new_cookies = CONF.cookies
-        elif next_step == selections['select']:
-            import tkinter
-            import tkinter.filedialog
-            tkapp = tkinter.Tk()
-            new_cookies = tkinter.filedialog.askopenfilename()
-            tkapp.destroy()
-        CONF.try_set('cookies', example='/home/user/cookies.sqlite', value=new_cookies)
-        if not os.path.isfile(CONF.cookies):
-            cit.err('cookies file does not exist!')
-            CONF.cookies = None
-
+        self.set_config('cookies', val=arg, example='/home/user/cookies.sqlite', mode='file')
 
     def do_proxy(self, arg=None):
         """Set proxy for oversea sites"""
-        CONF.try_set('proxy', example='127.0.0.1:1080', value=arg)
+        self.set_config('proxy', val=arg, example='127.0.0.1:1080')
 
-    def do_name(self, arg=None):
+    def do_filename(self, arg=None):
         """Set the filename of the savedfiles"""
-        CONF.try_set('name', example='hyouka_S01E01.mp4', value=arg)
+        self.set_config('filename', value=arg, example='hyouka_S01E01.mp4')
+
+    def do_debug(self, arg=None):
+        """Set if this run in debug mode"""
+        self.set_config('debug', val=arg, mode='bool')
+
+    def do_insecure(self, arg=None):
+        self.set_config('insecure', val=arg, mode='bool')
+
+    @cit.as_session
+    def do_run(self, arg=None, dry: bool = False):
+        """Get the recommanded video to target folder"""
+        if not self.config.get('url'):
+            cit.err('You must specified a URL')
+            return self.onecmd('url')
+        command = self.make_command()
+        cit.info(f'Final command: \n{command}')
+        if dry:
+            cit.warn("This is a dry run. Command is NOT executed.")
+            cit.pause()
+            return None
+        cit.ask('Does this look good?')
+        if cit.get_choice(['Yes', 'No']) == 'Yes':
+            os.system(command)
+            return self.do_exit()
+        else:
+            cit.warn('Canceled')
+        cit.pause()
+
+    def do_dryrun(self, arg=None):
+        return self.do_run(dry=True)
 
     def do_exit(self, arg=None):
         return True
 
 
-@cit.as_session('Loading configs')
-def load_config():
-    """Loading config from configfile into CONF"""
-    cit.info('Config file is {}'.format(CONF.CONFIGFILE))
-    config = configparser.ConfigParser()
-    if os.path.isfile(CONF.CONFIGFILE):
-        config.read(CONF.CONFIGFILE)
-        if config.has_section('proxy'):
-            sect = config['proxy']
-            proxy_ip = sect.get('ip')
-            proxy_port = sect.get('port')
-            CONF.proxy = "{}:{}".format(proxy_ip, proxy_port)
-
-
 def main():
-    load_config()
     ishell = InteractiveShell()
     ishell.cmdloop()
 
