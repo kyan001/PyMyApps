@@ -46,9 +46,9 @@ def main():
     cit.info(f"Mod 11 Result: {mod}")
     is_valid = mod == 1
     if is_valid:
-        cit.info(f"This ID is VALID!")
+        cit.info("This ID is VALID!")
     else:
-        cit.warn(f"This ID is NOT VALID!")
+        cit.warn("This ID is NOT VALID!")
 
 
 if __name__ == '__main__':
