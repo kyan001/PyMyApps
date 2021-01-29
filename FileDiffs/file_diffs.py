@@ -1,7 +1,6 @@
 import os
 import sys
 import pathlib
-import binascii
 import json
 import datetime
 
@@ -46,15 +45,6 @@ def read_old_list_file():
     return None
 
 
-def hash_file(target_file):
-    if target_file and os.path.isfile(target_file):
-        with open(target_file, 'rb') as f:
-            return binascii.crc32(f.read())
-    else:
-        cit.err(f"Target file does not exist: {target_file}")
-        return None
-
-
 @cit.as_session
 def generate_new_list(dir):
     now = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -62,7 +52,7 @@ def generate_new_list(dir):
     cit.info(f"Target files pattern: {TARGET_FILE_PATTERN}")
     pathlist = list(pathlib.Path(dir).rglob(TARGET_FILE_PATTERN))
     for fpath in tqdm.tqdm(pathlist, total=len(pathlist), unit=" files"):
-        file_hashes[os.path.basename(fpath)] = hash_file(fpath)
+        file_hashes[os.path.basename(fpath)] = cct.crc32(fpath)
     new_list_filename = f"{LISTFILE_PREFIX}{now}{LISTFILE_SUFFIX}"
     with open(new_list_filename, 'w', encoding="UTF8") as f:
         f.write(json.dumps(file_hashes, indent=4, ensure_ascii=False))
