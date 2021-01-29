@@ -2,18 +2,20 @@ import os
 import sys
 import pathlib
 import json
+import socket
 import datetime
 
 import tqdm
 import consolecmdtools as cct
 import consoleiotools as cit
 
-__version__ = '1.0.0'
+__version__ = '1.1.1'
 
 BASE_DIR = cct.get_dir(__file__)
 
 LISTFILE_PREFIX = "songlist-"
 LISTFILE_SUFFIX = ".json"
+SUFFIX_HOSTNAME = True
 TARGET_FILE_PATTERN = "*.mp3"
 
 
@@ -53,7 +55,8 @@ def generate_new_list(dir):
     pathlist = list(pathlib.Path(dir).rglob(TARGET_FILE_PATTERN))
     for fpath in tqdm.tqdm(pathlist, total=len(pathlist), unit=" files"):
         file_hashes[os.path.basename(fpath)] = cct.crc32(fpath)
-    new_list_filename = f"{LISTFILE_PREFIX}{now}{LISTFILE_SUFFIX}"
+    hostname_badge = f"-{socket.gethostname().replace('-', '')}" if SUFFIX_HOSTNAME else ""
+    new_list_filename = f"{LISTFILE_PREFIX}{now}{hostname_badge}{LISTFILE_SUFFIX}"
     with open(new_list_filename, 'w', encoding="UTF8") as f:
         f.write(json.dumps(file_hashes, indent=4, ensure_ascii=False))
         cit.info(f"New list file generated: {new_list_filename}")
