@@ -9,14 +9,15 @@ import tqdm
 import consolecmdtools as cct
 import consoleiotools as cit
 
-__version__ = '1.1.1'
+__version__ = '1.2.1'
 
 BASE_DIR = cct.get_dir(__file__)
 
-LISTFILE_PREFIX = "songlist-"
+LISTFILE_PREFIX = "list-"
 LISTFILE_SUFFIX = ".json"
 SUFFIX_HOSTNAME = True
 TARGET_FILE_PATTERN = "*.mp3"
+HASH_MODE = "CRC32"  # "CRC32", "MD5", "NAME", "PATH", "MTIME"
 
 
 def get_old_list_files(dir: str) -> list:
@@ -54,7 +55,19 @@ def generate_new_list(dir):
     cit.info(f"Target files pattern: {TARGET_FILE_PATTERN}")
     pathlist = list(pathlib.Path(dir).rglob(TARGET_FILE_PATTERN))
     for fpath in tqdm.tqdm(pathlist, total=len(pathlist), unit=" files"):
-        file_hashes[os.path.basename(fpath)] = cct.crc32(fpath)
+        if HASH_MODE == "CRC32":
+            fhash = cct.crc32(fpath)
+        elif HASH_MODE == "MTIME":
+            fhash = int(os.path.getmtime(fpath))
+        elif HASH_MODE == "NAME":
+            fhash = os.path.basename(fpath)
+        elif HASH_MODE == "PATH":
+            fhash = fpath
+        elif HASH_MODE == "MD5":
+            fhash = cct.md5(fpath)
+        else:
+            fhash = None
+        file_hashes[os.path.basename(fpath)] = fhash
     hostname_badge = f"-{socket.gethostname().replace('-', '')}" if SUFFIX_HOSTNAME else ""
     new_list_filename = f"{LISTFILE_PREFIX}{now}{hostname_badge}{LISTFILE_SUFFIX}"
     with open(new_list_filename, 'w', encoding="UTF8") as f:
