@@ -11,10 +11,11 @@ import consolecmdtools as cct
 import keyboardsimulator as kbs
 
 
-SCORE_QUALIFIED = 40
-SCORE_EXTRAORDINARY = 50
+SCORE_THRESHOLD = 40
 RARITY_STATISTICS = False
 # RARITY_STATISTICS = True
+WEBHOOK_ENABLED = False
+# WEBHOOK_ENABLED = True
 
 
 class Rarity(enum.Enum):
@@ -30,7 +31,7 @@ RARITY_WEIGHT = {
     "GRAY": 0,
     "GREEN": 0,
     "BLUE": 0,
-    "PURPLE": 1,
+    "PURPLE": 5,
     "ORANGE": 8,
     "RED": 10,
 }
@@ -43,7 +44,7 @@ BUFF_POINTS_Y = [577, 671]
 BUFF_POINTS_COUNT = len(BUFF_POINTS_X) * len(BUFF_POINTS_Y)
 WEBHOOK_FILE = os.path.join(cct.get_dir(__file__), "GGBH-WEBHOOK.txt")
 WEBHOOK_URL = None
-if os.path.isfile(WEBHOOK_FILE):
+if os.path.isfile(WEBHOOK_FILE) and WEBHOOK_ENABLED:
     with open(WEBHOOK_FILE) as fl:
         WEBHOOK_URL = fl.read()
 
@@ -131,15 +132,14 @@ def main():
             else:
                 rarity_cntr = grab_rarities()
                 score = rarity_cntr.score(RARITY_WEIGHT)
-                if score >= SCORE_EXTRAORDINARY:
-                    notify(f"Qualified BUFFs detected! (Score: {score})", f"Rarity Counter: {rarity_cntr}", webhook=WEBHOOK_URL)
                 if RARITY_STATISTICS:
                     stat_cntr += rarity_cntr
                 if high_attr_flag:
                     # cit.warn("High IQ detected!")
                     stat_cntr['HighIQ'] += 1
-                    if score >= SCORE_QUALIFIED:
+                    if score >= SCORE_THRESHOLD:
                         notify(f"Qualified BUFFs detected! (Score: {score})", f"Rarity Counter: {rarity_cntr}", webhook=WEBHOOK_URL)
+                        continue
         expansion += 1
 
 
