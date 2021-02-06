@@ -41,7 +41,7 @@ IQ_CHECK_POINT = (526, 1070)
 BUFF_POINTS_X = [1625, 1875, 2129]
 BUFF_POINTS_Y = [577, 671]
 BUFF_POINTS_COUNT = len(BUFF_POINTS_X) * len(BUFF_POINTS_Y)
-WEBHOOK_FILE = os.path.join(cct.get_dir(__file__), "WEBHOOK.txt")
+WEBHOOK_FILE = os.path.join(cct.get_dir(__file__), "GGBH-WEBHOOK.txt")
 WEBHOOK_URL = None
 if os.path.isfile(WEBHOOK_FILE):
     with open(WEBHOOK_FILE) as fl:
