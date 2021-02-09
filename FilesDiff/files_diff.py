@@ -9,7 +9,7 @@ import tqdm
 import consolecmdtools as cct
 import consoleiotools as cit
 
-__version__ = '1.5.1'
+__version__ = '1.6.1'
 
 BASE_DIR = cct.get_dir(__file__)
 HOSTNAME = socket.gethostname()
@@ -21,7 +21,7 @@ HASH_MODE = "CRC32"  # "CRC32", "MD5", "NAME", "PATH", "MTIME"
 SEPARATE_HOST = True
 
 
-def get_old_list_files() -> list:
+def get_old_list_files() -> list[str]:
     list_files = []
     for filename in os.listdir(BASE_DIR):
         if filename.startswith(LISTFILE_PREFIX) and filename.endswith(LISTFILE_SUFFIX):
@@ -32,7 +32,7 @@ def get_old_list_files() -> list:
 
 
 @cit.as_session
-def read_old_list_file():
+def read_old_list_file() -> list[str]:
     if len(sys.argv) > 1:
         input_file = os.path.basename(sys.argv[1])
         old_list_file = os.path.join(BASE_DIR, input_file)
@@ -54,7 +54,7 @@ def read_old_list_file():
 
 
 @cit.as_session
-def generate_new_list():
+def generate_new_list() -> dict:
     file_hashes = {}
     cit.info(f"Target files pattern: {TARGET_FILE_PATTERN}")
     pathlist = list(pathlib.Path(BASE_DIR).rglob(TARGET_FILE_PATTERN))
@@ -86,8 +86,10 @@ def save_new_list(new_list: dict):
     clean_up_old_list_files()
 
 
-def dict_diffs(dict1, dict2):
-    return set(dict1.items()) ^ set(dict2.items())
+def dict_diffs(dict1, dict2) -> tuple[set, set]:
+    set1 = set(dict1.items())
+    set2 = set(dict2.items())
+    return set1 - set2, set2 - set1
 
 
 @cit.as_session
@@ -113,11 +115,13 @@ def main():
     old_list = read_old_list_file()
     new_list = generate_new_list()
     if old_list and new_list:
-        diffs = dict_diffs(old_list, new_list)
-        if diffs:
+        diffs_del, diffs_add = dict_diffs(old_list, new_list)
+        if diffs_del or diffs_add:
             cit.info("Changes since last time:")
-            for filename, hash in diffs:
-                cit.echo(filename)
+            for filename, hash in diffs_del:
+                cit.echo(filename, pre="-")
+            for filename, hash in diffs_add:
+                cit.echo(filename, pre="+")
             save_new_list(new_list)
         else:
             cit.info("No changes")
