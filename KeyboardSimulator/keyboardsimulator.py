@@ -13,12 +13,12 @@ def count_down(num: int):
         time.sleep(1)
 
 
-def grab_color(pos: tuple[int, int] = None):
+def grab_color(pos: tuple[int, int] = None, size: int = 1, show: bool = False):
     """Grab the color of given pixel"""
     if not pos:
         x, y = win32api.GetCursorPos()
-    pixel = ImageGrab.grab((pos[0], pos[1], pos[0] + 1, pos[1] + 1))
-    return pixel.load()[0, 0]
+    pixel = ImageGrab.grab((pos[0], pos[1], pos[0] + size, pos[1] + size))
+    return pixel.load()[0, 0] if not show else pixel.show()
 
 
 def left_mouse_button(pos: tuple[int, int] = None):

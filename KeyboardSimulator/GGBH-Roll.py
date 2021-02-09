@@ -11,11 +11,14 @@ import consolecmdtools as cct
 import keyboardsimulator as kbs
 
 
-SCORE_THRESHOLD = 40
-RARITY_STATISTICS = False
-# RARITY_STATISTICS = True
-WEBHOOK_ENABLED = False
-# WEBHOOK_ENABLED = True
+SCORE_THRESHOLD = 24
+ENABLED = {
+    "WEBHOOK": False,
+    "STATISTICS": False,
+    "SCORE_THRESHOLD": False,
+    "IQ_100": False,
+    "SWORD_HIGH": True,
+}
 
 
 class Rarity(enum.Enum):
@@ -36,15 +39,23 @@ RARITY_WEIGHT = {
     "RED": 10,
 }
 
-REROLL_CLICK_POINT = (1084, 320)
-IQ_BACKGROUND_COLOR = (206, 207, 209)
-IQ_CHECK_POINT = (526, 1070)
-BUFF_POINTS_X = [1625, 1875, 2129]
-BUFF_POINTS_Y = [577, 671]
-BUFF_POINTS_COUNT = len(BUFF_POINTS_X) * len(BUFF_POINTS_Y)
+CHECKPOINT = {
+    "IQ_HIGH": (526, 1070),
+    "IQ_100": (652, 1067),
+    "REROLL": (1084, 320),
+    "BUFFS_X": [1625, 1875, 2129],
+    "BUFFS_Y": [577, 671],
+    "SWORD_HIGH": (1333, 1007)
+}
+CHECKCOLOR = {
+    "IQ_HIGH_KO": (206, 207, 209),
+    "IQ_100_OK": (50, 50, 50),
+    "SWORD_HIGH_KO": (233, 232, 230),
+}
+
 WEBHOOK_FILE = os.path.join(cct.get_dir(__file__), "GGBH-WEBHOOK.txt")
 WEBHOOK_URL = None
-if os.path.isfile(WEBHOOK_FILE) and WEBHOOK_ENABLED:
+if os.path.isfile(WEBHOOK_FILE) and ENABLED["WEBHOOK"]:
     with open(WEBHOOK_FILE) as fl:
         WEBHOOK_URL = fl.read()
 
@@ -58,7 +69,7 @@ class RarityCounter(Counter):
         self.validate()
 
     def validate(self):
-        if sum(self.values()) != BUFF_POINTS_COUNT:
+        if sum(self.values()) != len(CHECKPOINT["BUFFS_X"]) * len(CHECKPOINT["BUFFS_Y"]):
             cit.err(f"Counter Error: Not all counter counts.")
             cit.err(f"Oringal Counter: {self.origin}")
             cit.err(f"Rarity Counter: {self}")
@@ -68,15 +79,14 @@ class RarityCounter(Counter):
         return json.dumps(self)
 
     def score(self, weights) -> int:
-        highest_weight = sorted(weights.values())[-1] * BUFF_POINTS_COUNT
-        return sum([weights[rw] * self[rw] for rw in weights]) * 100 // highest_weight
+        return sum([weights[rw] * self[rw] for rw in weights])
 
 
 class StatisticsCounter(Counter):
     def __init__(self, rarities: enum.Enum):
         super().__init__()
         self.Rarity = rarities
-        self['HighIQ'] = 0
+        self["IQ_HIGH"] = 0
 
     def print_rarity_statistics(self):
         total = sum([self[r.name] for r in self.Rarity])
@@ -87,7 +97,7 @@ class StatisticsCounter(Counter):
 
     def print_iq_statistics(self, total):
         if total:
-            cit.info(f"IQ Statistics: {self['HighIQ']/total:.0%} high. ({self['HighIQ']}/{total})")
+            cit.info(f"IQ Statistics: {self['IQ_HIGH']/total:.0%} high. ({self['IQ_HIGH']}/{total})")
 
     def __str__(self):
         return json.dumps(self)
@@ -95,7 +105,7 @@ class StatisticsCounter(Counter):
 
 def grab_rarities() -> Counter:
     time.sleep(0.75)
-    color_cntr = Counter([kbs.grab_color((x, y)) for y in BUFF_POINTS_Y for x in BUFF_POINTS_X])
+    color_cntr = Counter([kbs.grab_color((x, y)) for y in CHECKPOINT["BUFFS_Y"] for x in CHECKPOINT["BUFFS_X"]])
     rarity_cntr = RarityCounter(color_cntr)
     return rarity_cntr
 
@@ -103,7 +113,7 @@ def grab_rarities() -> Counter:
 def notify(*texts, webhook: str = None):
     for text in texts:
         cit.warn(text)
-    if webhook:
+    if ENABLED["WEBHOOK"] and WEBHOOK_URL:
         cct.ajax(webhook, {"text": "; ".join(texts)}, method="post")
     cit.pause()
     kbs.count_down(3)
@@ -111,36 +121,44 @@ def notify(*texts, webhook: str = None):
 
 def main():
     kbs.count_down(3)
-    expansion = 0
     stat_cntr = StatisticsCounter(Rarity)
+    loops = 0
     while True:
-        stat_cntr.print_iq_statistics(expansion * 10)
+        flags = {}
+        stat_cntr.print_iq_statistics(loops)
         stat_cntr.print_rarity_statistics()
-        pbar = tqdm.tqdm(range(10), unit="round")
+        pbar = tqdm.tqdm(range(100), unit="roll")
         for i in pbar:
-            loop = expansion * 10 + i + 1
-            pbar.set_postfix({
-                "Loop": loop,
-                "HighIQ": stat_cntr['HighIQ'],
-            })
-            pbar.set_description(f"Lv.{expansion}")
-            kbs.left_mouse_button(REROLL_CLICK_POINT)
+            loops += 1
+            pbar.set_postfix(flags)
+            pbar.set_description(f"Loop={loops}, IQ+={stat_cntr['IQ_HIGH']}")
+            kbs.left_mouse_button(CHECKPOINT["REROLL"])
             time.sleep(1.25)
-            high_attr_flag = kbs.grab_color(IQ_CHECK_POINT) != IQ_BACKGROUND_COLOR
-            if not high_attr_flag and not RARITY_STATISTICS:
+            flags["IQ_HIGH"] = kbs.grab_color(CHECKPOINT["IQ_HIGH"]) != CHECKCOLOR["IQ_HIGH_KO"]
+            if ENABLED["IQ_100"]:
+                flags["IQ_100"] = kbs.grab_color(CHECKPOINT["IQ_100"]) == CHECKCOLOR["IQ_100_OK"]
+            if ENABLED["SWORD_HIGH"]:
+                time.sleep(0.25)
+                flags["SWORD_HIGH"] = kbs.grab_color(CHECKPOINT["SWORD_HIGH"]) != CHECKCOLOR["SWORD_HIGH_KO"]
+            if not flags["IQ_HIGH"] and not ENABLED["STATISTICS"]:
                 continue
             else:
                 rarity_cntr = grab_rarities()
                 score = rarity_cntr.score(RARITY_WEIGHT)
-                if RARITY_STATISTICS:
+                if ENABLED["STATISTICS"]:
                     stat_cntr += rarity_cntr
-                if high_attr_flag:
+                if flags["IQ_HIGH"]:
                     # cit.warn("High IQ detected!")
-                    stat_cntr['HighIQ'] += 1
-                    if score >= SCORE_THRESHOLD:
-                        notify(f"Qualified BUFFs detected! (Score: {score})", f"Rarity Counter: {rarity_cntr}", webhook=WEBHOOK_URL)
+                    stat_cntr["IQ_HIGH"] += 1
+                    if flags.get("IQ_100"):
+                        notify("IQ100!")
                         continue
-        expansion += 1
+                    if flags.get("SWORD_HIGH"):
+                        notify("Sword High!")
+                        continue
+                    if ENABLED["SCORE_THRESHOLD"] and score >= SCORE_THRESHOLD:
+                        notify("Qualified BUFFs detected!")
+                        continue
 
 
 if __name__ == "__main__":
