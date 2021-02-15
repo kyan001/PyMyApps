@@ -2,6 +2,7 @@ import configparser
 import os
 import cmd
 import sys
+import platform
 
 import consoleiotools as cit
 
@@ -130,7 +131,27 @@ class InteractiveShell(cmd.Cmd):
             sect = config['proxy']
             proxy_ip = sect.get('ip')
             proxy_port = sect.get('port')
-            self.config['proxy'] = f"{proxy_ip}: {proxy_port}"
+            if proxy_ip and proxy_port:
+                self.config['proxy'] = f"{proxy_ip}: {proxy_port}"
+                cit.info(f"Config Loaded: proxy={self.config['proxy']}")
+            else:
+                cit.warn(f"Config Load Failed: `proxy` unchanged.")
+        if config.has_section('folder'):
+            sect = config['folder']
+            folder_win = sect.get('win')  # Folder for Windows
+            folder_linux = sect.get('linux')  # Folder for Linux
+            folder_mac = sect.get('mac')  # Folder for macOS
+            if folder_win and sys.platform.startswith('win'):
+                self.config['folder'] = folder_win
+                cit.info(f"Config Loaded: folder={self.config['folder']}")
+            elif folder_linux and os.name == 'posix':
+                self.config['folder'] = folder_linux
+                cit.info(f"Config Loaded: folder={self.config['folder']}")
+            elif folder_mac and platform.system() == 'Darwin':
+                self.config['folder'] = folder_mac
+                cit.info(f"Config Loaded: folder={self.config['folder']}")
+            else:
+                cit.warn(f"Config Load Failed: `folder` unchanged.")
 
     def set_config(self, key, val=None, example="", mode=None):
         old_val = self.config.get(key)
