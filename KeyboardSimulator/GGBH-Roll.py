@@ -16,8 +16,8 @@ ENABLED = {
     "WEBHOOK": False,
     "STATISTICS": False,
     "SCORE_THRESHOLD": False,
-    "IQ_100": False,
-    "SWORD_HIGH": True,
+    "IQ_100": True,
+    "SWORD_HIGH": False,
 }
 
 
@@ -143,10 +143,11 @@ def main():
             if not flags["IQ_HIGH"] and not ENABLED["STATISTICS"]:
                 continue
             else:
-                rarity_cntr = grab_rarities()
-                score = rarity_cntr.score(RARITY_WEIGHT)
-                if ENABLED["STATISTICS"]:
-                    stat_cntr += rarity_cntr
+                if ENABLED["SCORE_THRESHOLD"]:
+                    rarity_cntr = grab_rarities()
+                    score = rarity_cntr.score(RARITY_WEIGHT)
+                    if ENABLED["STATISTICS"]:
+                        stat_cntr += rarity_cntr
                 if flags["IQ_HIGH"]:
                     # cit.warn("High IQ detected!")
                     stat_cntr["IQ_HIGH"] += 1
