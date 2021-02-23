@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import sys
 import pathlib
@@ -86,10 +88,10 @@ def save_new_list(new_list: dict):
     clean_up_old_list_files()
 
 
-def dict_diffs(dict1, dict2) -> tuple[set, set]:
+def dict_diffs(dict1, dict2) -> tuple[list, list]:
     set1 = set(dict1.items())
     set2 = set(dict2.items())
-    return set1 - set2, set2 - set1
+    return [filename for filename, filehash in set1 - set2], [filename for filename, filehash in set2 - set1]
 
 
 @cit.as_session
