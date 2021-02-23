@@ -8,10 +8,11 @@ import socket
 import datetime
 
 import tqdm
+import fuzzyfinder
 import consolecmdtools as cct
 import consoleiotools as cit
 
-__version__ = '1.6.1'
+__version__ = '1.7.1'
 
 BASE_DIR = cct.get_dir(__file__)
 HOSTNAME = socket.gethostname()
@@ -122,6 +123,12 @@ def main():
             cit.info("Changes since last time:")
             for filename in diffs_del:
                 cit.echo(filename, pre="-")
+                if diffs_add:
+                    fuzzy = fuzzyfinder.fuzzyfinder(filename, diffs_add)
+                    fuzzy_list = list(fuzzy)
+                    if len(fuzzy_list) > 0:
+                        cit.echo(fuzzy_list[0], pre="+")
+                        diffs_add.remove(fuzzy_list[0])
             for filename in diffs_add:
                 cit.echo(filename, pre="+")
             save_new_list(new_list)
