@@ -120,9 +120,9 @@ def main():
         diffs_del, diffs_add = dict_diffs(old_list, new_list)
         if diffs_del or diffs_add:
             cit.info("Changes since last time:")
-            for filename, hash in diffs_del:
+            for filename in diffs_del:
                 cit.echo(filename, pre="-")
-            for filename, hash in diffs_add:
+            for filename in diffs_add:
                 cit.echo(filename, pre="+")
             save_new_list(new_list)
         else:
