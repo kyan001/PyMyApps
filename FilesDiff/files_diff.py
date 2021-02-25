@@ -12,7 +12,7 @@ import fuzzyfinder
 import consolecmdtools as cct
 import consoleiotools as cit
 
-__version__ = '1.7.1'
+__version__ = '1.7.2'
 
 BASE_DIR = cct.get_dir(__file__)
 HOSTNAME = socket.gethostname()
@@ -31,7 +31,7 @@ def get_old_list_files() -> list[str]:
             if SEPARATE_HOST and (HOSTNAME not in filename):
                 continue
             list_files.append(filename)
-    return list_files
+    return sorted(list_files)
 
 
 @cit.as_session
@@ -98,8 +98,9 @@ def dict_diffs(dict1, dict2) -> tuple[list, list]:
 @cit.as_session
 def clean_up_old_list_files():
     list_files = get_old_list_files()
+    print(list_files)
     if len(list_files) > 1:
-        old_list_files = list_files[:-1]
+        old_list_files = sorted(list_files)[:-1]
         cit.ask("Clean up old list files?")
         cit.echo(old_list_files)
         if cit.get_choice(['Yes', 'No']) == 'Yes':
