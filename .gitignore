@@ -58,5 +58,5 @@ PyEncryptor/trace.xml
 .DS_store
 
 # virtualenv
-*/VENV/*
+*/VENV*
 KeyboardSimulator/GGBH-WEBHOOK.txt

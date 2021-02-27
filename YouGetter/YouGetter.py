@@ -26,6 +26,7 @@ class InteractiveShell(cmd.Cmd):
         itag : Set itag to download with a different quality.
       format : Set format download with a different format.
      cookies : Set cookies for download.
+    playlist : Set playlist mode for multi-video download.
        debug : Set if this run in debug mode.
     insecure : Set to ignore ssl errors.
     ---------:---------------------------
@@ -45,6 +46,7 @@ class InteractiveShell(cmd.Cmd):
             "itag": None,
             "debug": False,
             "cookies": None,
+            "playlist": False,
             "insecure": False,
         }
         self.load_config()
@@ -68,9 +70,10 @@ class InteractiveShell(cmd.Cmd):
         command += f' --http-proxy \"{self.config.get("proxy")}\"' if self.config.get('use_proxy') and self.config.get('proxy') else ""  # -x
         command += f' --itag={self.config.get("itag")}' if self.config.get('itag') else ""
         command += f' --format={self.config.get("format")}' if self.config.get('format') else ""
-        command += f' --cookies \"{self.config.get("cookies")}\"' if self.config.get('cookies') else ""
+        command += f' --cookies \"{self.config.get("cookies")}\"' if self.config.get('cookies') else ""  # -c
         command += ' --debug' if self.config.get('debug') else ""
-        command += ' --insecure' if self.config.get('insecure') else ""
+        command += ' --insecure' if self.config.get('insecure') else ""  # -k
+        command += ' --playlist' if self.config.get('playlist') else ""
         command += f' \"{self.config.get("url")}\"'
         return command
 
@@ -228,6 +231,9 @@ class InteractiveShell(cmd.Cmd):
 
     def do_insecure(self, arg=None):
         self.set_config('insecure', val=arg, mode='bool')
+
+    def do_playlist(self, arg=None):
+        self.set_config('playlist', val=arg, mode='bool')
 
     @cit.as_session
     def do_run(self, arg=None, dry: bool = False):
