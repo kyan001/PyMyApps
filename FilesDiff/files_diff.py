@@ -12,10 +12,10 @@ import fuzzyfinder
 import consolecmdtools as cct
 import consoleiotools as cit
 
-__version__ = '1.8.0'
+__version__ = '1.9.0'
 
 BASE_DIR = cct.get_dir(__file__)
-HOSTNAME = socket.gethostname().replace("-", "")
+HOSTNAME = socket.gethostname().replace("-", "").replace(".", "")
 
 TARGET_FILE_PATTERN = "*.mp3"
 LISTFILE_PREFIX = TARGET_FILE_PATTERN.split(".")[-1] + "list-"
