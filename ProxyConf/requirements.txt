@@ -1,2 +1,2 @@
-KyanToolKit
+consolecmdtools
 consoleiotools

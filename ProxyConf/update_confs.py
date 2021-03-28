@@ -3,7 +3,7 @@ import shutil
 import os
 import difflib
 
-from KyanToolKit import KyanToolKit as ktk
+import consolecmdtools as cct
 import consoleiotools as cit
 
 
@@ -17,7 +17,7 @@ def diff(from_path: str, to_path: str):
 
 def final_strategy_replace(filename="shdwrckt_gfwlst.conf"):
     with tempfile.TemporaryDirectory() as tmp_filedir:
-        filedirpath, filedirname = ktk.getDir(filename)
+        filedirpath = cct.get_dir(filename)
         tmp_filepath = os.path.join(tmp_filedir, filename)
         filepath = os.path.join(filedirpath, filename)
         with open(filepath, "rt", encoding='utf-8') as old_file, open(tmp_filepath, "wt", encoding='utf-8') as tmp_file:
@@ -42,7 +42,7 @@ def final_strategy_replace(filename="shdwrckt_gfwlst.conf"):
 
 
 def main():
-    ktk.updateFile("./shdwrckt_gfwlst.conf", "https://raw.githubusercontent.com/XinSSS/Conf-for-Surge-Shadowrocket/master/configFileHere/shadowrocket_gfwlist%26whiteIP.conf")
+    cct.update_file("./shdwrckt_gfwlst.conf", "https://raw.githubusercontent.com/XinSSS/Conf-for-Surge-Shadowrocket/master/configFileHere/shadowrocket_gfwlist%26whiteIP.conf")
     final_strategy_replace()
 
 
