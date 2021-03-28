@@ -24,3 +24,7 @@ def main(assigned_args: list = None):
         shellproxy.status()
     else:
         raise Exception("Command not support: {}".format(args.command))
+
+
+if __name__ == "__main__":
+    main()

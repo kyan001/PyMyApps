@@ -69,6 +69,7 @@ def start_proxy(address: str = CONFIGS.get('address')):
 def stop_proxy() -> bool:
     commands = get_proxy_commands()
     for command in commands.get('stop'):
+        cit.echo(command)
         if not __run_cmd(command):
             return False
     return True
