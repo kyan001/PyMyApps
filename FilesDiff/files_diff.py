@@ -3,7 +3,6 @@ from __future__ import annotations
 import os
 import sys
 import pathlib
-import json
 import socket
 import datetime
 
@@ -12,14 +11,24 @@ import fuzzyfinder
 import consolecmdtools as cct
 import consoleiotools as cit
 
-__version__ = '1.9.0'
+__version__ = '1.10.1'
 
 BASE_DIR = cct.get_dir(__file__)
 HOSTNAME = socket.gethostname().replace("-", "").replace(".", "")
 
 TARGET_FILE_PATTERN = "*.mp3"
 LISTFILE_PREFIX = TARGET_FILE_PATTERN.split(".")[-1] + "list-"
-LISTFILE_SUFFIX = ".json"
+OUTPUT_FORMAT = "JSON"
+if OUTPUT_FORMAT == "TOML":
+    import tomlkit
+    formatter = tomlkit
+    LISTFILE_SUFFIX = ".toml"
+elif OUTPUT_FORMAT == "JSON":
+    import json
+    formatter = json
+    LISTFILE_SUFFIX = ".json"
+else:
+    raise Exception(f"OUTPUT_FORMAT {FORMAT} does not support.")
 HASH_MODE = "CRC32"  # "CRC32", "MD5", "NAME", "PATH", "MTIME"
 SEPARATE_HOST = True
 
@@ -50,7 +59,7 @@ def read_old_list_file() -> list[str]:
     else:
         cit.info(f"Old list file: {old_list_file}")
         with open(old_list_file, encoding="UTF8") as f:
-            old_list = json.loads(f.read())
+            old_list = formatter.loads(f.read())
             cit.info(f"{len(old_list)} entries loaded")
             return old_list
     return None
@@ -84,7 +93,13 @@ def save_new_list(new_list: dict):
     hostname_badge = f"-{HOSTNAME}" if SEPARATE_HOST else ""
     new_list_filename = LISTFILE_PREFIX + now + hostname_badge + LISTFILE_SUFFIX
     with open(new_list_filename, 'w', encoding="UTF8") as f:
-        f.write(json.dumps(new_list, indent=4, ensure_ascii=False))
+        kwargs = {}
+        if OUTPUT_FORMAT == "JSON":
+            kwargs = {
+                "indent": 4,
+                "ensure_ascii": False
+            }
+        f.write(formatter.dumps(new_list, **kwargs))
         cit.info(f"New list file generated: {new_list_filename}")
     clean_up_old_list_files()
 
@@ -98,7 +113,6 @@ def dict_diffs(dict1, dict2) -> tuple[list, list]:
 @cit.as_session
 def clean_up_old_list_files():
     list_files = get_old_list_files()
-    print(list_files)
     if len(list_files) > 1:
         old_list_files = sorted(list_files)[:-1]
         cit.ask("Clean up old list files?")
