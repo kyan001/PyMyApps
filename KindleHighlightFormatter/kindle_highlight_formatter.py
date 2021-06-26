@@ -6,10 +6,14 @@ import sys
 from bs4 import BeautifulSoup
 
 import consoleiotools as cit
+import consolecmdtools as cct
+
+from parsers.HtmlFormatter import HtmlFormatter
+from parsers.MarkdownFormatter import MarkdownFormatter
 
 
-__version__ = '1.1.1'
-__prog__ = "Kindle Highlight HTML to Markdown"
+__version__ = '1.2.1'
+__prog__ = "Kindle Highlight Formatter"
 __description__ = "Convert Kindle Highlight HTML file into Markdown text"
 __epilog__ = "TL;DR: Run program with no args, or drag & drop a .html on it."
 
@@ -19,25 +23,13 @@ def get_file():
     if cit.get_choice(["Select", "Enter manually"]) == "Enter manually":
         return cit.get_input("Please enter your file path:")
     else:
-        tkapp = tkinter.Tk()
-        filepath = tkinter.filedialog.askopenfilename(filetypes=[("HTML file", ".html")])
-        tkapp.destroy()
-        return filepath
+        return cct.select_path(filetypes=[("HTML file", ".html")])
 
 
 def generate_markdown(html_file):
-    markdown = []
-    soup = BeautifulSoup(open(html_file, encoding="utf8"), 'lxml')
-    title_div = soup.find(attrs={'class': "bookTitle"})
-    if title_div:
-        title = title_div.get_text(strip=True)
-        markdown.append(f"# § 《{title}》")
-    for tag in soup.select(".sectionHeading, .noteText"):
-        if "sectionHeading" in tag['class']:
-            markdown.append(f"## {tag.get_text(strip=True)}")
-        if "noteText" in tag['class']:
-            markdown.append(f"> {tag.get_text(strip=True)}")
-    return "\n\n".join(markdown)
+    info = HtmlFormatter.parse(html_file)
+    markdown_text = MarkdownFormatter.to_text(info)
+    return markdown_text
 
 
 if __name__ == '__main__':
@@ -47,13 +39,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
     # get markdown text
     html_file = args.file or get_file()
-    md_text = generate_markdown(html_file)
+    markdown_text = generate_markdown(html_file)
     # how to deal
     cit.ask("How to deal with the markdown text?")
     if cit.get_choice(['Show', 'Copy to clipboard']) == 'Show':
-        cit.echo(md_text)
+        cit.echo(markdown_text)
     else:
         import pyperclip
-        pyperclip.copy(md_text)
+        pyperclip.copy(markdown_text)
         cit.info("Copy success.")
     cit.pause()
