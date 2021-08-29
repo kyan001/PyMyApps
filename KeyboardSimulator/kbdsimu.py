@@ -5,6 +5,16 @@ import win32con
 from PIL import ImageGrab
 import consoleiotools as cit
 
+__version__ = "1.0.5"
+
+
+def dpi_enable(level: int = 2):
+    import ctypes
+    try:  # Win8, Win10
+        ctypes.windll.shcore.SetProcessDpiAwareness(level)
+    except:  # Win7
+        ctypes.windll.user32.SetProcessDPIAware()
+
 
 @cit.as_session
 def count_down(num: int):
@@ -15,8 +25,7 @@ def count_down(num: int):
 
 def grab_color(pos: tuple[int, int] = None, size: int = 1, show: bool = False):
     """Grab the color of given pixel"""
-    if not pos:
-        x, y = win32api.GetCursorPos()
+    pos = pos or win32api.GetCursorPos()
     pixel = ImageGrab.grab((pos[0], pos[1], pos[0] + size, pos[1] + size))
     return pixel.load()[0, 0] if not show else pixel.show()
 
@@ -30,3 +39,6 @@ def left_mouse_button(pos: tuple[int, int] = None):
     time.sleep(0.1)
     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
     time.sleep(0.1)
+
+
+dpi_enable()
