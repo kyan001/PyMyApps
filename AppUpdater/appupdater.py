@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 import os
 
-import KyanToolKit as ktk
 import consoleiotools as cit
 
 from Updaters import *

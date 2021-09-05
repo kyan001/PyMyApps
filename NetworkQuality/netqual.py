@@ -14,8 +14,7 @@ from functools import wraps
 
 import ping3
 import consoleiotools as cit
-import KyanToolKit  # pip3 install KyanToolKit
-ktk = KyanToolKit.KyanToolKit()
+import consolecmdtools as cct
 
 
 class G(object):
@@ -40,7 +39,7 @@ class IShell(cmd.Cmd):
         self.prompt = '\nNetqual> '
         self.intro = """
 欢迎使用 NetQual，输入 ? 查看所有命令
-- 启动/停止/查看：start、stop、state
+- 启动/停止/查看：start、stop、status
 - 文字展示: show 1、show
 - Ping: ping 1
 - 查看说明：expl
@@ -49,9 +48,9 @@ class IShell(cmd.Cmd):
 
     def preloop(self):
         time.sleep(2)
-        ktk.clearScreen()
+        cct.clear_screen()
 
-    def do_state(self, args):
+    def do_status(self, args):
         """显示程序的运行状态"""
         cit.info('Running: {}'.format('On' if G.running else 'Off'))
 
@@ -64,7 +63,7 @@ class IShell(cmd.Cmd):
         count = int(args) if args.isdigit() else 0
         while (not args) or count > 0:
             time.sleep(0.6)
-            ktk.clearScreen()
+            cct.clear_screen()
             assemble_print()
             printQ()
             count -= 1
@@ -126,7 +125,7 @@ class IShell(cmd.Cmd):
     do_quit = do_exit  # shortcuts
 
 
-def async(input_func: callable):  # decorator
+def asyncf(input_func: callable):  # decorator
     """使函数单开一个线程执行"""
     @wraps(input_func)
     def callInputFunc(*args, **kwargs):
@@ -139,7 +138,7 @@ def async(input_func: callable):  # decorator
 def main():
     init_dicts()
     try:
-        ping3.do_one(G.myip, 1)  # test ping
+        ping3.ping(G.myip)  # test ping
     except OSError as e:
         cit.err(e)
         cit.info('可能您需要以管理员权限运行')
@@ -264,10 +263,10 @@ def assemble_print():
     putPrint(G.ext_notice)
 
 
-@async
-def start_ping(addr, timeout=3):
+@asyncf
+def start_ping(addr):
     while G.running:
-        delay = ping3.do_one(addr, timeout)
+        delay = ping3.ping(addr)
         if delay:
             if delay < 1:
                 time.sleep(1 - delay)

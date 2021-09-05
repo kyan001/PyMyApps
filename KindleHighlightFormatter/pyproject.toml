@@ -2,10 +2,11 @@
 name = "Kindle Highlight Formatter"
 version = "1.2.1"
 description = "Convert Kindle Highlight HTML file into Markdown text"
-authors = ["Kyan Y <ykyankai@gmail.com>"]
+authors = ["Kyan <ykyankai@gmail.com>"]
+license = "MIT"
 
 [tool.poetry.dependencies]
-python = ">=3.7.0"
+python = ">=3.7"
 bs4 = "*"
 lxml = "*"
 pyperclip = "*"
@@ -13,4 +14,8 @@ consoleiotools = "*"
 consolecmdtools = "*"
 
 [tool.poetry.dev-dependencies]
-pycodestyle = "^2.7.0"
+pycodestyle = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -1,6 +1,6 @@
 import os
 
-from KyanToolKit import KyanToolKit as ktk
+import consolecmdtools as cct
 import consoleiotools as cit
 
 
@@ -8,16 +8,16 @@ class Updater:
     @classmethod
     def _exe(cls, arg: str):
         cmd = f"{cls.base_cmd} {arg}"
-        return ktk.runCmd(cmd) == 0
+        return cct.run_cmd(cmd) == 0
 
     @classmethod
     def _read_cmd(cls, arg: str) -> str:
         cmd = f"{cls.base_cmd} {arg}"
-        return ktk.readCmd(cmd)
+        return cct.read_cmd(cmd)
 
     @classmethod
     def is_available(cls):
-        return cls.base_cmd and ktk.isCmdExist(cls.base_cmd)
+        return cls.base_cmd and cct.is_cmd_exist(cls.base_cmd)
 
     @classmethod
     def self_update(cls):
@@ -140,7 +140,7 @@ class NvmUpdater(Updater):
 
     @classmethod
     def self_update(cls):
-        ktk.runCmd(f"git -C {cls.nvm_folder} pull")
+        cct.run_cmd(f"git -C {cls.nvm_folder} pull")
 
     @classmethod
     def upgrade_all(cls):
