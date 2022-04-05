@@ -11,7 +11,7 @@ import fuzzyfinder
 import consolecmdtools as cct
 import consoleiotools as cit
 
-__version__ = '1.10.1'
+__version__ = '1.10.2'
 
 BASE_DIR = cct.get_dir(__file__)
 HOSTNAME = socket.gethostname().replace("-", "").replace(".", "")
@@ -28,7 +28,7 @@ elif OUTPUT_FORMAT == "JSON":
     formatter = json
     LISTFILE_SUFFIX = ".json"
 else:
-    raise Exception(f"OUTPUT_FORMAT {FORMAT} does not support.")
+    raise Exception(f"OUTPUT_FORMAT {OUTPUT_FORMAT} does not support.")
 HASH_MODE = "CRC32"  # "CRC32", "MD5", "NAME", "PATH", "MTIME"
 SEPARATE_HOST = True
 
