@@ -5,7 +5,7 @@ import win32con
 from PIL import ImageGrab
 import consoleiotools as cit
 
-__version__ = "1.0.5"
+__version__ = "1.1.1"
 
 
 def dpi_enable(level: int = 2):
@@ -28,6 +28,9 @@ def grab_color(pos: tuple[int, int] = None, size: int = 1, show: bool = False):
     pos = pos or win32api.GetCursorPos()
     pixel = ImageGrab.grab((pos[0], pos[1], pos[0] + size, pos[1] + size))
     return pixel.load()[0, 0] if not show else pixel.show()
+
+def get_cursor_pos():
+    return win32api.GetCursorPos()
 
 
 def left_mouse_button(pos: tuple[int, int] = None):
