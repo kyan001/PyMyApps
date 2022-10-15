@@ -7,7 +7,7 @@ import consoleiotools as cit
 
 import filetrack_changed
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 ITUNES_LIBRARY_FILE = "资料库.xml" if os.path.isfile("资料库.xml") else "iTunes Library.xml"
 
@@ -74,8 +74,9 @@ def filename_purify(name: str) -> str:
 def main():
     filetrack_songs = read_trackfile()
     itunes_lib_songs = read_itunes_library()
-    show_itunes_only(check_diffs(checkees=filetrack_songs, checklist=itunes_lib_songs))
-    show_file_only(check_diffs(checkees=itunes_lib_songs, checklist=filetrack_songs))
+    show_file_only(check_diffs(checkees=filetrack_songs, checklist=itunes_lib_songs))
+    show_itunes_only(check_diffs(checkees=itunes_lib_songs, checklist=filetrack_songs))
+    cit.pause()
 
 
 if __name__ == "__main__":
