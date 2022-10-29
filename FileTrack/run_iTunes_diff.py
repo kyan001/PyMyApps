@@ -1,15 +1,16 @@
 import os
 import unicodedata
+import platform
 
 import consoleiotools as cit
 import consolecmdtools as cct
 
-import Filetrack
-import ItunesLib
+from lib import Filetrack
+from lib import ItunesLib
 
-__version__ = "2.0.1"
+__version__ = "2.1.0"
 
-ITUNESLIB_PATH = os.path.join(cct.get_dir(cct.get_dir(__file__)), "iTunes Library.xml")
+ITUNESLIB_PATH = os.path.join(cct.get_dir(cct.get_dir(__file__)), "资料库.xml" if platform.system() == "Darwin" else "iTunes Library.xml")
 
 
 def read_trackfile(ft: Filetrack) -> list[str]:
@@ -27,14 +28,14 @@ def check_diffs(checkees: list, checklist: list) -> list:
 def show_itunes_only(diffs: list):
     cit.info(f"{len(diffs)} songs in iTunes but not in File:")
     for item in diffs:
-        cit.echo(f"{item}")
+        cit.echo(f"♬ {item}")
 
 
 @cit.as_session
 def show_file_only(diffs: list):
     cit.info(f"{len(diffs)} songs in File but not in iTunes:")
     for item in diffs:
-        cit.echo(f"{item}")
+        cit.echo(f"📁 {item}")
 
 
 def filename_purify(name: str) -> str:
