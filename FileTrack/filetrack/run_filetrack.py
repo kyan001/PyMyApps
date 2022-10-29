@@ -4,9 +4,9 @@ import fuzzyfinder
 import consolecmdtools as cct
 import consoleiotools as cit
 
-from lib import Filetrack
+from classes import Filetrack
 
-__version__ = '2.1.0'
+__version__ = '2.2.0'
 
 TARGET_EXTS = ["mp3", "m4a"]
 HASH_MODE = "CRC32"  # "CRC32", "MD5", "NAME", "PATH", "MTIME"

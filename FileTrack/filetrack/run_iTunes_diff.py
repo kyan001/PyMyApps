@@ -5,10 +5,10 @@ import platform
 import consoleiotools as cit
 import consolecmdtools as cct
 
-from lib import Filetrack
-from lib import ItunesLib
+from classes import Filetrack
+from classes import ItunesLib
 
-__version__ = "2.1.0"
+__version__ = "2.2.0"
 
 ITUNESLIB_PATH = os.path.join(cct.get_dir(cct.get_dir(__file__)), "资料库.xml" if platform.system() == "Darwin" else "iTunes Library.xml")
 
