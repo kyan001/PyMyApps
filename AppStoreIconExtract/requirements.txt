@@ -1,0 +1,5 @@
+pyperclip
+BeautifulSoup4
+consoleiotools
+consolecmdtools
+requests
