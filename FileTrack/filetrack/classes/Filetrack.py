@@ -9,11 +9,11 @@ import consolecmdtools as cct
 
 
 class Trackfile:
-    __version__ = "1.0.0"
+    __version__ = "1.2.0"
 
     def __init__(
             self,
-            trackfile_dir: str = cct.get_dir(__file__),
+            trackfile_dir: str = cct.get_dir(cct.get_dir(__file__)),
             prefix: str = "TrackFile-",
             format: str = "json",
             host: bool = True):
