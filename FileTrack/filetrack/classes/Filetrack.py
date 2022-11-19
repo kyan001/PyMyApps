@@ -3,13 +3,12 @@ import socket
 import pathlib
 import datetime
 
-import tqdm
 import consoleiotools as cit
 import consolecmdtools as cct
 
 
 class Trackfile:
-    __version__ = "1.2.0"
+    __version__ = "1.3.0"
 
     def __init__(
             self,
@@ -116,7 +115,7 @@ class Trackfile:
             target_file_pattern = f"*.{ext}"
             cit.info(f"Target file pattern: {target_file_pattern}")
             paths += list(pathlib.Path(base_dir).rglob(target_file_pattern))
-        for filepath in tqdm.tqdm(paths, total=len(paths), unit=" files"):
+        for filepath in cit.track(paths, "Hashing...", unit="files"):
             if hash_mode == "CRC32":
                 filehash = cct.crc32(filepath)
             elif hash_mode == "MTIME":
