@@ -82,8 +82,7 @@ def extraction_result(icon_url: str):
         print(icon_url)
         cit.br()
         if not IS_CLIPBOARD:
-            import rich.prompt
-            if rich.prompt.Confirm.ask("Open in Browser?", default="y"):
+            if cit.get_input("Open in Browser? [cyan](yes)[/]", prompt="> [dim]yes[/] ") == "":
                 webbrowser.open_new_tab(icon_url)
 
 
