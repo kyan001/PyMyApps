@@ -2,7 +2,7 @@ import sys
 import webbrowser
 
 import consoleiotools as cit
-from bs4 import BeautifulSoup
+import bs4
 import requests
 try:
     import pyperclip
@@ -26,20 +26,42 @@ def get_url_html(url: str) -> str:
         cit.err("URL is required.")
         cit.bye()
     resp = requests.get(url)
+    if resp.status_code == 200:
+        cit.info(f"HTML loaded {resp.reason}. Content Length: {resp.headers['Content-Length']}.")
+    else:
+        cit.err(f"HTML loaded FAILED. Reason: {resp.status_code} {resp.reason}.")
+        cit.bye()
     return resp.text
 
 
+def get_tag(self, selector):
+    tag = self.select_one(selector)
+    mark = "[green]✓[/]" if tag else "[red]✕[/]"
+    cit.info(f"{mark} [dim]<[/]{selector}[dim]>[/]")
+    return tag
+
+
 def get_icon_srcset(html: str) -> str:
-    soup = BeautifulSoup(html, "html.parser")
-    picture_tag = soup.select_one("body > div.ember-view > main section.section--hero.product-hero picture")
+    def get_image_tag(root_tag):
+        for mime in ("image/png", "image/jpg", "image/webp"):
+            image_tag = root_tag.find("source", attrs={"type": mime})
+            if image_tag:
+                return image_tag
+        return None
+
+    bs4.BeautifulSoup.get_tag = get_tag
+    bs4.element.Tag.get_tag = get_tag
+    soup = bs4.BeautifulSoup(html, "html.parser")
+    picture_tag = soup.get_tag("body > div.ember-view").get_tag("main").get_tag("section.section--hero.product-hero").get_tag("picture")
+    # picture_tag = soup.select_one("body > div.ember-view > main section.section--hero.product-hero picture")
     if not picture_tag:
         cit.err("Tag <picture> not found.")
         cit.bye()
-    png_tag = picture_tag.find("source", attrs={"type": "image/png"})
-    if not png_tag:
-        cit.err("Tag <source type='image/png'> not found.")
+    image_tag = get_image_tag(picture_tag)
+    if not image_tag:
+        cit.err("Tag <source type='image/[png|jpg|webp]'> not found.")
         cit.bye()
-    srcset = png_tag["srcset"]
+    srcset = image_tag["srcset"]
     return srcset
 
 
@@ -60,8 +82,9 @@ def extraction_result(icon_url: str):
         print(icon_url)
         cit.br()
         if not IS_CLIPBOARD:
-            cit.get_input("Open in Browser?", "> Yes")
-        webbrowser.open_new_tab(icon_url)
+            import rich.prompt
+            if rich.prompt.Confirm.ask("Open in Browser?", default="y"):
+                webbrowser.open_new_tab(icon_url)
 
 
 def main():
