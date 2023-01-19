@@ -27,7 +27,7 @@ def get_url_html(url: str) -> str:
         cit.bye()
     resp = requests.get(url)
     if resp.status_code == 200:
-        cit.info(f"HTML loaded {resp.reason}. Content Length: {resp.headers['Content-Length']}.")
+        cit.info(f"HTML loaded {resp.reason}. Content Length: {resp.headers.get('Content-Length')}.")
     else:
         cit.err(f"HTML loaded FAILED. Reason: {resp.status_code} {resp.reason}.")
         cit.bye()
