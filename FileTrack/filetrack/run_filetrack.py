@@ -5,8 +5,9 @@ import consolecmdtools as cct
 import consoleiotools as cit
 
 from classes import Filetrack
+Filetrack.dont_write_bytecode = True
 
-__version__ = '2.2.0'
+__version__ = '2.2.1'
 
 TARGET_EXTS = ["mp3", "m4a"]
 HASH_MODE = "CRC32"  # "CRC32", "MD5", "NAME", "PATH", "MTIME"
@@ -59,4 +60,5 @@ def main():
 
 
 if __name__ == '__main__':
+    cit.panel(f"[dim]{__file__}", title="[yellow]Run Filetrack")
     main()

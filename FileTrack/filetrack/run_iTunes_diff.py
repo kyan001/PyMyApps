@@ -6,9 +6,11 @@ import consoleiotools as cit
 import consolecmdtools as cct
 
 from classes import Filetrack
+Filetrack.dont_write_bytecode = True
 from classes import ItunesLib
+ItunesLib.dont_write_bytecode = True
 
-__version__ = "2.2.0"
+__version__ = "2.2.1"
 
 ITUNESLIB_PATH = os.path.join(cct.get_dir(cct.get_dir(__file__)), "资料库.xml" if platform.system() == "Darwin" else "iTunes Library.xml")
 
@@ -65,4 +67,5 @@ def main():
 
 
 if __name__ == "__main__":
+    cit.panel(f"[dim]{__file__}", title="[yellow]Run iTunes Diff")
     main()
