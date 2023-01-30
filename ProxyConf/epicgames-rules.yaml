@@ -1,0 +1,6 @@
+# Epic-Games Rules. https://raw.githubusercontent.com/ender-zhao/Clash-for-Windows_Rule/main/Rule/Epic-Games
+payload:
+  - DOMAIN-SUFFIX,epicgames.com
+  - DOMAIN-SUFFIX,epicgames.dev
+  - DOMAIN-SUFFIX,epicgames.net
+  - DOMAIN-SUFFIX,unrealengine.com
