@@ -1,4 +1,4 @@
-# Epic-Games Rules. https://raw.githubusercontent.com/ender-zhao/Clash-for-Windows_Rule/main/Rule/Epic-Games
+# Epic Games Rules from https://raw.githubusercontent.com/ender-zhao/Clash-for-Windows_Rule/main/Rule/Epic-Games
 payload:
   - DOMAIN-SUFFIX,epicgames.com
   - DOMAIN-SUFFIX,epicgames.dev
