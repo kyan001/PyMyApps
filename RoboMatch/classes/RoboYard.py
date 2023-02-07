@@ -1,11 +1,11 @@
 import threading
-import Robo
+from . import Robo
 import queue
 import random
 import time
 
 import consoleiotools as cit
-import KyanToolKit
+import consolecmdtools as cct
 
 
 class RoboYard(threading.Thread):
@@ -24,7 +24,6 @@ class RoboYard(threading.Thread):
         self.yard_queue = queue.Queue()
         self.start_time = time.time()
         self.end_time = None
-        self.ktk = KyanToolKit.KyanToolKit(trace_file)
         # init Robos
         for robo_id in range(self.robo_init):
             power_init = int(random.random() * power_max)
@@ -36,7 +35,7 @@ class RoboYard(threading.Thread):
 
     def run(self):
         while True:
-            self.ktk.clearScreen()
+            cct.clear_screen()
             self.printYard(10)
             self.childbearingPolicy(2)
 

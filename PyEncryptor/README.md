@@ -1,1 +1,0 @@
-* `py Entrance.py -gui`
