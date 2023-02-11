@@ -82,7 +82,7 @@ def extraction_result(icon_url: str):
         print(icon_url)
         cit.br()
         if not IS_CLIPBOARD:
-            if cit.get_input("Open in Browser? [cyan](yes)[/]", prompt="> [dim]yes[/] ") == "":
+            if cit.get_input("Open in Browser?", default="yes") == "yes":
                 webbrowser.open_new_tab(icon_url)
 
 
