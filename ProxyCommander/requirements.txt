@@ -1,0 +1,3 @@
+consoleiotools
+pyperclip
+shellingham
