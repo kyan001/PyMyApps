@@ -7,12 +7,11 @@ import click
 
 
 # Set environment variables through python script does not work. Run it in your shell manually.
-__version__ = "1.1.1"
+__version__ = "1.2.1"
 
 PROXY_IP = "127.0.0.1"
 PROXY_PORT = 1088
 PROXY_PROTOCOL = "http"
-PROXY = (f"{PROXY_PROTOCOL}://" if PROXY_PROTOCOL else "") + f"{PROXY_IP}:{PROXY_PORT}"
 
 OK = "[green]✓[/]"
 KO = "[red]✕[/]"
@@ -58,9 +57,9 @@ def unset_var_command(key: str):
         return f"unset {key};"
 
 
-def get_proxy_enable_command():
+def get_proxy_enable_command(proxy):
     shell_type = get_shell_type()
-    return " ".join([set_var_command(key, PROXY) for key in PROXY_KEYS.get(shell_type)])
+    return " ".join([set_var_command(key, proxy) for key in PROXY_KEYS.get(shell_type)])
 
 
 def get_proxy_disable_command():
@@ -134,6 +133,7 @@ def show_proxy_status():
 @click.group(invoke_without_command=True)
 @click.pass_context
 def main(context):
+    """Check proxy settings and get proxy commands."""
     if context.invoked_subcommand is None:
         proxy_enabled = show_proxy_status()
         cit.br()
@@ -145,19 +145,27 @@ def main(context):
 
 @main.command()
 def status():
+    """Show current proxy settings."""
     show_proxy_status()
 
 
 @main.command()
-def start():
-    cit.info("Proxy:", PROXY)
-    cmd = get_proxy_enable_command()
+@click.option("-p", "--port", type=int, help="Set proxy port", default=PROXY_PORT, show_default=True)
+@click.option("-i", "--ip", help="Set proxy IP", default=PROXY_IP, show_default=True)
+@click.option("-P", "--protocol", help="Set proxy protocol. No value provided sets proxy with no protocol", default=PROXY_PROTOCOL, show_default=True, is_flag=False, flag_value="")
+def start(port, ip, protocol):
+    """Generate and copy command for enable proxy."""
+    proxy = (f"{protocol}://" if protocol else "") + f"{ip}:{port}"
+    cit.info("Proxy:", proxy)
+    cit.mute(f"(Use --help for more details)")
+    cmd = get_proxy_enable_command(proxy)
     cit.panel(cmd or "Error", title="Proxy Enable Command", expand=False, style="info")
     copy_cmd(cmd)
 
 
 @main.command()
 def stop():
+    """Generate and copy command for disable proxy."""
     cmd = get_proxy_disable_command()
     cit.panel(cmd or "Error", title="Proxy Disable Command", expand=False, style="info")
     copy_cmd(cmd)
