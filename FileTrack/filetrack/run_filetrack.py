@@ -7,7 +7,7 @@ import consoleiotools as cit
 from classes import Filetrack
 Filetrack.dont_write_bytecode = True
 
-__version__ = '2.2.1'
+__version__ = '2.2.2'
 
 TARGET_EXTS = ["mp3", "m4a"]
 HASH_MODE = "CRC32"  # "CRC32", "MD5", "NAME", "PATH", "MTIME"
@@ -24,7 +24,7 @@ def compare(ft: Filetrack):
     if old_trackings and ft.trackings:
         entries_deleted, entries_added = ft.diffs(old_trackings, ft.trackings)
         if entries_deleted or entries_added:
-            cit.info("Changes since last time:")
+            cit.info("Changes since last time: ✍️")
             for filename in entries_deleted:
                 cit.echo(filename, pre="-")
                 if entries_added:
@@ -52,13 +52,15 @@ def main():
         host=True,
     )
     cit.info(f"Version: {ft.__version__}")
-    cit.info(f"Trackfile Dir: {ft.trackfile_dir}")
-    cit.info(f"Target File Folder: {BASE_DIR}")
-    cit.info(f"Hostname: {ft.hostname}")
+    cit.info(f"Trackfile Dir: 📂 {ft.trackfile_dir}")
+    cit.info(f"Target File Folder: 📂 {BASE_DIR}")
+    cit.info(f"Hash Mod: 🧮 {HASH_MODE}")
+    cit.info(f"Target Extensions: 📜 {TARGET_EXTS}")
+    cit.info(f"Hostname: 💻 {ft.hostname}")
     compare(ft)
     cit.pause()
 
 
 if __name__ == '__main__':
-    cit.panel(f"[dim]{__file__}", title="[yellow]Run Filetrack")
+    cit.panel(f"[dim]{__file__}", title="▶ [yellow]Run Filetrack")
     main()
