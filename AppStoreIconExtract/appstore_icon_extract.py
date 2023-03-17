@@ -84,6 +84,9 @@ def extraction_result(icon_url: str):
         if not IS_CLIPBOARD:
             if cit.get_input("Open in Browser?", default="yes") == "yes":
                 webbrowser.open_new_tab(icon_url)
+        else:
+            pyperclip.copy(icon_url)
+            cit.info("Icon URL is copied!")
 
 
 def main():
