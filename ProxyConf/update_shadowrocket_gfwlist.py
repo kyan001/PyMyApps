@@ -6,6 +6,8 @@ import difflib
 import consolecmdtools as cct
 import consoleiotools as cit
 
+LOCAL_CONF_FILE = "./Shadowrocket-Rules-Gfwlist.conf"
+
 
 def diff(from_path: str, to_path: str):
     with open(from_path, encoding='utf-8') as f:
@@ -43,8 +45,11 @@ def final_strategy_replace(filename="shdwrckt_gfwlst.conf"):
 
 
 def main():
-    cct.update_file("./shdwrckt_gfwlst.conf", "https://raw.githubusercontent.com/XinSSS/Conf-for-Surge-Shadowrocket/master/configFileHere/shadowrocket_gfwlist%26whiteIP.conf")
-    final_strategy_replace()
+    if os.path.isfile(LOCAL_CONF_FILE):
+        cct.update_file(LOCAL_CONF_FILE, "https://raw.githubusercontent.com/XinSSS/Conf-for-Surge-Shadowrocket/master/configFileHere/shadowrocket_gfwlist%26whiteIP.conf")
+        final_strategy_replace()
+    else:
+        cit.err("Local conf file does not exist!")
 
 
 if __name__ == "__main__":
