@@ -1,0 +1,42 @@
+#!name=User Defined Rules
+#!desc=Extra Rules
+
+[Rule]
+# User Defined
+DOMAIN-SUFFIX, githubusercontent.com, PROXY
+DOMAIN-SUFFIX, notion.vip, PROXY
+DOMAIN-SUFFIX, notion.so, PROXY
+DOMAIN-SUFFIX, yazio.com, PROXY
+DOMAIN-SUFFIX, sentry.io, PROXY  # blocked
+DOMAIN-SUFFIX, amazonaws.com, PROXY  # blocked
+DOMAIN-SUFFIX, starship.rs, PROXY
+DOMAIN-SUFFIX, calmcode.io, PROXY  # blocked
+DOMAIN-SUFFIX, cloudflare.com, PROXY
+DOMAIN-SUFFIX, hcaptcha.com, PROXY
+DOMAIN-SUFFIX, readthedocs.io, PROXY
+DOMAIN-SUFFIX, unpkg.com, PROXY
+DOMAIN-SUFFIX, wireshark.org, PROXY
+DOMAIN-SUFFIX, docker.com, PROXY  # blocked
+DOMAIN-SUFFIX, grid.is, PROXY  # blocked
+DOMAIN-SUFFIX, tiktok.com, PROXY
+DOMAIN-SUFFIX, tiktokcdn.com, PROXY
+DOMAIN, www.bing.com, PROXY  # redirected
+
+# User Defined (Games)
+DOMAIN-SUFFIX, mod.io, PROXY  # blocked
+DOMAIN-SUFFIX, play.sc, PROXY  # blocked
+DOMAIN-SUFFIX, nexusmods.com, PROXY  # blocked
+DOMAIN-SUFFIX, xivanalysis.com, PROXY  # blocked
+DOMAIN-SUFFIX, nintendo.net, PROXY  # blocked
+DOMAIN-SUFFIX, 52poke.wiki, PROXY
+DOMAIN-SUFFIX, 52poke.com, PROXY
+DOMAIN-SUFFIX, wikimg.net, PROXY
+DOMAIN-SUFFIX, sendou.ink, PROXY
+DOMAIN-SUFFIX, xmanhua.com, PROXY
+DOMAIN-SUFFIX, heroesprofile.com, PROXY
+DOMAIN-SUFFIX, universalis.app, PROXY
+DOMAIN-SUFFIX, d2jsp.org, PROXY
+DOMAIN-SUFFIX, starcitizen.tools, PROXY
+DOMAIN-SUFFIX, sc-trade.tools, PROXY
+DOMAIN-SUFFIX, maxroll.gg, PROXY
+DOMAIN-SUFFIX, planner-assets.com, PROXY  # blocked
