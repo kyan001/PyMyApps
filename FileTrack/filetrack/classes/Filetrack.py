@@ -8,7 +8,7 @@ import consolecmdtools as cct
 
 
 class Trackfile:
-    __version__ = "1.3.0"
+    __version__ = "1.3.1"
 
     def __init__(
             self,
@@ -95,7 +95,9 @@ class Trackfile:
                 cit.warn("Cleanup canceled")
 
     @cit.as_session
-    def parse(self, path: str) -> dict:
+    def parse(self, path: str) -> dict or None:
+        if not path:
+            return None
         if not os.path.isfile(path):
             raise Exception(f"TrackFile is not a file: {path}")
         cit.info(f"Parsing TrackFile `{path}`")
