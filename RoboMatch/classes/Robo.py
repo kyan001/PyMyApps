@@ -4,7 +4,7 @@ import random
 
 
 class Robo(threading.Thread):
-    'Robo class to create a robo'
+    """Robo class to create a robo"""
     PREG_TIME = 10
     LIFE_LENGTH = 100
 
