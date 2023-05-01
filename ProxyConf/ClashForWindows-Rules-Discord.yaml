@@ -6,3 +6,4 @@ payload:
   - DOMAIN-SUFFIX,discordapp.com
   - DOMAIN-SUFFIX,discordapp.net
   - DOMAIN-SUFFIX,discordstatus.com
+  - PROCESS-NAME,Discord.exe
