@@ -3,7 +3,7 @@ import plistlib
 
 
 class ItunesLib:
-    __version__ = "1.2.0"
+    __version__ = "1.3.0"
 
     def __init__(self, path: str = "资料库.xml"):
         self.path = path if os.path.isfile(path) else "iTunes Library.xml"
@@ -17,10 +17,13 @@ class ItunesLib:
             name = tracks[id]['Name']
             track_num = tracks[id].get('Track Number')
             disc_num = tracks[id].get('Disc Number')
-            if tracks[id]['Genre'] == "语音备忘录":
+            genre = tracks[id].get('Genre')
+            if not genre:
+                songs.append(f"{name} (w/o Genre)")
+            elif genre == "语音备忘录":
                 # print(name)
                 pass  # do not track Voice Memo
-            if track_num is None:
+            elif track_num is None:
                 songs.append(name)
             elif disc_num is None:
                 songs.append(f"{track_num:0>2} {name}")

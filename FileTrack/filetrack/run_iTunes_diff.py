@@ -10,9 +10,10 @@ Filetrack.dont_write_bytecode = True
 from classes import ItunesLib
 ItunesLib.dont_write_bytecode = True
 
-__version__ = "2.2.1"
+__version__ = "2.2.2"
 
-ITUNESLIB_PATH = os.path.join(cct.get_dir(cct.get_dir(__file__)), "资料库.xml" if platform.system() == "Darwin" else "iTunes Library.xml")
+BASE_DIR = cct.get_dir(cct.get_dir(__file__))
+ITUNESLIB_PATH = os.path.join(BASE_DIR, "资料库.xml" if platform.system() == "Darwin" else "iTunes Library.xml")
 
 
 def read_trackfile(ft: Filetrack) -> list[str]:
