@@ -20,7 +20,10 @@ DOMAIN-SUFFIX, docker.com, PROXY  # blocked
 DOMAIN-SUFFIX, grid.is, PROXY  # blocked
 DOMAIN-SUFFIX, tiktok.com, PROXY
 DOMAIN-SUFFIX, tiktokcdn.com, PROXY
-DOMAIN, www.bing.com, PROXY  # redirected
+DOMAIN-SUFFIX, www.bing.com, PROXY  # redirected
+DOMAIN-SUFFIX, sydney.bing.com, PROXY  # blocked
+DOMAIN-SUFFIX, cn.bing.com, DIRECT  # ignored
+DOMAIN-SUFFIX, openai.com, PROXY  # blocked
 
 # User Defined (Games)
 DOMAIN-SUFFIX, mod.io, PROXY  # blocked
