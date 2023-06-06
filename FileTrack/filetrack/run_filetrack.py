@@ -1,13 +1,14 @@
 from __future__ import annotations
+import sys
 
 import fuzzyfinder
 import consolecmdtools as cct
 import consoleiotools as cit
 
 from classes import Filetrack
-Filetrack.dont_write_bytecode = True
 
-__version__ = '2.2.2'
+sys.dont_write_bytecode = True
+__version__ = '2.3.0'
 
 TARGET_EXTS = ["mp3", "m4a"]
 HASH_MODE = "CRC32"  # "CRC32", "MD5", "NAME", "PATH", "MTIME"
