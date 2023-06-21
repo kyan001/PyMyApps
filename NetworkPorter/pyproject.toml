@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "NetworkPorter"
+description = "Network Porter"
+requires-python = ">=3.6"
+version = "1.0.0"
+dependencies = [
+    "consoleiotools",
+    "psutil"
+]
+
+[[project.authors]]
+name = "Kyan"
+email = "kai@kyan001.com"
+
+[project.optional-dependencies]
+dev = ["build", "wheel", "pycodestyle"]
+
+[tool.setuptools.packages.find]
+exclude = ["contrib", "docs", "tests"]
