@@ -8,11 +8,11 @@ import consolecmdtools as cct
 
 
 class Trackfile:
-    __version__ = "1.3.1"
+    __version__ = "1.4.0"
 
     def __init__(
             self,
-            trackfile_dir: str = cct.get_dir(cct.get_dir(__file__)),
+            trackfile_dir: str = cct.get_path(cct.get_path(__file__, parent=True), parent=True),
             prefix: str = "TrackFile-",
             format: str = "json",
             host: bool = True):
@@ -107,7 +107,7 @@ class Trackfile:
         return trackings
 
     @cit.as_session
-    def generate(self, base_dir: str = cct.get_dir(__file__), exts: list[str] = [], hash_mode: str = "CRC32",):
+    def generate(self, base_dir: str = cct.get_path(__file__, parent=True), exts: list[str] = [], hash_mode: str = "CRC32",):
         """
         Args:
             hash_mode: "CRC32", "MD5", "NAME", "PATH", "MTIME"
