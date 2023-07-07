@@ -12,7 +12,7 @@ ItunesLib.dont_write_bytecode = True
 
 __version__ = "2.2.2"
 
-BASE_DIR = cct.get_dir(cct.get_dir(__file__))
+BASE_DIR = cct.get_path(cct.get_path(__file__, parent=True), parent=True)
 ITUNESLIB_PATH = os.path.join(BASE_DIR, "资料库.xml" if platform.system() == "Darwin" else "iTunes Library.xml")
 
 
