@@ -1,4 +1,3 @@
 consoleiotools
 consolecmdtools
-tqdm
 fuzzyfinder
