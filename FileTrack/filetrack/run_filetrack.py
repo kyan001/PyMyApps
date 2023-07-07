@@ -9,11 +9,11 @@ import consoleiotools as cit
 from classes import Filetrack
 Filetrack.dont_write_bytecode = True
 
-__version__ = '2.2.3'
+__version__ = '2.4.0'
 
 TARGET_EXTS = ["mp3", "m4a"]
 HASH_MODE = "CRC32"  # "CRC32", "MD5", "NAME", "PATH", "MTIME"
-BASE_DIR = cct.get_dir(cct.get_dir(__file__))
+BASE_DIR = cct.get_path(cct.get_path(__file__, parent=True), parent=True)
 
 
 def compare(ft: Filetrack):
@@ -48,7 +48,7 @@ def compare(ft: Filetrack):
 
 def main():
     ft = Filetrack.Trackfile(
-        trackfile_dir=cct.get_dir(__file__),
+        trackfile_dir=cct.get_path(__file__, parent=True),
         prefix="TrackFile-",
         format="json",
         host=True,
