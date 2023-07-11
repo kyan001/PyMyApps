@@ -8,7 +8,7 @@ import consolecmdtools as cct
 
 
 class Trackfile:
-    __version__ = "1.4.0"
+    __version__ = "1.4.2"
 
     def __init__(
             self,
@@ -47,7 +47,7 @@ class Trackfile:
             if filename.startswith(self.prefix) and filename.endswith(self.suffix):
                 if self.host and (self.hostname not in filename):
                     continue
-                trackfile_list.append(filename)
+                trackfile_list.append(os.path.join(self.trackfile_dir, filename))
         return sorted(trackfile_list)
 
     @property
@@ -85,11 +85,11 @@ class Trackfile:
         if len(self.files) > 1:
             old_trackfiles = sorted(self.files)[:-1]
             cit.ask("Cleanup old TrackFiles?")
-            cit.echo(old_trackfiles)
+            for trackfile in old_trackfiles:
+                cit.echo(cct.get_path(trackfile, basename=True), pre="*")
             if cit.get_choice(["Yes", "No"]) == "Yes":
-                for filename in old_trackfiles:
-                    abspath = os.path.abspath(filename)
-                    os.remove(abspath)
+                for filepath in old_trackfiles:
+                    os.remove(filepath)
                 cit.info("Cleanup done")
             else:
                 cit.warn("Cleanup canceled")
