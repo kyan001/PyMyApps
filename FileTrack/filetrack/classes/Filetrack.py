@@ -8,7 +8,7 @@ import consolecmdtools as cct
 
 
 class Trackfile:
-    __version__ = "1.4.2"
+    __version__ = "1.5.0"
 
     def __init__(
             self,
@@ -23,7 +23,6 @@ class Trackfile:
         self.prefix = prefix
         self.trackfile_dir = trackfile_dir
         self.host = host
-        self.hostname = socket.gethostname().replace("-", "").replace(".", "")
         self.format = format
         if self.format.upper() == "TOML":
             import tomlkit  # lazyload
@@ -39,6 +38,28 @@ class Trackfile:
 
     def __str__(self) -> str:
         return self.path
+
+    @property
+    def hostname(self):
+        """Get hostname and check if hostname is new."""
+        if self.host is False:
+            return None
+        host = socket.gethostname().replace("-", "").replace(".", "")  # default hostname
+        if host not in self.hosts:
+            cit.ask(f"")
+            if cit.get_input("New hostname `{host}` detected. Continue?", default="Yes") != "Yes":
+                cit.info("Please choose a hostname from the list below:")
+                return cit.get_choice(self.hosts)
+        return host
+
+    @property
+    def hosts(self) -> list[str]:
+        """list of known hosts in trackfile_dir"""
+        trackfile_list = []
+        for filename in os.listdir(self.trackfile_dir):
+            if filename.startswith(self.prefix) and filename.endswith(self.suffix):
+                trackfile_list.append(filename.split("-")[2].split(".")[0])
+        return sorted(list(set(trackfile_list)))
 
     @property
     def files(self) -> list[str]:
@@ -107,10 +128,15 @@ class Trackfile:
         return trackings
 
     @cit.as_session
-    def generate(self, base_dir: str = cct.get_path(__file__, parent=True), exts: list[str] = [], hash_mode: str = "CRC32",):
-        """
+    def generate(self, base_dir: str = cct.get_path(__file__, parent=True), exts: list[str] = [], hash_mode: str = "CRC32"):
+        """Generate file tracking information.
+
         Args:
-            hash_mode: "CRC32", "MD5", "NAME", "PATH", "MTIME"
+            exts (list[str]): Accepted file extensions. Ex. ["mp3", "m4a"]
+            hash_mode (str): "CRC32", "MD5", "NAME", "PATH", "MTIME"
+
+        Returns:
+            dict: {filename: filehash}
         """
         paths = []
         for ext in exts:
