@@ -1,19 +1,23 @@
 import os
 import pathlib
 
+import tomlkit
 import consolecmdtools as cct
 import consoleiotools as cit
 
-__version__ = '1.0.0'
+__version__ = '1.1.2'
 
 
-_itunes_tools_dir = cct.get_path(__file__, parent=True)
-_itunes_extras_dir = cct.get_path(_itunes_tools_dir, parent=True)
-_app_folder_dir = cct.get_path(_itunes_extras_dir, parent=True)
-_itunes_library_dir = os.path.join(_app_folder_dir, 'iTunesLibrary')
-_itunes_media_dir = os.path.join(_itunes_library_dir, 'iTunes Media')
-_itunes_music_dir = os.path.join(_itunes_media_dir, 'Music')
-ROOT_FOLDER = _itunes_music_dir
+def get_root_folder_from_config(config_path: str = "") -> str:
+    if not config_path:
+        config_path = cct.get_path(__file__).replace(cct.get_path(__file__, ext=True), "toml")
+    if os.path.isfile(config_path):
+        with open(config_path, "r") as f:
+            config = tomlkit.parse(f.read())
+            if config and config.get("folder"):
+                return cct.get_path(os.path.join(cct.get_path(__file__, parent=True), config["folder"]))
+    return None
+
 
 def is_empty(path):
     """Check if a given path is an empty folder
@@ -66,21 +70,28 @@ def bfs_walk(root_folder):
 def empty_folder_tree(root_folder):
     """List folders under root_folder."""
     cit.echo(f'{root_folder}{os.sep}')
+    dir_count = 0
+    file_count = 0
     for path in bfs_walk(root_folder):
         depth = len(path.relative_to(root_folder).parts)
-        prefix = '    ' * (depth - 1) + '|-- '
-        pathname = ('📂' if os.path.isdir(path) else '') + path.name
+        prefix = '|   ' * (depth - 1) + f"|--{'📂' if path.is_dir() else '📄'}"
         suffix = ' '.join([
             os.sep if path.is_dir() else '',
             '🈳' if is_empty(path) else '',
         ])
+        if path.is_dir():
+            dir_count += 1
+        else:
+            file_count += 1
         if has_empty(path):
-            cit.echo(f'{prefix}{pathname}{suffix}')
+            cit.echo(f'{prefix} {path.name}{suffix}')
+    cit.info(f"📂{dir_count} folders, 📄{file_count} files")
 
 
 def main():
-    cit.panel(f"Root Folder: 📂{ROOT_FOLDER}")
-    empty_folder_tree(ROOT_FOLDER)
+    root_folder = get_root_folder_from_config() or cct.get_path(__file__, parent=True)
+    cit.panel(f"Root Folder: 📂{root_folder}")
+    empty_folder_tree(root_folder)
 
 if __name__ == "__main__":
     main()
