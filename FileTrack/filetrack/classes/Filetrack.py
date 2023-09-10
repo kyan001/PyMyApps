@@ -8,21 +8,21 @@ import consolecmdtools as cct
 
 
 class Trackfile:
-    __version__ = "1.5.0"
+    __version__ = "1.5.5"
 
     def __init__(
             self,
             trackfile_dir: str = cct.get_path(cct.get_path(__file__, parent=True), parent=True),
             prefix: str = "TrackFile-",
             format: str = "json",
-            host: bool = True):
+            host: bool = True
+            ):
         """
         Args:
             format: "json", "toml"
         """
         self.prefix = prefix
         self.trackfile_dir = trackfile_dir
-        self.host = host
         self.format = format
         if self.format.upper() == "TOML":
             import tomlkit  # lazyload
@@ -34,23 +34,12 @@ class Trackfile:
             self.formatter = json
         else:
             raise Exception(f"Output format `{self.format}` does not support")
+        self.host = host
+        self.hostname = self.get_hostname()
         self.trackings = {}
 
     def __str__(self) -> str:
         return self.path
-
-    @property
-    def hostname(self):
-        """Get hostname and check if hostname is new."""
-        if self.host is False:
-            return None
-        host = socket.gethostname().replace("-", "").replace(".", "")  # default hostname
-        if host not in self.hosts:
-            cit.ask(f"")
-            if cit.get_input("New hostname `{host}` detected. Continue?", default="Yes") != "Yes":
-                cit.info("Please choose a hostname from the list below:")
-                return cit.get_choice(self.hosts)
-        return host
 
     @property
     def hosts(self) -> list[str]:
@@ -88,6 +77,16 @@ class Trackfile:
         set1 = set(trackings1.items())
         set2 = set(trackings2.items())
         return [filename for filename, filehash in set1 - set2], [filename for filename, filehash in set2 - set1]
+
+    def get_hostname(self):
+        """Get hostname and check if hostname is new."""
+        host = socket.gethostname().replace("-", "").replace(".", "")  # default hostname
+        if host not in self.hosts:
+            cit.ask(f"")
+            if cit.get_input(f"New hostname `{host}` detected. Continue?", default="Yes") != "Yes":
+                cit.info("Please choose a hostname from the list below:")
+                return cit.get_choice(self.hosts)
+        return host
 
     @cit.as_session
     def save(self):
@@ -128,10 +127,11 @@ class Trackfile:
         return trackings
 
     @cit.as_session
-    def generate(self, base_dir: str = cct.get_path(__file__, parent=True), exts: list[str] = [], hash_mode: str = "CRC32"):
+    def generate(self, target_dir: str = cct.get_path(__file__, parent=True), exts: list[str] = [], hash_mode: str = "CRC32"):
         """Generate file tracking information.
 
         Args:
+            target_dir (str): Target directory to scan.
             exts (list[str]): Accepted file extensions. Ex. ["mp3", "m4a"]
             hash_mode (str): "CRC32", "MD5", "NAME", "PATH", "MTIME"
 
@@ -142,7 +142,7 @@ class Trackfile:
         for ext in exts:
             target_file_pattern = f"*.{ext}"
             cit.info(f"Target file pattern: {target_file_pattern}")
-            paths += list(pathlib.Path(base_dir).rglob(target_file_pattern))
+            paths += list(pathlib.Path(target_dir).rglob(target_file_pattern))
         for filepath in cit.track(paths, "Hashing...", unit="files"):
             if hash_mode == "CRC32":
                 filehash = cct.crc32(filepath)

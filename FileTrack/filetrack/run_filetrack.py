@@ -10,22 +10,22 @@ import consoleiotools as cit
 from classes import Filetrack
 Filetrack.dont_write_bytecode = True
 
-__version__ = '2.5.2'
+__version__ = '2.5.5'
 
 TARGET_EXTS = ["mp3", "m4a"]
 HASH_MODE = "CRC32"  # "CRC32", "MD5", "NAME", "PATH", "MTIME"
-BASE_DIR = ""
+TARGET_DIR = ""
+FORMAT = "toml"
 
-
-def get_base_dir(config_path: str = "filetrack.toml") -> str:
-    if BASE_DIR:  # if already set, return it
-        return BASE_DIR
+def get_target_dir(config_path: str = "filetrack.toml") -> str:
+    if TARGET_DIR:  # if already set, return it
+        return TARGET_DIR
     if os.path.isfile(config_path):
         with open(config_path, "r") as f:
             config = tomlkit.parse(f.read())
         if config and config.get("folder"):
-            base_dir = cct.get_path(__file__, parent=True)
-            relative_path = os.path.join(base_dir, config["folder"])
+            current_dir = cct.get_path(__file__, parent=True)
+            relative_path = os.path.join(current_dir, config["folder"])
             return cct.get_path(relative_path)  # reveal real path
     return cct.get_path(__file__, parent=True)  # default to current dir
 
@@ -33,7 +33,7 @@ def get_base_dir(config_path: str = "filetrack.toml") -> str:
 def compare(ft: Filetrack):
     old_trackings = ft.parse(ft.latest)
     ft.generate(
-        base_dir=BASE_DIR,
+        target_dir=TARGET_DIR,
         exts=TARGET_EXTS,
         hash_mode=HASH_MODE
     )
@@ -61,17 +61,18 @@ def compare(ft: Filetrack):
 
 
 def main():
-    BASE_DIR = get_base_dir()
+    global TARGET_DIR
+    TARGET_DIR = get_target_dir()
     ft = Filetrack.Trackfile(
         trackfile_dir=cct.get_path(__file__, parent=True),
         prefix="TrackFile-",
-        format="json",
+        format=FORMAT,
         host=True,
     )
     cit.info(f"Version: {ft.__version__}")
     cit.info(f"Trackfile Dir: 📂 {ft.trackfile_dir}")
-    cit.info(f"Target File Folder: 📂 {BASE_DIR}")
-    cit.info(f"Hash Mod: 🧮 {HASH_MODE}")
+    cit.info(f"Target Folder: 📂 {TARGET_DIR}")
+    cit.info(f"Hash Mode: 🧮 {HASH_MODE}")
     cit.info(f"Target Extensions: 📜 {TARGET_EXTS}")
     cit.info(f"Hostname: 💻 {ft.hostname}")
     compare(ft)
