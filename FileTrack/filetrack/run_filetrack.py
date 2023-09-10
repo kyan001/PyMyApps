@@ -3,17 +3,31 @@ from __future__ import annotations
 import os
 
 import fuzzyfinder
+import tomlkit
 import consolecmdtools as cct
 import consoleiotools as cit
 
 from classes import Filetrack
 Filetrack.dont_write_bytecode = True
 
-__version__ = '2.4.0'
+__version__ = '2.5.2'
 
 TARGET_EXTS = ["mp3", "m4a"]
 HASH_MODE = "CRC32"  # "CRC32", "MD5", "NAME", "PATH", "MTIME"
-BASE_DIR = cct.get_path(cct.get_path(__file__, parent=True), parent=True)
+BASE_DIR = ""
+
+
+def get_base_dir(config_path: str = "filetrack.toml") -> str:
+    if BASE_DIR:  # if already set, return it
+        return BASE_DIR
+    if os.path.isfile(config_path):
+        with open(config_path, "r") as f:
+            config = tomlkit.parse(f.read())
+        if config and config.get("folder"):
+            base_dir = cct.get_path(__file__, parent=True)
+            relative_path = os.path.join(base_dir, config["folder"])
+            return cct.get_path(relative_path)  # reveal real path
+    return cct.get_path(__file__, parent=True)  # default to current dir
 
 
 def compare(ft: Filetrack):
@@ -47,6 +61,7 @@ def compare(ft: Filetrack):
 
 
 def main():
+    BASE_DIR = get_base_dir()
     ft = Filetrack.Trackfile(
         trackfile_dir=cct.get_path(__file__, parent=True),
         prefix="TrackFile-",
