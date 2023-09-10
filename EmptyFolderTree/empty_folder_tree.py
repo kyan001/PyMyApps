@@ -5,10 +5,10 @@ import tomlkit
 import consolecmdtools as cct
 import consoleiotools as cit
 
-__version__ = '1.2.1'
+__version__ = '1.2.2'
 
 
-def get_root_folder_from_config(config_path: str = os.path.splitext(cct.get_path(__file__))[0] + ".toml") -> str:
+def get_root_folder(config_path: str = os.path.splitext(cct.get_path(__file__))[0] + ".toml") -> str:
     if os.path.isfile(config_path):
         with open(config_path, "r") as f:
             config = tomlkit.parse(f.read())
@@ -16,7 +16,7 @@ def get_root_folder_from_config(config_path: str = os.path.splitext(cct.get_path
                 base_dir = cct.get_path(__file__, parent=True)
                 relative_path = os.path.join(base_dir, config["folder"])
                 return cct.get_path(relative_path)
-    return None
+    return cct.get_path(__file__, parent=True)  # default to the folder of this script
 
 
 def is_empty(path):
@@ -92,7 +92,7 @@ def empty_folder_tree(root_folder):
 
 
 def main():
-    root_folder = get_root_folder_from_config() or cct.get_path(__file__, parent=True)
+    root_folder = get_root_folder()
     cit.panel(f"{root_folder}", title="📂 Root Folder")
     empty_folder_tree(root_folder)
 
