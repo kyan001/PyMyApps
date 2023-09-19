@@ -1,1 +1,4 @@
 folder = ""
+show_files = true
+show_all_folders = true
+ignore = ["新建文件夹"]

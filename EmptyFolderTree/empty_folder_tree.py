@@ -1,21 +1,33 @@
 import os
 import pathlib
+import shutil
 
 import tomlkit
 import consolecmdtools as cct
 import consoleiotools as cit
 
-__version__ = '1.2.2'
+__version__ = "1.4.0"
 
 
-def get_root_folder(config_path: str = os.path.splitext(cct.get_path(__file__))[0] + ".toml") -> str:
+CONFIG = {}
+
+def config_init(config_path: str = os.path.splitext(cct.get_path(__file__))[0] + ".toml"):
     if os.path.isfile(config_path):
-        with open(config_path, "r") as f:
-            config = tomlkit.parse(f.read())
-            if config and config.get("folder"):
-                base_dir = cct.get_path(__file__, parent=True)
-                relative_path = os.path.join(base_dir, config["folder"])
-                return cct.get_path(relative_path)
+        config = tomlkit.parse(cct.read_file(config_path))
+        if config:
+            CONFIG["self"] = config_path
+            CONFIG["root_folder"] = config.get("root_folder")
+            CONFIG["show_files"] = config.get("show_files")
+            CONFIG["show_all_folders"] = config.get("show_all_folders")
+            CONFIG["ignore"] = config.get("ignore")
+
+
+def get_root_folder() -> str:
+    """Get the root folder to scan for empty folders"""
+    if CONFIG.get("root_folder"):
+        base_dir = cct.get_path(__file__, parent=True)
+        relative_path = os.path.join(base_dir, CONFIG.get("root_folder"))
+        return cct.get_path(relative_path)
     return cct.get_path(__file__, parent=True)  # default to the folder of this script
 
 
@@ -57,44 +69,64 @@ def has_empty(path):
     return False
 
 
-def bfs_walk(root_folder):
-    queue = [pathlib.Path(root_folder)]
-    while queue:
-        path = queue.pop(0)
-        yield path
-        if path.is_dir():
-            # insert into the front of the queue
-            queue = [p for p in path.iterdir()] + queue
-
-
-def empty_folder_tree(root_folder):
-    """List folders under root_folder."""
-    cit.echo(f'📂 {cct.get_path(root_folder, basename=True)}{os.sep}')
-    dir_count = 0
-    file_count = 0
-    empty_count = 0
-    for path in bfs_walk(root_folder):
-        depth = len(path.relative_to(root_folder).parts)
-        prefix = '|   ' * (depth - 1) + f"|--{'📂' if path.is_dir() else '📄'}"
-        suffix = ' '.join([
-            os.sep if path.is_dir() else '',
-            '🈳' if is_empty(path) else '',
-        ])
-        if path.is_dir():
-            dir_count += 1
-        else:
-            file_count += 1
-        if is_empty(path):
-            empty_count += 1
+def traverse_empty_folder(root_folder: str) -> list[str]:
+    """Traverse the folder tree and return a list of empty folders"""
+    def to_visible(path: str) -> bool:
+        if CONFIG.get("show_files") and path.is_file():
+            return True
+        if CONFIG.get("show_all_folders") and path.is_dir():
+            return True
         if has_empty(path):
-            cit.echo(f'{prefix} {path.name}{suffix}')
-    cit.info(f"Total: {dir_count} folders, {file_count} files, {empty_count} empty folders.")
+            return True
+        return False
 
+    def to_highlight(path: str) -> bool:
+        if is_empty(path):
+            return True
+        return False
+
+    def add_suffix(path: str) -> str:
+        suffix = []
+        if is_empty(path):
+            suffix.append("🈳")
+        if CONFIG.get("ignore") and path.name in CONFIG.get("ignore"):
+            suffix.append("[red](IGNORED)[/]")
+        return " ".join(suffix)
+
+    def path_fitler(path: str) -> bool:
+        if CONFIG.get("ignore") and path.name in CONFIG.get("ignore"):
+            return False
+        if is_empty(path):
+            return True
+        return False
+
+    delete_candidates = cct.ls_tree(root_folder, show_icon=True, to_visible=to_visible, to_highlight=to_highlight, add_suffix=add_suffix, filter=path_fitler)
+    return delete_candidates
+
+def delete_empty_folders(empty_folders: list[str]):
+    if empty_folders:
+        if cit.get_input(f"[yellow]{len(empty_folders)}[/] of the folders will be removed, is that OK?", default="Yes") == "Yes":
+            for folder in empty_folders:
+                shutil.rmtree(folder)
+            cit.info(f"{len(empty_folders)} folders removed.")
+        else:
+            cit.warn("Delete cancelled.")
+    else:
+        cit.info("No empty folders found.")
 
 def main():
+    config_init()
     root_folder = get_root_folder()
-    cit.panel(f"{root_folder}", title="📂 Root Folder")
-    empty_folder_tree(root_folder)
+    info_texts = [f"📂 Root Folder: {root_folder}",]
+    if CONFIG:
+        info_texts.append(f"🛠️ Config File: {CONFIG.get('self')}")
+        info_texts.append(f"👀 Show Files: {'✔' if CONFIG.get('show_files') else '✖'}")
+        info_texts.append(f"👀 Show All Folders: {'✔' if CONFIG.get('show_all_folders') else '✖'}")
+    cit.panel("\n".join(info_texts), title="Info")
+    empty_folders = traverse_empty_folder(root_folder)
+    delete_empty_folders(empty_folders)
+
 
 if __name__ == "__main__":
     main()
+    cit.pause()
