@@ -100,7 +100,8 @@ def traverse_empty_folder(root_folder: str) -> list[str]:
             return True
         return False
 
-    delete_candidates = cct.ls_tree(root_folder, show_icon=True, to_visible=to_visible, to_highlight=to_highlight, add_suffix=add_suffix, filter=path_fitler)
+    delete_candidates = cct.get_files(root_folder, filter=path_fitler)
+    cct.ls_tree(root_folder, show_icon=True, to_visible=to_visible, to_highlight=to_highlight, add_suffix=add_suffix)
     return delete_candidates
 
 def delete_empty_folders(empty_folders: list[str]):
