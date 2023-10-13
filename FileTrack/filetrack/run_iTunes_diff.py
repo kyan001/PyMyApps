@@ -10,9 +10,9 @@ Filetrack.dont_write_bytecode = True
 from classes import ItunesLib
 ItunesLib.dont_write_bytecode = True
 
-__version__ = "2.2.2"
+__version__ = "2.2.3"
 
-BASE_DIR = cct.get_path(cct.get_path(__file__, parent=True), parent=True)
+BASE_DIR = os.path.join(cct.get_path(__file__).parent.parent.parent, "iTunesLibrary")
 ITUNESLIB_PATH = os.path.join(BASE_DIR, "资料库.xml" if platform.system() == "Darwin" else "iTunes Library.xml")
 
 

@@ -10,7 +10,7 @@ import consoleiotools as cit
 from classes import Filetrack
 Filetrack.dont_write_bytecode = True
 
-__version__ = '2.5.5'
+__version__ = '2.5.6'
 
 TARGET_EXTS = ["mp3", "m4a"]
 HASH_MODE = "CRC32"  # "CRC32", "MD5", "NAME", "PATH", "MTIME"
@@ -24,10 +24,10 @@ def get_target_dir(config_path: str = "filetrack.toml") -> str:
         with open(config_path, "r") as f:
             config = tomlkit.parse(f.read())
         if config and config.get("folder"):
-            current_dir = cct.get_path(__file__, parent=True)
+            current_dir = cct.get_path(__file__).parent
             relative_path = os.path.join(current_dir, config["folder"])
             return cct.get_path(relative_path)  # reveal real path
-    return cct.get_path(__file__, parent=True)  # default to current dir
+    return cct.get_path(__file__).parent  # default to current dir
 
 
 def compare(ft: Filetrack):
@@ -64,7 +64,7 @@ def main():
     global TARGET_DIR
     TARGET_DIR = get_target_dir()
     ft = Filetrack.Trackfile(
-        trackfile_dir=cct.get_path(__file__, parent=True),
+        trackfile_dir=cct.get_path(__file__).parent,
         prefix="TrackFile-",
         format=FORMAT,
         host=True,

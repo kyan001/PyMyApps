@@ -8,11 +8,11 @@ import consolecmdtools as cct
 
 
 class Trackfile:
-    __version__ = "1.5.5"
+    __version__ = "1.5.6"
 
     def __init__(
             self,
-            trackfile_dir: str = cct.get_path(cct.get_path(__file__, parent=True), parent=True),
+            trackfile_dir: str = cct.get_path(__file__).parent,
             prefix: str = "TrackFile-",
             format: str = "json",
             host: bool = True
@@ -106,7 +106,7 @@ class Trackfile:
             old_trackfiles = sorted(self.files)[:-1]
             cit.ask("Cleanup old TrackFiles?")
             for trackfile in old_trackfiles:
-                cit.echo(cct.get_path(trackfile, basename=True), pre="*")
+                cit.echo(cct.get_path(trackfile).basename, pre="*")
             if cit.get_choice(["Yes", "No"]) == "Yes":
                 for filepath in old_trackfiles:
                     os.remove(filepath)
@@ -127,7 +127,7 @@ class Trackfile:
         return trackings
 
     @cit.as_session
-    def generate(self, target_dir: str = cct.get_path(__file__, parent=True), exts: list[str] = [], hash_mode: str = "CRC32"):
+    def generate(self, target_dir: str = cct.get_path(__file__).parent, exts: list[str] = [], hash_mode: str = "CRC32"):
         """Generate file tracking information.
 
         Args:
