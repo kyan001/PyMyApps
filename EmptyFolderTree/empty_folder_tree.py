@@ -6,12 +6,12 @@ import tomlkit
 import consolecmdtools as cct
 import consoleiotools as cit
 
-__version__ = "1.4.0"
+__version__ = "1.4.1"
 
 
 CONFIG = {}
 
-def config_init(config_path: str = os.path.splitext(cct.get_path(__file__))[0] + ".toml"):
+def config_init(config_path: str = cct.get_path(__file__).stem + ".toml"):
     if os.path.isfile(config_path):
         config = tomlkit.parse(cct.read_file(config_path))
         if config:
@@ -25,10 +25,10 @@ def config_init(config_path: str = os.path.splitext(cct.get_path(__file__))[0] +
 def get_root_folder() -> str:
     """Get the root folder to scan for empty folders"""
     if CONFIG.get("root_folder"):
-        base_dir = cct.get_path(__file__, parent=True)
+        base_dir = cct.get_path(__file__).parent
         relative_path = os.path.join(base_dir, CONFIG.get("root_folder"))
         return cct.get_path(relative_path)
-    return cct.get_path(__file__, parent=True)  # default to the folder of this script
+    return cct.get_path(__file__).parent  # default to the folder of this script
 
 
 def is_empty(path):

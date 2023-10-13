@@ -4,13 +4,13 @@ import shutil
 import consoleiotools as cit
 import consolecmdtools as cct
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 
 class EmptyFolderDeleter:
     IGNORE_FOLDERS = {""}
 
-    def __init__(self, base_dir: str = cct.get_path(__file__, parent=True)):
+    def __init__(self, base_dir: str = cct.get_path(__file__).parent):
         self.base_dir = base_dir
         self.folders = []
         self.empty_folders = []
