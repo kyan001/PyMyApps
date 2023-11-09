@@ -10,7 +10,7 @@ import consoleiotools as cit
 from classes import Filetrack
 Filetrack.dont_write_bytecode = True
 
-__version__ = '2.5.7'
+__version__ = '2.5.8'
 
 TARGET_EXTS = ["mp3", "m4a"]
 HASH_MODE = "CRC32"  # "CRC32", "MD5", "NAME", "PATH", "MTIME"
@@ -21,13 +21,12 @@ def get_target_dir(config_path: str = "filetrack.toml") -> str:
     if TARGET_DIR:  # if already set, return it
         return TARGET_DIR
     if os.path.isfile(config_path):
-        with open(config_path, "r") as fl:
-            try:
-                import tomllib  # >= Python 3.11
-                config = tomllib.load(fl)
-            except ImportError:
-                import tomlkit  # fallback to tomlkit
-                config = tomlkit.parse(fl.read())
+        try:
+            import tomllib  # >= Python 3.11
+            config = tomllib.loads(cct.read_file(config_path))
+        except ImportError:
+            import tomlkit  # fallback to tomlkit
+            config = tomlkit.parse(cct.read_file(config_path))
         if config and config.get("folder"):
             current_dir = cct.get_path(__file__).parent
             relative_path = os.path.join(current_dir, config["folder"])
