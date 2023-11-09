@@ -73,7 +73,7 @@ class Trackfile:
         return self.prefix + now + badge_hostname + self.suffix
 
     @staticmethod
-    def diffs(trackings1: dict, trackings2: dict) -> tuple[list, list]:
+    def diffs(trackings1: dict, trackings2: dict) -> 'tuple[list, list]':
         set1 = set(trackings1.items())
         set2 = set(trackings2.items())
         return [filename for filename, filehash in set1 - set2], [filename for filename, filehash in set2 - set1]
