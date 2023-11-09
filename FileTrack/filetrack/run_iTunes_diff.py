@@ -16,7 +16,7 @@ BASE_DIR = os.path.join(cct.get_path(__file__).parent.parent.parent, "iTunesLibr
 ITUNESLIB_PATH = os.path.join(BASE_DIR, "资料库.xml" if platform.system() == "Darwin" else "iTunes Library.xml")
 
 
-def read_trackfile(ft: Filetrack) -> list[str]:
+def read_trackfile(ft: Filetrack) -> list:
     old_trackings = ft.parse(ft.latest)
     if not old_trackings:
         cit.err("TrackFile unable to load.")

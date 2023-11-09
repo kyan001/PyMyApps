@@ -3,13 +3,13 @@ import plistlib
 
 
 class ItunesLib:
-    __version__ = "1.3.0"
+    __version__ = "1.3.1"
 
     def __init__(self, path: str = "资料库.xml"):
         self.path = path if os.path.isfile(path) else "iTunes Library.xml"
 
     @property
-    def songs(self) -> list[str]:
+    def songs(self) -> list:
         songs = []
         with open(self.path, 'rb') as f:
             tracks = plistlib.load(f)['Tracks']

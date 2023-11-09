@@ -1,19 +1,23 @@
 import os
-import pathlib
 import shutil
 
 import tomlkit
 import consolecmdtools as cct
 import consoleiotools as cit
 
-__version__ = "1.4.1"
+__version__ = "1.4.2"
 
 
 CONFIG = {}
 
 def config_init(config_path: str = cct.get_path(__file__).stem + ".toml"):
     if os.path.isfile(config_path):
-        config = tomlkit.parse(cct.read_file(config_path))
+        try:
+            import tomllib  # >= Python 3.11
+            config = tomllib.loads(cct.read_file(config_path))
+        except ImportError:
+            import tomlkit
+            config = tomlkit.parse(cct.read_file(config_path))
         if config:
             CONFIG["self"] = config_path
             CONFIG["root_folder"] = config.get("root_folder")
@@ -69,7 +73,7 @@ def has_empty(path):
     return False
 
 
-def traverse_empty_folder(root_folder: str) -> list[str]:
+def traverse_empty_folder(root_folder: str) -> list:
     """Traverse the folder tree and return a list of empty folders"""
     def to_visible(path: str) -> bool:
         if CONFIG.get("show_files") and path.is_file():
@@ -104,7 +108,7 @@ def traverse_empty_folder(root_folder: str) -> list[str]:
     cct.ls_tree(root_folder, show_icon=True, to_visible=to_visible, to_highlight=to_highlight, add_suffix=add_suffix)
     return delete_candidates
 
-def delete_empty_folders(empty_folders: list[str]):
+def delete_empty_folders(empty_folders: list):
     if empty_folders:
         if cit.get_input(f"[yellow]{len(empty_folders)}[/] of the folders will be removed, is that OK?", default="Yes") == "Yes":
             for folder in empty_folders:

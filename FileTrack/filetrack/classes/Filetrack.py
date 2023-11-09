@@ -8,7 +8,7 @@ import consolecmdtools as cct
 
 
 class Trackfile:
-    __version__ = "1.5.6"
+    __version__ = "1.5.7"
 
     def __init__(
             self,
@@ -42,7 +42,7 @@ class Trackfile:
         return self.path
 
     @property
-    def hosts(self) -> list[str]:
+    def hosts(self) -> list:
         """list of known hosts in trackfile_dir"""
         trackfile_list = []
         for filename in os.listdir(self.trackfile_dir):
@@ -51,7 +51,7 @@ class Trackfile:
         return sorted(list(set(trackfile_list)))
 
     @property
-    def files(self) -> list[str]:
+    def files(self) -> list:
         trackfile_list = []
         for filename in os.listdir(self.trackfile_dir):
             if filename.startswith(self.prefix) and filename.endswith(self.suffix):
@@ -127,7 +127,7 @@ class Trackfile:
         return trackings
 
     @cit.as_session
-    def generate(self, target_dir: str = cct.get_path(__file__).parent, exts: list[str] = [], hash_mode: str = "CRC32"):
+    def generate(self, target_dir: str = cct.get_path(__file__).parent, exts: list = [], hash_mode: str = "CRC32"):
         """Generate file tracking information.
 
         Args:
