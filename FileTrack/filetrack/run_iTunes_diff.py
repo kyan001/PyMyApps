@@ -10,10 +10,11 @@ Filetrack.dont_write_bytecode = True
 from classes import ItunesLib
 ItunesLib.dont_write_bytecode = True
 
-__version__ = "2.2.5"
+__version__ = "2.2.6"
 
 BASE_DIR = os.path.join(cct.get_path(__file__).parent.parent.parent, "iTunesLibrary")
 ITUNESLIB_PATH = os.path.join(BASE_DIR, "资料库.xml" if platform.system() == "Darwin" else "iTunes Library.xml")
+TRACKFILE_DIR = cct.get_path(__file__).parent
 FORMAT = "toml"
 
 
@@ -61,7 +62,7 @@ def main():
     cit.info(f"VERSION: {__version__}")
     cit.info(f"iTunes Library File: `{ITUNESLIB_PATH}`")
     cit.info(f"Update iTunes Library File by iTunes -> File -> Lib -> Export")
-    trackfile = Filetrack.Trackfile(format=FORMAT)
+    trackfile = Filetrack.Trackfile(trackfile_dir=TRACKFILE_DIR, format=FORMAT)
     filetrack_songs = read_trackfile(trackfile)
     ituneslib = ItunesLib.ItunesLib(ITUNESLIB_PATH)
     show_file_only(check_diffs(checkees=filetrack_songs, checklist=ituneslib.songs))
