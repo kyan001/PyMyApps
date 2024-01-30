@@ -5,7 +5,7 @@ import tomlkit
 import consolecmdtools as cct
 import consoleiotools as cit
 
-__version__ = "1.4.2"
+__version__ = "1.4.3"
 
 
 CONFIG = {}
@@ -104,7 +104,7 @@ def traverse_empty_folder(root_folder: str) -> list:
             return True
         return False
 
-    delete_candidates = cct.get_files(root_folder, filter=path_fitler)
+    delete_candidates = cct.get_paths(root_folder, filter=path_fitler)
     cct.ls_tree(root_folder, show_icon=True, to_visible=to_visible, to_highlight=to_highlight, add_suffix=add_suffix)
     return delete_candidates
 
