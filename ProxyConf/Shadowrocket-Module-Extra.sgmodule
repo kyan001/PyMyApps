@@ -24,6 +24,8 @@ DOMAIN-SUFFIX, bing.com, PROXY  # redirected
 DOMAIN-SUFFIX, bingapis.com, PROXY  # blocked
 DOMAIN-SUFFIX, cn.bing.com, DIRECT  # ignored
 DOMAIN-SUFFIX, openai.com, PROXY  # blocked! For OpenAI
+DOMAIN-SUFFIX, openai.io, PROXY
+DOMAIN-SUFFIX, sentry.io, PROXY
 DOMAIN-SUFFIX, statsig.com, PROXY  # blocked! For OpenAI
 
 # User Defined (Games)
