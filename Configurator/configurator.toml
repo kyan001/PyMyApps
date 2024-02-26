@@ -1,3 +1,8 @@
+# Configurator Attributes
+[configurator]
+# Configurator name, which is used to identify the configurator.
+# If not provided, will use the folder basename as the configurator name.
+name = "My Configurator"  # Optional
 
 # Config files.
 # The configurator will replace the destination config files with the source config files.
@@ -22,7 +27,7 @@ dst = "cmd --config-file"
 
 # Dependency packages
 # The configurator will install the dependencies before replacing the config files.
-[[package]]
+[[install]]
 # Package name. Used in installation.
 name = "python3"  # Required
 # Package command to test if the package is already installed.
@@ -32,7 +37,7 @@ cmd = "python3"  # Optional
 # If not provided, will use the default package manager, which is Scoop for Windows,Homebrew for macOS.
 manager = "pip3"  # Optional
 
-[[package]]  # Multiple dependencies can be listed
+[[install]]  # Multiple dependencies can be listed
 # Package name can be a table.
 # The platform name as the key and the package name as the value.
 # Platforms: `Windows`, `Darwin`, `Linux`, `FreeBSD`, etc. `*` is the default.
