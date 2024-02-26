@@ -6,6 +6,7 @@ name = "My Configurator"  # Optional
 
 # Config files.
 # The configurator will replace the destination config files with the source config files.
+# Optional
 [[config]]  # Config file name and paths
 # Config name, which is used to identify the config file.
 # If not provided, will use the src file basename as the config name.
@@ -27,6 +28,7 @@ dst = "cmd --config-file"
 
 # Dependency packages
 # The configurator will install the dependencies before replacing the config files.
+# Optional
 [[install]]
 # Package name. Used in installation.
 name = "python3"  # Required
