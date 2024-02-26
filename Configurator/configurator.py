@@ -5,7 +5,7 @@ import consoleiotools as cit
 import consolecmdtools as cct
 
 
-__version__ = "1.0.0"
+__version__ = "1.0.2"
 CONFIGURATOR_CONF_NAME = 'configurator.toml'
 
 
@@ -141,35 +141,36 @@ def run_configrator(configurator_conf_path: str):
     configurator = get_configurator(configurator_conf_path)
     cit.rule(f"{configurator.get('name')} Configurator")
     cit.info(f"Folder: {configurator_conf_path.parent}")
-    dependencies = configurator.get('install')
-    cit.info(f"Dependencies: {[package.get('name') for package in dependencies]}")
-    configlets = configurator.get("config")
-    cit.info(f"Configs: {[configlet.get('name') for configlet in configlets]}")
+    if dependencies := configurator.get('install'):
+        cit.info(f"Dependencies: {[package.get('name') for package in dependencies]}")
+    if configlets :=configurator.get("config"):
+        cit.info(f"Configs: {[configlet.get('name') for configlet in configlets]}")
 
     # install dependencies
-    if not ensure_packages(dependencies):
+    if dependencies and not ensure_packages(dependencies):
         _soft_raise("Failed to install dependencies!")
 
     # update config files
-    for configlet in configlets:
-        cit.start()
-        cit.title(f"Configurating {configlet.get('name')}")
-        cit.info(f"Source: `{configlet.get('src')}`")
-        cit.info(f"Destination: `{configlet.get('dst')}`")
-        src = configlet.get('src')
-        dst = configlet.get('dst')
-        if src.exists and dst.exists:
-            diffs = cct.diff(dst, src)
-            if diffs:
-                cit.info("Diff:")
-                cit.print("\n".join(diffs))
-                if cit.get_input("Update config file? (y/n)", default='y').lower() != 'y':
-                    cit.warn(f"Config file for `{configlet.get('name')}` is not updated!")
+    if configlets:
+        for configlet in configlets:
+            cit.start()
+            cit.title(f"Configurating {configlet.get('name')}")
+            cit.info(f"Source: `{configlet.get('src')}`")
+            cit.info(f"Destination: `{configlet.get('dst')}`")
+            src = configlet.get('src')
+            dst = configlet.get('dst')
+            if src.exists and dst.exists:
+                diffs = cct.diff(dst, src)
+                if diffs:
+                    cit.info("Diff:")
+                    cit.print("\n".join(diffs))
+                    if cit.get_input("Update config file? (y/n)", default='y').lower() != 'y':
+                        cit.warn(f"Config file for `{configlet.get('name')}` is not updated!")
+                        continue
+                else:
+                    cit.info(f"Config file for `{configlet.get('name')}` is up-to-date!")
                     continue
-            else:
-                cit.info(f"Config file for `{configlet.get('name')}` is up-to-date!")
-                continue
-        cct.copy_file(src, dst, backup=True, ensure=True, msgout=cit.debug)
+            cct.copy_file(src, dst, backup=True, ensure=True, msgout=cit.info)
 
 
 def main():
