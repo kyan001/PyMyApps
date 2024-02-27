@@ -5,7 +5,7 @@ import consoleiotools as cit
 import consolecmdtools as cct
 
 
-__version__ = "1.0.2"
+__version__ = "1.0.4"
 CONFIGURATOR_CONF_NAME = 'configurator.toml'
 
 
@@ -26,7 +26,7 @@ def parse_src_or_dst(path_or_cmd: str) -> cct.Path:
         cct.Path: The parsed path.
     """
     if not path_or_cmd:
-        return None
+        _soft_raise("The input of `parse_src_or_dst()` is empty!")
     if os.path.isfile(path_or_cmd):  # path_or_cmd is a file
         return cct.get_path(path_or_cmd)
     if cct.is_cmd_exist(path_or_cmd):  # path_or_cmd is a command
@@ -105,7 +105,7 @@ def get_configurator(path: str) -> dict:
             config['src'] = src
             if not config.get('dst'):
                 _soft_raise(f"Destination config file path not found in {config}!")
-            config['dst'] = parse_src_or_dst(config.get('dst'))
+            config['dst'] = cct.get_path(parse_src_or_dst(config.get('dst')))
             if not config.get('name'):
                 config['name'] = src.basename
     return configurator
