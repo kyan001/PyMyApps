@@ -6,17 +6,14 @@ build-backend = "setuptools.build_meta"
 name = "appstoreiconextractor"
 description = "AppStore Icon Extractor"
 requires-python = ">=3.6"
-version = "1.0.0"
-dependencies = [
-    "BeautifulSoup4",
-    "consoleiotools",
-    "consolecmdtools",
-    "requests",
-    "pyperclip"
-]
+dynamic = ["dependencies", "version"]
 
 [project.optional-dependencies]
 dev = ["build", "wheel", "pycodestyle"]
 
 [tool.setuptools.packages.find]
 exclude = ["contrib", "docs", "tests"]
+
+[tool.setuptools.dynamic]
+version = {attr = "appstore_icon_extract.__version__"}
+dependencies = {file = ["requirements.txt"]}

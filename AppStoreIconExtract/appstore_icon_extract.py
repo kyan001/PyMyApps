@@ -10,6 +10,9 @@ except ImportError:
     cit.warn("Module `pyperclip` not found, clipboard is unavailable.")
 
 
+__version__ = "1.0.0"
+
+
 def get_url():
     if len(sys.argv) > 1 and sys.argv[1].startswith("https://apps.apple.com/"):
         return sys.argv[1]
