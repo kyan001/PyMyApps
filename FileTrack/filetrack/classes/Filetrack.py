@@ -8,16 +8,11 @@ import consolecmdtools as cct
 
 
 class Trackfile:
-    __version__ = "1.5.7"
+    __version__ = "1.5.8"
 
-    def __init__(
-            self,
-            trackfile_dir: str = cct.get_path(__file__).parent,
-            prefix: str = "TrackFile-",
-            format: str = "json",
-            host: bool = True
-            ):
-        """
+    def __init__(self, trackfile_dir: str = cct.get_path(__file__).parent, prefix: str = "TrackFile-", format: str = "json", host: bool = True):
+        """Initialize Trackfile object.
+
         Args:
             format: "json", "toml"
         """
@@ -82,7 +77,6 @@ class Trackfile:
         """Get hostname and check if hostname is new."""
         host = socket.gethostname().replace("-", "").replace(".", "")  # default hostname
         if host not in self.hosts:
-            cit.ask(f"")
             if cit.get_input(f"New hostname `{host}` detected. Continue?", default="Yes") != "Yes":
                 cit.info("Please choose a hostname from the list below:")
                 return cit.get_choice(self.hosts)
@@ -115,9 +109,9 @@ class Trackfile:
                 cit.warn("Cleanup canceled")
 
     @cit.as_session
-    def parse(self, path: str) -> dict or None:
+    def parse(self, path: str) -> dict:
         if not path:
-            return None
+            return {}
         if not os.path.isfile(path):
             raise Exception(f"TrackFile is not a file: {path}")
         cit.info(f"Parsing TrackFile `{path}`")

@@ -5,33 +5,31 @@ import os
 import fuzzyfinder
 import consolecmdtools as cct
 import consoleiotools as cit
-# lazyload: tomllib, tomlkit
+import tomllib
 
 from classes import Filetrack
-Filetrack.dont_write_bytecode = True
 
-__version__ = '2.5.8'
+
+__version__ = '2.5.9'
+
 
 TARGET_EXTS = ["mp3", "m4a"]
 HASH_MODE = "CRC32"  # "CRC32", "MD5", "NAME", "PATH", "MTIME"
 TARGET_DIR = ""
 FORMAT = "toml"
 
+
 def get_target_dir(config_path: str = "filetrack.toml") -> str:
     if TARGET_DIR:  # if already set, return it
         return TARGET_DIR
+    current_dir = cct.get_path(__file__).parent
     if os.path.isfile(config_path):
-        try:
-            import tomllib  # >= Python 3.11
-            config = tomllib.loads(cct.read_file(config_path))
-        except ImportError:
-            import tomlkit  # fallback to tomlkit
-            config = tomlkit.parse(cct.read_file(config_path))
+        with open(config_path, "rb") as fl:
+            config = tomllib.load(fl)
         if config and config.get("folder"):
-            current_dir = cct.get_path(__file__).parent
             relative_path = os.path.join(current_dir, config["folder"])
             return cct.get_path(relative_path)  # reveal real path
-    return cct.get_path(__file__).parent  # default to current dir
+    return current_dir  # default to current dir
 
 
 def compare(ft: Filetrack):
