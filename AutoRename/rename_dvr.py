@@ -1,12 +1,13 @@
 import re
 import os
 import tomllib
+import functools
 
 import consoleiotools as cit
 import consolecmdtools as cct
 
 
-__version__ = "0.0.1"
+__version__ = "0.1.0"
 TOML_FILENAME = "rename.toml"
 
 
@@ -18,7 +19,8 @@ def parse_config(path: cct.Path) -> dict:
         return tomllib.load(fl)
 
 
-def validate_filename(path: cct.Path, pattern: str):
+def validate_filename(path: any, pattern: str):
+    path = cct.Path(path)
     if re.match(pattern, path.basename):
         return True
     else:
@@ -38,22 +40,22 @@ def main():
     config = parse_config(cct.get_path(TOML_FILENAME))
     current_folder = cct.get_path(__file__).parent
     rename_count = 0
-    for path in cct.bfs_walk(current_folder):
+    validater = functools.partial(validate_filename, pattern=config.get("pattern").get("name"))
+    cct.ls_tree(current_folder, to_visible=validater)
+    for path in cct.get_paths(current_folder, filter=validater):
         path = cct.get_path(path)
-        if path.is_file and validate_filename(path, config.get("pattern").get("name")):
-            cit.info(f"Processing: {path.basename}")
-            date = get_date(path, config.get("pattern").get("date"), config.get("pattern").get("split"))
-            for i in range(1, 99):
-                new_filename = f"{config.get("prefix")}-{date}-{i:02}.mp4"
-                new_filepath = os.path.join(path.parent, new_filename)
-                if not cct.get_path(new_filepath).exists:
-                    cct.move_file(path, new_filepath, msgout=cit.mute)
-                    cit.info(f"Renamed to: {new_filename}")
-                    rename_count = rename_count + 1
-                    break
-            else:
-                cit.warn("Too many files with the same date.")
-    cit.info(f"Renamed {rename_count} files.")
+        date = get_date(path, config.get("pattern").get("date"), config.get("pattern").get("split"))
+        for i in range(1, 99):
+            new_filename = f"{config.get("prefix")}-{date}-{i:02}.mp4"
+            new_filepath = os.path.join(path.parent, new_filename)
+            if not cct.get_path(new_filepath).exists:
+                cct.move_file(path, new_filepath)
+                cit.info(f"Renamed: `{path.basename}` => `{new_filename}`")
+                rename_count = rename_count + 1
+                break
+        else:
+            cit.warn("Too many files with the same date.")
+    cit.panel(f"Renamed {rename_count} files.", expand=False)
 
 
 if __name__ == '__main__':
