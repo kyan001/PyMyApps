@@ -1,6 +1,0 @@
-prefix = "ABBR"  # the prefix of the new filename, e.g. "ABBR" will be "ABBR-YYYYMMDD-01"
-
-[pattern]
-date = "\\d{4}.\\d{2}.\\d{2}"  # date format in the filename
-name = "The full filename with date \\d{4}.\\d{2}.\\d{2} - \\d{2}.\\d{2}.\\d{2}.\\d{2}.DVR.mp4"  # the full filename pattern, to validate the filename
-split = "."  # split the date into [year, month, day], and then join them with nothing. The final date will be "YYYYMMDD"
