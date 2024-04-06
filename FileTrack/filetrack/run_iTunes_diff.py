@@ -1,25 +1,25 @@
 import os
 import unicodedata
 import platform
+import json
 
 import consoleiotools as cit
 import consolecmdtools as cct
 
-from classes import Filetrack
 from classes import ItunesLib
 
 
-__version__ = "2.2.7"
+__version__ = "3.0.0"
 
 
 BASE_DIR = os.path.join(cct.get_path(__file__).parent.parent.parent, "iTunesLibrary")
 ITUNESLIB_PATH = os.path.join(BASE_DIR, "资料库.xml" if platform.system() == "Darwin" else "iTunes Library.xml")
 TRACKFILE_DIR = cct.get_path(__file__).parent
-FORMAT = "toml"
 
 
-def read_trackfile(ft: Filetrack) -> list:
-    old_trackings = ft.parse(ft.latest)
+def read_trackfile(trackfile_path: str) -> list:
+    with open(trackfile_path, "r") as fl:
+       old_trackings = json.load(fl)
     if not old_trackings:
         cit.err("TrackFile unable to load.")
         cit.bye()
@@ -58,18 +58,31 @@ def filename_purify(name: str) -> str:
     return name
 
 
+def get_latest_trackfile() -> str:
+    def trackfile_filter(path: str) -> bool:
+        filename = cct.get_path(path).basename
+        if filename.startswith(trackfile_prefix) and filename.endswith(trackfile_suffix):
+            return True
+        return False
+
+    trackfile_prefix = "FileTrack-"
+    trackfile_suffix = ".json"
+    trackfiles = cct.get_paths(TRACKFILE_DIR, filter=trackfile_filter)
+    return sorted(trackfiles)[-1] if trackfiles else ""
+
+
 def main():
     cit.info(f"VERSION: {__version__}")
     cit.info(f"iTunes Library File: `{ITUNESLIB_PATH}`")
     cit.info("Update iTunes Library File by iTunes -> File -> Lib -> Export")
-    trackfile = Filetrack.Trackfile(trackfile_dir=TRACKFILE_DIR, format=FORMAT)
-    filetrack_songs = read_trackfile(trackfile)
+    latest_trackfile = get_latest_trackfile()
+    filetrack_songs = read_trackfile(latest_trackfile)
     ituneslib = ItunesLib.ItunesLib(ITUNESLIB_PATH)
     show_file_only(check_diffs(checkees=filetrack_songs, checklist=ituneslib.songs))
     show_itunes_only(check_diffs(checkees=ituneslib.songs, checklist=filetrack_songs))
-    cit.pause()
 
 
 if __name__ == "__main__":
     cit.panel(f"[dim]{__file__}", title="[yellow]Run iTunes Diff")
     main()
+    cit.pause()
