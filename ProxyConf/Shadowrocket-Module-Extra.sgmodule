@@ -2,47 +2,66 @@
 #!desc=Extra Rules
 
 [Rule]
-# User Defined
-DOMAIN-SUFFIX, githubusercontent.com, PROXY
+# User Defined (General)
+## General: Note Takings
 DOMAIN-SUFFIX, notion.vip, PROXY
 DOMAIN-SUFFIX, notion.so, PROXY
+DOMAIN-SUFFIX, notion-static.com, PROXY
+DOMAIN-SUFFIX, notion.com, PROXY
+DOMAIN-SUFFIX, sentry.io, PROXY  # BLOCKED! For Notion
 DOMAIN-SUFFIX, yazio.com, PROXY
-DOMAIN-SUFFIX, sentry.io, PROXY  # blocked
-DOMAIN-SUFFIX, amazonaws.com, PROXY  # blocked
-DOMAIN-SUFFIX, starship.rs, PROXY
-DOMAIN-SUFFIX, calmcode.io, PROXY  # blocked
+DOMAIN-SUFFIX, digitaloceanspaces.com, PROXY  # BLOCKED! For Anytype.
+DOMAIN-SUFFIX, grid.is, PROXY  # BLOCKED!
+## General: CDN & Cloud
+DOMAIN-SUFFIX, amazonaws.com, PROXY  # BLOCKED!
 DOMAIN-SUFFIX, cloudflare.com, PROXY
 DOMAIN-SUFFIX, hcaptcha.com, PROXY
-DOMAIN-SUFFIX, readthedocs.io, PROXY
-DOMAIN-SUFFIX, unpkg.com, PROXY
-DOMAIN-SUFFIX, wireshark.org, PROXY
-DOMAIN-SUFFIX, docker.com, PROXY  # blocked
-DOMAIN-SUFFIX, grid.is, PROXY  # blocked
+DOMAIN-SUFFIX, bootstrapcdn.com, PROXY  # BLOCKED!
+## General: Entertainment
+DOMAIN-SUFFIX, xmanhua.com, PROXY
 DOMAIN-SUFFIX, tiktok.com, PROXY
 DOMAIN-SUFFIX, tiktokcdn.com, PROXY
-DOMAIN-SUFFIX, bing.com, PROXY  # redirected
-DOMAIN-SUFFIX, bingapis.com, PROXY  # blocked
-DOMAIN-SUFFIX, cn.bing.com, DIRECT  # ignored
-DOMAIN-SUFFIX, openai.com, PROXY  # blocked! For OpenAI
-DOMAIN-SUFFIX, openai.io, PROXY
-DOMAIN-SUFFIX, sentry.io, PROXY
-DOMAIN-SUFFIX, statsig.com, PROXY  # blocked! For OpenAI
+DOMAIN-KEYWORD, missa, PROXY  # BLOCKED!
+DOMAIN-SUFFIX, surrit.com, PROXY
+## General: AI
+DOMAIN-SUFFIX, bing.com, PROXY  # REDIRECTED! For Bing AI.
+DOMAIN-SUFFIX, cn.bing.com, DIRECT  # IGNORED! For Bing AI.
+DOMAIN-SUFFIX, bingapis.com, PROXY  # BLOCKED! For Bing AI.
+IP-CIDR, 13.107.21.0/8, PROXY  # BLOCKED! For Bing AI,
+IP-CIDR, 204.79.197.0/24, PROXY  # BLOCKED! For Bing AI.
+DOMAIN-SUFFIX, openai.com, PROXY  # REDIRECTED! For Open AI.
+DOMAIN-SUFFIX, openai.io, PROXY  # REDIRECTED! For Open AI.
+DOMAIN-SUFFIX, sentry.io, PROXY  # For Open AI.
+DOMAIN-SUFFIX, civitai.com, PROXY  # BLOCKED! For Civit AI.
+DOMAIN-SUFFIX, claude.ai, PROXY  # REDIRECTED! For Claude AI.
+DOMAIN-SUFFIX, phind.com, PROXY  # BLOCKED! For Phind AI.
+## General: Programming
+DOMAIN-SUFFIX, unpkg.com, PROXY  # For NPM
+DOMAIN-SUFFIX, docker.com, PROXY  # BLOCKED!
+DOMAIN-SUFFIX, githubusercontent.com, PROXY
+DOMAIN-SUFFIX, wireshark.org, PROXY
+DOMAIN-SUFFIX, starship.rs, PROXY
+DOMAIN-SUFFIX, readthedocs.io, PROXY
+DOMAIN-SUFFIX, calmcode.io, PROXY  # BLOCKED!
 
-# User Defined (Games)
-DOMAIN-SUFFIX, mod.io, PROXY  # blocked
-DOMAIN-SUFFIX, play.sc, PROXY  # blocked
-DOMAIN-SUFFIX, nexusmods.com, PROXY  # blocked
-DOMAIN-SUFFIX, xivanalysis.com, PROXY  # blocked
-DOMAIN-SUFFIX, nintendo.net, PROXY  # blocked
-DOMAIN-SUFFIX, 52poke.wiki, PROXY
-DOMAIN-SUFFIX, 52poke.com, PROXY
-DOMAIN-SUFFIX, wikimg.net, PROXY
-DOMAIN-SUFFIX, sendou.ink, PROXY
-DOMAIN-SUFFIX, xmanhua.com, PROXY
-DOMAIN-SUFFIX, heroesprofile.com, PROXY
+  # User Defined (Games)
+DOMAIN-SUFFIX, mod.io, PROXY  # BLOCKED!
+DOMAIN-SUFFIX, nexusmods.com, PROXY  # BLOCKED!
+DOMAIN-SUFFIX, nintendo.net, PROXY  # BLOCKED!
+## Game: FF14
+DOMAIN-SUFFIX, xivanalysis.com, PROXY  # BLOCKED!
 DOMAIN-SUFFIX, universalis.app, PROXY
-DOMAIN-SUFFIX, d2jsp.org, PROXY
+## Game: Star Citizen
+DOMAIN-SUFFIX, play.sc, PROXY  # BLOCKED!
 DOMAIN-SUFFIX, starcitizen.tools, PROXY
 DOMAIN-SUFFIX, sc-trade.tools, PROXY
+DOMAIN-SUFFIX, recaptcha.net, PROXY  # BLOCKED!
+## Game: Splatoon
+DOMAIN-SUFFIX, sendou.ink, PROXY
+## Game: Heroes of the Storm
+DOMAIN-SUFFIX, heroesprofile.com, PROXY
+## Game: Diablo
+DOMAIN-SUFFIX, d2jsp.org, PROXY
 DOMAIN-SUFFIX, maxroll.gg, PROXY
-DOMAIN-SUFFIX, planner-assets.com, PROXY  # blocked
+DOMAIN-SUFFIX, planner-assets.com, PROXY  # BLOCKED!
+DOMAIN-SUFFIX, battle.net, PROXY  # REDIRECTED!
