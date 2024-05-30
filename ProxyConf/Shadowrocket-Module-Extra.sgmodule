@@ -23,6 +23,7 @@ DOMAIN-SUFFIX, tiktok.com, PROXY
 DOMAIN-SUFFIX, tiktokcdn.com, PROXY
 DOMAIN-KEYWORD, missa, PROXY  # BLOCKED!
 DOMAIN-SUFFIX, surrit.com, PROXY
+DOMAIN-SUFFIX, chatgpc.com, PROXY  # BLOCKED!
 ## General: AI
 DOMAIN-SUFFIX, bing.com, PROXY  # REDIRECTED! For Bing AI.
 DOMAIN-SUFFIX, cn.bing.com, DIRECT  # IGNORED! For Bing AI.
