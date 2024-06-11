@@ -107,6 +107,8 @@ class InteractiveShell(cmd.Cmd):
             tkapp.destroy()
         else:
             raise Exception(f"Selection {selection} is not valid.")
+        if not new_path:
+            return self.get_path_input(mode, default)
         if mode == 'folder' and not os.path.isdir(new_path):
             cit.warn('Folder does not exist.')
             cit.ask(f'Create `{new_path}`?')
@@ -135,10 +137,10 @@ class InteractiveShell(cmd.Cmd):
             proxy_ip = sect.get('ip')
             proxy_port = sect.get('port')
             if proxy_ip and proxy_port:
-                self.config['proxy'] = f"{proxy_ip}: {proxy_port}"
+                self.config['proxy'] = f"{proxy_ip}:{proxy_port}"
                 cit.info(f"Config Loaded: proxy={self.config['proxy']}")
             else:
-                cit.warn(f"Config Load Failed: `proxy` unchanged.")
+                cit.warn("Config Load Failed: `proxy` unchanged.")
         if config.has_section('folder'):
             sect = config['folder']
             folder_win = sect.get('win')  # Folder for Windows
@@ -154,9 +156,9 @@ class InteractiveShell(cmd.Cmd):
                 self.config['folder'] = folder_mac
                 cit.info(f"Config Loaded: folder={self.config['folder']}")
             else:
-                cit.warn(f"Config Load Failed: `folder` unchanged.")
+                cit.warn("Config Load Failed: `folder` unchanged.")
 
-    def set_config(self, key, val=None, example="", mode=None):
+    def set_config(self, key, val=None, example="", mode=''):
         old_val = self.config.get(key)
         cit.info(f'Current {key} is: `{old_val}`')
         if not val:  # no val provided, ask for input.
@@ -199,7 +201,7 @@ class InteractiveShell(cmd.Cmd):
             cit.err('You must specified a URL')
             return self.onecmd('url')
         for site in GFW_SITES:
-            if site in self.config.get('url'):
+            if site in self.config['url']:
                 self.set_config('use_proxy', True)
                 break
 
@@ -223,7 +225,7 @@ class InteractiveShell(cmd.Cmd):
 
     def do_filename(self, arg=None):
         """Set the filename of the savedfiles"""
-        self.set_config('filename', value=arg, example='hyouka_S01E01.mp4')
+        self.set_config('filename', val=arg, example='hyouka_S01E01.mp4')
 
     def do_debug(self, arg=None):
         """Set if this run in debug mode"""
