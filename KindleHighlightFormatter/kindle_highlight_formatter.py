@@ -1,3 +1,4 @@
+#! .venv/bin/python
 import argparse
 import tkinter
 import tkinter.filedialog
