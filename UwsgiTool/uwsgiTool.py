@@ -10,7 +10,7 @@ import sys
 import consoleiotools as cit
 import consolecmdtools as cct
 
-__version__ = '1.7.2'
+__version__ = '1.8.0'
 
 
 def main():
@@ -44,7 +44,7 @@ def get_pid_file():
     """generate pid_file path and name according to script's dirname
 
     returns:
-        '/var/run/uwsgi_dirname.pid'
+        '/var/run/uwsgi_{dirname}.pid'
     """
     dir_name = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
     return "/var/run/uwsgi_{}.pid".format(dir_name)
@@ -60,14 +60,13 @@ def get_log_file():
     return "/var/log/uwsgi_{}.log".format(dir_name)
 
 
-def get_venv_folder():
+def get_venv_folder(venv_name: str = ".venv"):
     """check if virtualenv folder exist, and return the path or None
 
     returns:
-        '/path/to/VENV' or None
+        '/path/to/.venv' or None
     """
     dir_path = os.getcwd()
-    venv_name = "VENV"
     venv_path = os.path.join(dir_path, venv_name)
     return venv_path if os.path.isdir(venv_path) else None
 
