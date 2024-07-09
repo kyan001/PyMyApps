@@ -9,5 +9,5 @@
     <module>portal.wsgi:application</module>
     <master/>
     <processes>32</processes>
-    <plugins>python35</plugins>
+    <plugins>python3</plugins>
 </uwsgi>
