@@ -1,10 +1,6 @@
 #! .venv/bin/python
 import argparse
-import tkinter
-import tkinter.filedialog
 import sys
-
-from bs4 import BeautifulSoup
 
 import consoleiotools as cit
 import consolecmdtools as cct
@@ -13,7 +9,7 @@ from parsers.HtmlFormatter import HtmlFormatter
 from parsers.MarkdownFormatter import MarkdownFormatter
 
 
-__version__ = '1.2.1'
+__version__ = '1.2.2'
 __prog__ = "Kindle Highlight Formatter"
 __description__ = "Convert Kindle Highlight HTML file into Markdown text"
 __epilog__ = "TL;DR: Run program with no args, or drag & drop a .html on it."
@@ -41,7 +37,7 @@ if __name__ == '__main__':
     # get markdown text
     html_file = args.file or get_file()
     markdown_text = generate_markdown(html_file)
-    # how to deal
+    # how to export
     cit.ask("How to deal with the markdown text?")
     if cit.get_choice(['Show', 'Copy to clipboard']) == 'Show':
         cit.echo(markdown_text)

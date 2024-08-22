@@ -14,7 +14,7 @@ class HtmlFormatter:
         title_div = soup.select_one(".bookTitle")
         info["title"] = title_div.get_text(strip=True) if title_div else ""
         authors_div = soup.select_one(".authors")
-        info["authors"] = authors_div.get_text(strip=True) if title_div else ""
+        info["authors"] = authors_div.get_text(strip=True) if authors_div else ""
         for tag in soup.find_all("div", {"class": ["sectionHeading", "noteText", "noteHeading"]}):
             if "sectionHeading" in tag["class"]:
                 highlight = {
