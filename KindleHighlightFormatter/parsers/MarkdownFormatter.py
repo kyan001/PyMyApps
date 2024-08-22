@@ -2,17 +2,9 @@ class MarkdownFormatter:
     @classmethod
     def to_text(cls, info: dict = {}, export_h3: bool = True, export_color: bool = False, export_page: bool = False):
         markdowns = []
-        h1 = "# § "
+        title = info["title"].lstrip("《").rstrip("》") if info.get("title") else ""
+        markdowns.append(f"# § 《{title}》{info.get('authors')}")
         h3_cache = ""
-        if info.get("title"):
-            if not info["title"].startswith("《"):
-                h1 += "《"
-            h1 += info["title"]
-            if not info["title"].endswith("》"):
-                h1 += "》"
-        if info.get("authors"):
-            h1 += info["authors"]
-        markdowns.append(h1)
         for highlight in info.get('highlights') or []:
             if highlight["type"] == "sectionHeading":
                 markdowns.append(f"## {highlight['content']}")
