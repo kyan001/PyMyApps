@@ -9,7 +9,7 @@ from parsers.HtmlFormatter import HtmlFormatter
 from parsers.MarkdownFormatter import MarkdownFormatter
 
 
-__version__ = '1.2.2'
+__version__ = '1.2.3'
 __prog__ = "Kindle Highlight Formatter"
 __description__ = "Convert Kindle Highlight HTML file into Markdown text"
 __epilog__ = "TL;DR: Run program with no args, or drag & drop a .html on it."
