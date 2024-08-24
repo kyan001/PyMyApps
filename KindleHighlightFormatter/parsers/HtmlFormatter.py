@@ -5,24 +5,24 @@ from bs4 import BeautifulSoup
 
 class HtmlFormatter:
     @classmethod
-    def parse(cls, html_file=""):
-        """parse highlight html file into object
+    def parse_html(cls, html: str):
+        """parse highlight html string into object
 
         Args:
-            html_file (str, optional): path to highlight html file. Defaults to "".
+            html (str): html string
 
         Returns:
             dict: {  # parsed highlight object
-                ".bookTitle": str,  # book title
+                ".bookTitle": str,
                 ".authors": str,  # book authors
             }
         """
+        soup = BeautifulSoup(html, "lxml")
         info = {
             ".bookTitle": "",
             ".authors": "",
             "highlights": [],  # [{selector: value}, ...]
         }
-        soup = BeautifulSoup(open(html_file, encoding="utf8"), "lxml")
         for selector in (".bookTitle", ".authors"):
             div = soup.select_one(selector)
             if div:
@@ -44,3 +44,20 @@ class HtmlFormatter:
                 highlight = {f'.{css_class}': tag.get_text(strip=True)}
             info["highlights"].append(highlight)
         return info
+
+    @classmethod
+    def parse_file(cls, filepath: str):
+        """parse highlight html file into object
+
+        Args:
+            filepath (str, optional): path to highlight html file.
+
+        Returns:
+            dict: {  # parsed highlight object
+                ".bookTitle": str,  # book title
+                ".authors": str,  # book authors
+            }
+        """
+        with open(filepath, encoding="utf8") as fl:
+            html = fl.read()
+        return cls.parse_html(html)
