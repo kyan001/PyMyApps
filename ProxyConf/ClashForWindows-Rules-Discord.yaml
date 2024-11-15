@@ -1,9 +1,0 @@
-# Discord Rules from https://raw.githubusercontent.com/ender-zhao/Clash-for-Windows_Rule/main/Rule/Discord
-payload:
-  - DOMAIN-SUFFIX,discord.com
-  - DOMAIN-SUFFIX,discord.gg
-  - DOMAIN-SUFFIX,discord.media
-  - DOMAIN-SUFFIX,discordapp.com
-  - DOMAIN-SUFFIX,discordapp.net
-  - DOMAIN-SUFFIX,discordstatus.com
-  - PROCESS-NAME,Discord.exe

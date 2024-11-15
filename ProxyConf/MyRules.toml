@@ -1,0 +1,417 @@
+# Rule Wiki: https://clash.wiki/configuration/rules.html
+[default]
+type = "DOMAIN-SUFFIX"  # Rule Type
+arg = ""  # Rule Argument
+policy = "PROXY"  # Rule Policy
+blocked = false  # Blocked by GFW
+redirected = false  # Redirected by GFW
+desc = ""  # Description
+
+# General::Information
+[[rules]]
+arg = "google.com"
+blocked = true
+desc = "For Google"
+
+[[rules]]
+arg = "clash.wiki"
+blocked = true
+desc = "For Clash Wiki"
+
+[[rules]]
+arg = "z-lib.gs"
+desc = "For Z-Library"
+
+[[rules]]
+arg = "z-library.sk"
+desc = "For Z-Library"
+
+[[rules]]
+arg = "bing.com"
+redirected = true
+desc = "For Bing"
+
+[[rules]]
+arg = "cn.bing.com"
+policy = "DIRECT"
+desc = "For Bing"
+
+[[rules]]
+arg = "bingapis.com"
+blocked = true
+desc = "For Bing"
+
+# General::Note Taking
+[[rules]]
+arg = "notion.vip"
+desc = "For Notion"
+
+[[rules]]
+arg = "notion.so"
+desc = "For Notion"
+
+[[rules]]
+arg = "notion.com"
+desc = "For Notion"
+
+[[rules]]
+arg = "notion.site"
+desc = "For Notion"
+
+[[rules]]
+arg = "notion-static.com"
+desc = "For Notion"
+
+[[rules]]
+arg = "sentry.io"
+blocked = true
+desc = "For Notion/OpenAI"
+
+[[rules]]
+arg = "yazio.com"
+desc = "For Yazio"
+
+[[rules]]
+arg = "digitaloceanspaces.com"
+desc = "For AnyType"
+
+[[rules]]
+arg = "grid.is"
+blocked = true
+
+[[rules]]
+arg = "agilebits.com"
+blocked = true
+desc = "For 1Password"
+
+[[rules]]
+arg = "calibre-ebook.com"
+desc = "For Calibre"
+
+# General::Cloud
+[[rules]]
+arg = "amazonaws.com"
+blocked = true
+
+[[rules]]
+arg = "cloudflare.com"
+
+[[rules]]
+arg = "hcaptcha.com"
+
+[[rules]]
+arg = "recaptcha.net"
+
+[[rules]]
+arg = "bootstrapcdn.com"
+blocked = true
+desc = "For Bootstrap"
+
+[[rules]]
+arg = "vsassets.io"
+blocked = true
+desc = "For VSCode"
+
+# General::Tool
+[[rules]]
+arg = "gopeed.com"
+blocked = true
+desc = "For Gopeed Downloader"
+
+[[rules]]
+arg = "folivora.ai"
+desc = "For BetterTouchTool"
+
+[[rules]]
+arg = "discord.com"
+blocked = true
+desc = "For Discord"
+
+[[rules]]
+arg = "discord.gg"
+blocked = true
+desc = "For Discord"
+
+[[rules]]
+arg = "discordapp.com"
+blocked = true
+desc = "For Discord"
+
+[[rules]]
+arg = "discordapp.net"
+blocked = true
+desc = "For Discord"
+
+[[rules]]
+arg = "discordstatus.com"
+blocked = true
+desc = "For Discord"
+
+[[rules]]
+type = "PROCESS-NAME"
+arg = "Discord.exe"
+blocked = true
+desc = "For Discord"
+
+[[rules]]
+arg = "download-installer.cdn.mozilla.net"
+desc = "For Firefox"
+
+[[rules]]
+arg = "archive.mozilla.org"
+desc = "For Firefox"
+
+# General::Entertainment
+[[rules]]
+arg = "tiktok.com"
+blocked = true
+desc = "For TikTok"
+
+[[rules]]
+arg = "tiktokcdn.com"
+blocked = true
+desc = "For TikTok"
+
+[[rules]]
+arg = "xmanhua.com"
+blocked = true
+
+[[rules]]
+type = "DOMAIN-KEYWORD"
+arg = "missa"
+
+[[rules]]
+arg = "surrit.com"
+desc = "For missa"
+
+[[rules]]
+type = "DOMAIN-SUFFIX"
+arg = "p5yy.com"
+blocked = true
+
+[[rules]]
+arg = "x.com"
+blocked = true
+desc = "For Twitter"
+
+[[rules]]
+arg = "tomtoc.com"
+blocked = true
+desc = "For Tomtoc"
+
+# General::AI
+[[rules]]
+type = "IP-CIDR"
+arg = "13.107.21.0/8"
+blocked = true
+desc = "For Bing AI"
+
+[[rules]]
+type = "IP-CIDR"
+arg = "204.79.197.0/24"
+blocked = true
+desc = "For Bing AI"
+
+[[rules]]
+arg = "openai.com"
+redirected = true
+desc = "For OpenAI"
+
+[[rules]]
+arg = "openai.io"
+redirected = true
+desc = "For OpenAI"
+
+[[rules]]
+arg = "civitai.com"
+blocked = true
+desc = "For Civit AI"
+
+[[rules]]
+arg = "claude.ai"
+redirected = true
+desc = "For Claude AI"
+
+[[rules]]
+arg = "phind.com"
+blocked = true
+desc = "For Phind AI"
+
+[[rules]]
+arg = "poe.com"
+blocked = true
+desc = "For Poe AI"
+
+[[rules]]
+arg = "poecdn.net"
+blocked = true
+desc = "For Poe AI"
+
+[[rules]]
+arg = "chatgpt.com"
+blocked = true
+desc = "For ChatGPT"
+
+[[rules]]
+arg = "openart.ai"
+blocked = true
+desc = "For OpenArt AI"
+
+# General::Programming
+[[rules]]
+arg = "unpkg.com"
+desc = "For NPM"
+
+[[rules]]
+arg = "docker.com"
+blocked = true
+desc = "For Docker"
+
+[[rules]]
+arg = "githubusercontent.com"
+desc = "For GitHub"
+
+[[rules]]
+arg = "wireshark.org"
+blocked = true
+desc = "For Wireshark"
+
+[[rules]]
+arg = "starship.rs"
+desc = "For Starship Prompt"
+
+[[rules]]
+arg = "readthedocs.io"
+desc = "For ReadTheDocs"
+
+[[rules]]
+arg = "calmcode.io"
+desc = "For CalmCode"
+
+[[rules]]
+arg = "zed.dev"
+desc = "For Zed"
+
+[[rules]]
+arg = "brew.sh"
+desc = "For Homebrew"
+
+[[rules]]
+arg = "gitbook.io"
+desc = "For GitBook"
+
+[[rules]]
+arg = "astral.sh"
+blocked = true
+desc = "For uv"
+
+[[rules]]
+arg = "pythonhosted.org"
+desc = "For uv"
+
+[[rules]]
+arg = "python.org"
+desc = "For Python"
+
+# Game::General
+[[rules]]
+arg = "mod.io"
+blocked = true
+
+[[rules]]
+arg = "nexusmods.com"
+blocked = true
+desc = "For Nexus Mods"
+
+[[rules]]
+arg = "steampowered.com"
+blocked = true
+desc = "For Steam"
+
+[[rules]]
+arg = "vrchat.com"
+blocked = true
+desc = "For VRChat"
+
+[[rules]]
+arg = "satisfactory-calculator.com"
+desc = "For Satisfactory"
+
+# Game::Nintendo
+[[rules]]
+arg = "nintendo.net"
+blocked = true
+desc = "For Nintendo"
+
+[[rules]]
+arg = "sendou.ink"
+desc = "For Splatoon"
+
+# Game::FF14
+[[rules]]
+arg = "xivanalysis.com"
+blocked = true
+desc = "For FF14 XIVAnalysis"
+
+[[rules]]
+arg = "universalis.app"
+desc = "For FF14 Universalis"
+
+# Game::Star Citizen
+[[rules]]
+arg = "play.sc"
+desc = "For Star Citizen"
+
+[[rules]]
+arg = "starcitizen.tools"
+desc = "For Star Citizen Wiki"
+
+[[rules]]
+arg = "sc-trade.tools"
+desc = "For Star Citizen"
+
+[[rules]]
+arg = "scorg.tools"
+desc = "For Star Citizen"
+
+# Game::Blizzard
+[[rules]]
+arg = "d2jsp.org"
+desc = "For Diablo 2"
+
+[[rules]]
+arg = "maxroll.gg"
+desc = "For Diablo/Last Epoch"
+
+[[rules]]
+arg = "planner-assets.com"
+desc = "For Diablo"
+
+[[rules]]
+arg = "battle.net"
+desc = "For Blizzard"
+
+[[rules]]
+arg = "heroesprofile.com"
+desc = "For Heroes of the Storm"
+
+# Game::Epic
+[[rules]]
+arg = "epicgames.com"
+blocked = true
+desc = "For Epic"
+
+[[rules]]
+arg = "epicgames.dev"
+blocked = true
+desc = "For Epic"
+
+[[rules]]
+arg = "epicgames.net"
+blocked = true
+desc = "For Epic"
+
+[[rules]]
+arg = "unrealengine.com"
+blocked = true
+desc = "For Epic"
