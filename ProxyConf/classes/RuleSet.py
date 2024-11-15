@@ -65,17 +65,18 @@ class RuleSet:
             result.append(text)
         return "\n".join(result)
 
-    def save_to_file(self, content: str, filename: str):
-        if not filename:
-            cit.err("No filename specified.")
+    def save_to_file(self, content: str, filepath: str):
+        if not filepath:
+            cit.err("No filepath specified.")
             return False
         if not content:
             cit.err("No content to save.")
             return False
         with tempfile.TemporaryDirectory() as tmp_filedir:
-            tmp_filepath = os.path.join(tmp_filedir, filename)
-            current_dir = cct.get_path(__file__).parent
-            filepath = os.path.join(current_dir, filename)
+            path = cct.get_path(filepath)
+            tmp_filepath = os.path.join(tmp_filedir, path.basename)
+            current_dir = path.parent
+            filepath = os.path.join(current_dir, path.basename)
             with open(tmp_filepath, "wt", encoding='utf-8') as tmp_file:
                 tmp_file.write(content)
             cct.move_file(tmp_filepath, filepath)
