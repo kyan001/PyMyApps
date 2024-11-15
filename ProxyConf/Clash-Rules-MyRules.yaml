@@ -1,88 +1,88 @@
 payload:
-  - DOMAIN-SUFFIX, google.com  # BLOCKED! For Google
-  - DOMAIN-SUFFIX, clash.wiki  # BLOCKED! For Clash Wiki
-  - DOMAIN-SUFFIX, z-lib.gs  # For Z-Library
-  - DOMAIN-SUFFIX, z-library.sk  # For Z-Library
-  - DOMAIN-SUFFIX, bing.com  # REDIRECTED! For Bing
-  - DOMAIN-SUFFIX, bingapis.com  # BLOCKED! For Bing
-  - DOMAIN-SUFFIX, notion.vip  # For Notion
-  - DOMAIN-SUFFIX, notion.so  # For Notion
-  - DOMAIN-SUFFIX, notion.com  # For Notion
-  - DOMAIN-SUFFIX, notion.site  # For Notion
-  - DOMAIN-SUFFIX, notion-static.com  # For Notion
-  - DOMAIN-SUFFIX, sentry.io  # BLOCKED! For Notion/OpenAI
-  - DOMAIN-SUFFIX, yazio.com  # For Yazio
-  - DOMAIN-SUFFIX, digitaloceanspaces.com  # For AnyType
-  - DOMAIN-SUFFIX, grid.is  # BLOCKED!
-  - DOMAIN-SUFFIX, agilebits.com  # BLOCKED! For 1Password
-  - DOMAIN-SUFFIX, calibre-ebook.com  # For Calibre
-  - DOMAIN-SUFFIX, amazonaws.com  # BLOCKED!
-  - DOMAIN-SUFFIX, cloudflare.com
-  - DOMAIN-SUFFIX, hcaptcha.com
-  - DOMAIN-SUFFIX, recaptcha.net
-  - DOMAIN-SUFFIX, bootstrapcdn.com  # BLOCKED! For Bootstrap
-  - DOMAIN-SUFFIX, vsassets.io  # BLOCKED! For VSCode
-  - DOMAIN-SUFFIX, gopeed.com  # BLOCKED! For Gopeed Downloader
-  - DOMAIN-SUFFIX, folivora.ai  # For BetterTouchTool
-  - DOMAIN-SUFFIX, discord.com  # BLOCKED! For Discord
-  - DOMAIN-SUFFIX, discord.gg  # BLOCKED! For Discord
-  - DOMAIN-SUFFIX, discordapp.com  # BLOCKED! For Discord
-  - DOMAIN-SUFFIX, discordapp.net  # BLOCKED! For Discord
-  - DOMAIN-SUFFIX, discordstatus.com  # BLOCKED! For Discord
-  - PROCESS-NAME, Discord.exe  # BLOCKED! For Discord
-  - DOMAIN-SUFFIX, download-installer.cdn.mozilla.net  # For Firefox
-  - DOMAIN-SUFFIX, archive.mozilla.org  # For Firefox
-  - DOMAIN-SUFFIX, tiktok.com  # BLOCKED! For TikTok
-  - DOMAIN-SUFFIX, tiktokcdn.com  # BLOCKED! For TikTok
-  - DOMAIN-SUFFIX, xmanhua.com  # BLOCKED!
-  - DOMAIN-KEYWORD, missa
-  - DOMAIN-SUFFIX, surrit.com  # For missa
-  - DOMAIN-SUFFIX, p5yy.com  # BLOCKED!
-  - DOMAIN-SUFFIX, x.com  # BLOCKED! For Twitter
-  - DOMAIN-SUFFIX, tomtoc.com  # BLOCKED! For Tomtoc
-  - IP-CIDR, 13.107.21.0/8  # BLOCKED! For Bing AI
-  - IP-CIDR, 204.79.197.0/24  # BLOCKED! For Bing AI
-  - DOMAIN-SUFFIX, openai.com  # REDIRECTED! For OpenAI
-  - DOMAIN-SUFFIX, openai.io  # REDIRECTED! For OpenAI
-  - DOMAIN-SUFFIX, civitai.com  # BLOCKED! For Civit AI
-  - DOMAIN-SUFFIX, claude.ai  # REDIRECTED! For Claude AI
-  - DOMAIN-SUFFIX, phind.com  # BLOCKED! For Phind AI
-  - DOMAIN-SUFFIX, poe.com  # BLOCKED! For Poe AI
-  - DOMAIN-SUFFIX, poecdn.net  # BLOCKED! For Poe AI
-  - DOMAIN-SUFFIX, chatgpt.com  # BLOCKED! For ChatGPT
-  - DOMAIN-SUFFIX, openart.ai  # BLOCKED! For OpenArt AI
-  - DOMAIN-SUFFIX, unpkg.com  # For NPM
-  - DOMAIN-SUFFIX, docker.com  # BLOCKED! For Docker
-  - DOMAIN-SUFFIX, githubusercontent.com  # For GitHub
-  - DOMAIN-SUFFIX, wireshark.org  # BLOCKED! For Wireshark
-  - DOMAIN-SUFFIX, starship.rs  # For Starship Prompt
-  - DOMAIN-SUFFIX, readthedocs.io  # For ReadTheDocs
-  - DOMAIN-SUFFIX, calmcode.io  # For CalmCode
-  - DOMAIN-SUFFIX, zed.dev  # For Zed
-  - DOMAIN-SUFFIX, brew.sh  # For Homebrew
-  - DOMAIN-SUFFIX, gitbook.io  # For GitBook
-  - DOMAIN-SUFFIX, astral.sh  # BLOCKED! For uv
-  - DOMAIN-SUFFIX, pythonhosted.org  # For uv
-  - DOMAIN-SUFFIX, python.org  # For Python
-  - DOMAIN-SUFFIX, mod.io  # BLOCKED!
-  - DOMAIN-SUFFIX, nexusmods.com  # BLOCKED! For Nexus Mods
-  - DOMAIN-SUFFIX, steampowered.com  # BLOCKED! For Steam
-  - DOMAIN-SUFFIX, vrchat.com  # BLOCKED! For VRChat
-  - DOMAIN-SUFFIX, satisfactory-calculator.com  # For Satisfactory
-  - DOMAIN-SUFFIX, nintendo.net  # BLOCKED! For Nintendo
-  - DOMAIN-SUFFIX, sendou.ink  # For Splatoon
-  - DOMAIN-SUFFIX, xivanalysis.com  # BLOCKED! For FF14 XIVAnalysis
-  - DOMAIN-SUFFIX, universalis.app  # For FF14 Universalis
-  - DOMAIN-SUFFIX, play.sc  # For Star Citizen
-  - DOMAIN-SUFFIX, starcitizen.tools  # For Star Citizen Wiki
-  - DOMAIN-SUFFIX, sc-trade.tools  # For Star Citizen
-  - DOMAIN-SUFFIX, scorg.tools  # For Star Citizen
-  - DOMAIN-SUFFIX, d2jsp.org  # For Diablo 2
-  - DOMAIN-SUFFIX, maxroll.gg  # For Diablo/Last Epoch
-  - DOMAIN-SUFFIX, planner-assets.com  # For Diablo
-  - DOMAIN-SUFFIX, battle.net  # For Blizzard
-  - DOMAIN-SUFFIX, heroesprofile.com  # For Heroes of the Storm
-  - DOMAIN-SUFFIX, epicgames.com  # BLOCKED! For Epic
-  - DOMAIN-SUFFIX, epicgames.dev  # BLOCKED! For Epic
-  - DOMAIN-SUFFIX, epicgames.net  # BLOCKED! For Epic
-  - DOMAIN-SUFFIX, unrealengine.com  # BLOCKED! For Epic
+  - DOMAIN-SUFFIX,google.com  # BLOCKED! For Google
+  - DOMAIN-SUFFIX,clash.wiki  # BLOCKED! For Clash Wiki
+  - DOMAIN-SUFFIX,z-lib.gs  # For Z-Library
+  - DOMAIN-SUFFIX,z-library.sk  # For Z-Library
+  - DOMAIN-SUFFIX,bing.com  # REDIRECTED! For Bing
+  - DOMAIN-SUFFIX,bingapis.com  # BLOCKED! For Bing
+  - DOMAIN-SUFFIX,notion.vip  # For Notion
+  - DOMAIN-SUFFIX,notion.so  # For Notion
+  - DOMAIN-SUFFIX,notion.com  # For Notion
+  - DOMAIN-SUFFIX,notion.site  # For Notion
+  - DOMAIN-SUFFIX,notion-static.com  # For Notion
+  - DOMAIN-SUFFIX,sentry.io  # BLOCKED! For Notion/OpenAI
+  - DOMAIN-SUFFIX,yazio.com  # For Yazio
+  - DOMAIN-SUFFIX,digitaloceanspaces.com  # For AnyType
+  - DOMAIN-SUFFIX,grid.is  # BLOCKED!
+  - DOMAIN-SUFFIX,agilebits.com  # BLOCKED! For 1Password
+  - DOMAIN-SUFFIX,calibre-ebook.com  # For Calibre
+  - DOMAIN-SUFFIX,amazonaws.com  # BLOCKED!
+  - DOMAIN-SUFFIX,cloudflare.com
+  - DOMAIN-SUFFIX,hcaptcha.com
+  - DOMAIN-SUFFIX,recaptcha.net
+  - DOMAIN-SUFFIX,bootstrapcdn.com  # BLOCKED! For Bootstrap
+  - DOMAIN-SUFFIX,vsassets.io  # BLOCKED! For VSCode
+  - DOMAIN-SUFFIX,gopeed.com  # BLOCKED! For Gopeed Downloader
+  - DOMAIN-SUFFIX,folivora.ai  # For BetterTouchTool
+  - DOMAIN-SUFFIX,discord.com  # BLOCKED! For Discord
+  - DOMAIN-SUFFIX,discord.gg  # BLOCKED! For Discord
+  - DOMAIN-SUFFIX,discordapp.com  # BLOCKED! For Discord
+  - DOMAIN-SUFFIX,discordapp.net  # BLOCKED! For Discord
+  - DOMAIN-SUFFIX,discordstatus.com  # BLOCKED! For Discord
+  - PROCESS-NAME,Discord.exe  # BLOCKED! For Discord
+  - DOMAIN-SUFFIX,download-installer.cdn.mozilla.net  # For Firefox
+  - DOMAIN-SUFFIX,archive.mozilla.org  # For Firefox
+  - DOMAIN-SUFFIX,tiktok.com  # BLOCKED! For TikTok
+  - DOMAIN-SUFFIX,tiktokcdn.com  # BLOCKED! For TikTok
+  - DOMAIN-SUFFIX,xmanhua.com  # BLOCKED!
+  - DOMAIN-KEYWORD,missa
+  - DOMAIN-SUFFIX,surrit.com  # For missa
+  - DOMAIN-SUFFIX,p5yy.com  # BLOCKED!
+  - DOMAIN-SUFFIX,x.com  # BLOCKED! For Twitter
+  - DOMAIN-SUFFIX,tomtoc.com  # BLOCKED! For Tomtoc
+  - IP-CIDR,13.107.21.0/8  # BLOCKED! For Bing AI
+  - IP-CIDR,204.79.197.0/24  # BLOCKED! For Bing AI
+  - DOMAIN-SUFFIX,openai.com  # REDIRECTED! For OpenAI
+  - DOMAIN-SUFFIX,openai.io  # REDIRECTED! For OpenAI
+  - DOMAIN-SUFFIX,civitai.com  # BLOCKED! For Civit AI
+  - DOMAIN-SUFFIX,claude.ai  # REDIRECTED! For Claude AI
+  - DOMAIN-SUFFIX,phind.com  # BLOCKED! For Phind AI
+  - DOMAIN-SUFFIX,poe.com  # BLOCKED! For Poe AI
+  - DOMAIN-SUFFIX,poecdn.net  # BLOCKED! For Poe AI
+  - DOMAIN-SUFFIX,chatgpt.com  # BLOCKED! For ChatGPT
+  - DOMAIN-SUFFIX,openart.ai  # BLOCKED! For OpenArt AI
+  - DOMAIN-SUFFIX,unpkg.com  # For NPM
+  - DOMAIN-SUFFIX,docker.com  # BLOCKED! For Docker
+  - DOMAIN-SUFFIX,githubusercontent.com  # For GitHub
+  - DOMAIN-SUFFIX,wireshark.org  # BLOCKED! For Wireshark
+  - DOMAIN-SUFFIX,starship.rs  # For Starship Prompt
+  - DOMAIN-SUFFIX,readthedocs.io  # For ReadTheDocs
+  - DOMAIN-SUFFIX,calmcode.io  # For CalmCode
+  - DOMAIN-SUFFIX,zed.dev  # For Zed
+  - DOMAIN-SUFFIX,brew.sh  # For Homebrew
+  - DOMAIN-SUFFIX,gitbook.io  # For GitBook
+  - DOMAIN-SUFFIX,astral.sh  # BLOCKED! For uv
+  - DOMAIN-SUFFIX,pythonhosted.org  # For uv
+  - DOMAIN-SUFFIX,python.org  # For Python
+  - DOMAIN-SUFFIX,mod.io  # BLOCKED!
+  - DOMAIN-SUFFIX,nexusmods.com  # BLOCKED! For Nexus Mods
+  - DOMAIN-SUFFIX,steampowered.com  # BLOCKED! For Steam
+  - DOMAIN-SUFFIX,vrchat.com  # BLOCKED! For VRChat
+  - DOMAIN-SUFFIX,satisfactory-calculator.com  # For Satisfactory
+  - DOMAIN-SUFFIX,nintendo.net  # BLOCKED! For Nintendo
+  - DOMAIN-SUFFIX,sendou.ink  # For Splatoon
+  - DOMAIN-SUFFIX,xivanalysis.com  # BLOCKED! For FF14 XIVAnalysis
+  - DOMAIN-SUFFIX,universalis.app  # For FF14 Universalis
+  - DOMAIN-SUFFIX,play.sc  # For Star Citizen
+  - DOMAIN-SUFFIX,starcitizen.tools  # For Star Citizen Wiki
+  - DOMAIN-SUFFIX,sc-trade.tools  # For Star Citizen
+  - DOMAIN-SUFFIX,scorg.tools  # For Star Citizen
+  - DOMAIN-SUFFIX,d2jsp.org  # For Diablo 2
+  - DOMAIN-SUFFIX,maxroll.gg  # For Diablo/Last Epoch
+  - DOMAIN-SUFFIX,planner-assets.com  # For Diablo
+  - DOMAIN-SUFFIX,battle.net  # For Blizzard
+  - DOMAIN-SUFFIX,heroesprofile.com  # For Heroes of the Storm
+  - DOMAIN-SUFFIX,epicgames.com  # BLOCKED! For Epic
+  - DOMAIN-SUFFIX,epicgames.dev  # BLOCKED! For Epic
+  - DOMAIN-SUFFIX,epicgames.net  # BLOCKED! For Epic
+  - DOMAIN-SUFFIX,unrealengine.com  # BLOCKED! For Epic

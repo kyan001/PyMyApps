@@ -48,7 +48,7 @@ class RuleSet:
     def to_clash_ruleset(self) -> str:
         result = ["payload:"]
         for rule in self.rules:
-            text = f"  - {rule['type']}, {rule['arg']}"
+            text = f"  - {rule['type']},{rule['arg']}"
             comment = self.rule_comment(rule)
             if comment:
                 text += "  " + comment

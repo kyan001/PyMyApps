@@ -22,7 +22,7 @@ def main():
     clash_ruleset = rules.to_clash_ruleset()
     rules.save_to_file(clash_ruleset, clash_ruleset_path)
     # ShadowRocket
-    cit.info("Generate ShadowRocket sgmodule File")
+    cit.title("Generate ShadowRocket sgmodule File")
     shadowrocket_module_path = os.path.join(current_dir, SHADOWROCKET_MODULE_FILENAME)
     shadowrocket_module = rules.to_shadowrocket_module()
     rules.save_to_file(shadowrocket_module, shadowrocket_module_path)
