@@ -9,7 +9,7 @@ import sys
 import consoleiotools as cit
 import consolecmdtools as cct
 
-__version__ = '1.9.2'
+__version__ = '1.9.3'
 
 
 def main():
@@ -120,10 +120,13 @@ def run_operation(oprtn, config_file, pid_file="", log_file="", venv_dir=""):
                 return False
         cmd = "sudo uwsgi -x '{}'".format(config_file)
         if pid_file:
+            cit.info("PID file enabled: " + pid_file)
             cmd += " --pidfile '{}'".format(pid_file)
         if log_file:
+            cit.info("Daemonize enabled, log file: " + log_file)
             cmd += " --daemonize '{}'".format(log_file)
         if venv_dir:
+            cit.info("Virtual Env enabled: " + venv_dir)
             cmd += " --virtualenv '{}'".format(venv_dir)
         cct.run_cmd(cmd)
     elif "stop" == oprtn:
