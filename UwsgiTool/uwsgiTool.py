@@ -9,7 +9,7 @@ import sys
 import consoleiotools as cit
 import consolecmdtools as cct
 
-__version__ = '1.9.1'
+__version__ = '1.9.2'
 
 
 def main():
@@ -111,14 +111,16 @@ def get_operation():
         cit.bye()
 
 
-def run_operation(oprtn, config_file, pid_file, log_file="", venv_dir=""):
+def run_operation(oprtn, config_file, pid_file="", log_file="", venv_dir=""):
     if "start" == oprtn:
         if os.path.exists(pid_file):
             cit.ask('uwsgi is already running, start a new one? (Y/n)\n(Doing this will overwrite pid_file)')
             if cit.get_input().lower() != 'y':
                 cit.info('User canceled start operation')
                 return False
-        cmd = "sudo uwsgi -x '{c}' --pidfile '{p}'".format(c=config_file, p=pid_file)
+        cmd = "sudo uwsgi -x '{}'".format(config_file)
+        if pid_file:
+            cmd += " --pidfile '{}'".format(pid_file)
         if log_file:
             cmd += " --daemonize '{}'".format(log_file)
         if venv_dir:
@@ -130,7 +132,7 @@ def run_operation(oprtn, config_file, pid_file, log_file="", venv_dir=""):
     elif "reload" == oprtn:
         cct.run_cmd("sudo uwsgi --reload " + pid_file)
     elif "debug" == oprtn:
-        return run_operation("start", config_file, pid_file, log_file="", venv_dir=venv_dir)
+        return run_operation("start", config_file, pid_file="", log_file="", venv_dir=venv_dir)  # no pidfile and no daemonize for debug
     elif "*** update uwsgiTool ***" == oprtn:
         update_uwsgitool()
     else:
