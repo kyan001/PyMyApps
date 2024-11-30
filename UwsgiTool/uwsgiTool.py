@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
 # usage:
 #    ./uwsgiTool.py
 #    python3 uwsgiTool.py
-#    ./uwsgiTool.py start/stop/reload
+#    ./uwsgiTool.py start/stop/reload/debug
 
 import os
 import sys
@@ -10,7 +9,7 @@ import sys
 import consoleiotools as cit
 import consolecmdtools as cct
 
-__version__ = '1.9.0'
+__version__ = '1.9.1'
 
 
 def main():
