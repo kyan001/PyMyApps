@@ -48,10 +48,10 @@ class TagPointer:
     def get_tag(self, selector: str):
         self.tag = self.select_one(selector)
         if self.tag is None:
-            cit.info(f"[red]✕[/] [dim]<[/]{selector}[dim]>[/]")
-            cit.err(f"Tag <{selector}> not found.")
+            cit.info(f"[red]✕[/] [dim]<[/]{cit.escape(selector)}[dim]>[/]")
+            cit.err(f"Tag <{cit.escape(selector)}> not found.")
             cit.bye()
-        cit.info(f"[green]✓[/] [dim]<[/]{selector}[dim]>[/]")
+        cit.info(f"[green]✓[/] [dim]<[/]{cit.escape(selector)}[dim]>[/]")
         return self
 
     def find_image_tag(self):
@@ -63,18 +63,24 @@ class TagPointer:
         cit.err("Tag <source type='image/[png|jpg|webp]'> not found.")
         cit.bye()
 
+    def get_background_image(self):
+        return
 
-def get_icon_srcset(html: str) -> str:
+
+def get_icon_string(html: str) -> str:
     soup = TagPointer(bs4.BeautifulSoup(html, "html.parser"))
-    image_tag = soup.get_tag("body > div.ember-view").get_tag("main").get_tag("section.section--hero.product-hero").get_tag("picture").find_image_tag()
-    srcset = image_tag.get("srcset")  # type: ignore
-    return srcset
+    target_tag = soup.get_tag("body > div.body-container").get_tag("main").get_tag("section.shelf").get_tag("div.container[style]")
+    return target_tag.get("style")  # type: ignore
 
 
-def get_icon_url(srcset: str) -> str:
-    srcs = srcset.split(", ")
-    widest = sorted([src.split() for src in srcs])[-1]
-    return widest[0]
+def extract_icon_url(val: str) -> str:
+    styles = val.split(";")
+    for style in styles:
+        style = style.strip()
+        if style.startswith("--background-image: url("):
+            url = style.lstrip("--background-image: url(").rstrip(")").strip('"').strip("'").strip()
+            return url.rstrip("400x400bb.webp") + "500x500bb.png"
+    return ""
 
 
 @cit.as_session("Extraction")
@@ -97,8 +103,8 @@ def extraction_result(icon_url: str):
 def main():
     url = get_url()
     html = get_url_html(url)
-    srcset = get_icon_srcset(html)
-    icon_url = get_icon_url(srcset)
+    icon_string = get_icon_string(html)
+    icon_url = extract_icon_url(icon_string)
     extraction_result(icon_url)
 
 
