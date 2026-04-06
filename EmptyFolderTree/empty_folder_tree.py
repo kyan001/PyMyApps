@@ -5,8 +5,7 @@ import tomllib  # >=Python3.11
 import consolecmdtools as cct
 import consoleiotools as cit
 
-
-__version__ = "1.4.5"
+__version__ = "1.5.1"
 
 
 def config_init(config_path: str = cct.get_path(__file__).stem + ".toml") -> dict:
@@ -111,7 +110,17 @@ def delete_empty_folders(empty_folders: list):
     if empty_folders:
         if cit.get_input(f"[yellow]{len(empty_folders)}[/] of the folders will be removed, is that OK?", default="Yes") == "Yes":
             for folder in empty_folders:
-                shutil.rmtree(folder)
+                folder = cct.get_path(folder)
+                if shutil.which("recycle-bin") is not None:
+                    if "'" in folder and '"' in folder:
+                        cit.error(f"Cannot delete folder with both single and double quotes in the name: {folder}")
+                        continue
+                    elif "'" in folder:
+                        cct.run_cmd(f"recycle-bin '{folder}'")
+                    else:
+                        cct.run_cmd(f'recycle-bin "{folder}"')
+                else:
+                    shutil.rmtree(folder)
             cit.info(f"{len(empty_folders)} folders removed.")
         else:
             cit.warn("Delete cancelled.")
