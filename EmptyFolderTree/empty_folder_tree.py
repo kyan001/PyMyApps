@@ -5,7 +5,7 @@ import tomllib  # >=Python3.11
 import consolecmdtools as cct
 import consoleiotools as cit
 
-__version__ = "1.5.1"
+__version__ = "1.5.2"
 
 
 def config_init(config_path: str = cct.get_path(__file__).stem + ".toml") -> dict:
@@ -45,7 +45,7 @@ def is_empty(path):
     if os.path.isfile(path):
         return None
     for root, dirs, files in os.walk(path):
-        if files:  # return False if any files are found
+        if [f for f in files if f != ".DS_Store"]:  # ignore .DS_Store files on macOS
             return False
         if dirs:  # return False if any of the subfolders is not empty
             for dir in dirs:
@@ -111,14 +111,21 @@ def delete_empty_folders(empty_folders: list):
         if cit.get_input(f"[yellow]{len(empty_folders)}[/] of the folders will be removed, is that OK?", default="Yes") == "Yes":
             for folder in empty_folders:
                 folder = cct.get_path(folder)
+                if not folder.exists():  # skip if already deleted (e.g. parent was deleted)
+                    continue
+                delete_cmd = None
+                if shutil.which("trash") is not None:
+                    delete_cmd = "trash"
                 if shutil.which("recycle-bin") is not None:
+                    delete_cmd = "recycle-bin"
+                if delete_cmd:
                     if "'" in folder and '"' in folder:
                         cit.error(f"Cannot delete folder with both single and double quotes in the name: {folder}")
                         continue
                     elif "'" in folder:
-                        cct.run_cmd(f"recycle-bin '{folder}'")
+                        cct.run_cmd(f"{delete_cmd} '{folder}'")
                     else:
-                        cct.run_cmd(f'recycle-bin "{folder}"')
+                        cct.run_cmd(f'{delete_cmd} "{folder}"')
                 else:
                     shutil.rmtree(folder)
             cit.info(f"{len(empty_folders)} folders removed.")
